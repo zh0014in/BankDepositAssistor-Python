@@ -30,6 +30,10 @@
                         accept: "accept",
                         value: "value",
                         uploadMode: "uploadMode"
+                    },
+                    onUploaded: function(e){
+                        console.log(e);
+                        vm.savedPath = e.request.response;
                     }
                 };
             }
@@ -40,7 +44,8 @@
         return {
             templateUrl: 'static/myUploader.html',
             bindings: {
-                path: "@"
+                path: "@",
+                savedPath: "="
             },
             controller: myUploaderController,
             controllerAs: 'vm'
