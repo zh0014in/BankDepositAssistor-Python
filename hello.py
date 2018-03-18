@@ -8,6 +8,8 @@ from werkzeug.utils import secure_filename
 import csv
 import sys
 
+from dataAnalysis.final_model_performance_measure import run_model
+
 # Emit Bluemix deployment event
 cf_deployment_tracker.track()
 
@@ -115,16 +117,18 @@ def upload_file():
             filename = secure_filename(file.filename)
             fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(fullfilename)
+            print fullfilename
+            return run_model(fullfilename, ['svm'])
 
-            with open(fullfilename, 'rb') as f:
-                reader = csv.reader(f)
-                lis = [line.split() for line in f]
-                # save to db
-                # for row in reader:
-                # data = {'train': row}
-                # db.create_document(data)
-
-                return jsonify(lis)
+            # with open(fullfilename, 'rb') as f:
+            #     reader = csv.reader(f)
+            #     lis=[line.split() for line in f]
+            #     #save to db
+            #     # for row in reader:
+            #         # data = {'train': row}
+            #         # db.create_document(data)
+            #
+            #     return jsonify(lis)
     return ''
 
 
