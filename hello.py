@@ -1,9 +1,10 @@
 from cloudant import Cloudant
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify,redirect, url_for
 import atexit
 import cf_deployment_tracker
 import os
 import json
+from werkzeug.utils import secure_filename
 
 # Emit Bluemix deployment event
 cf_deployment_tracker.track()
@@ -39,6 +40,7 @@ elif os.path.isfile('vcap-local.json'):
 # When running this app on the local machine, default the port to 8000
 port = int(os.getenv('PORT', 8000))
 
+
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -49,6 +51,8 @@ def home():
 # *     "name": "Bob"
 # * }
 # */
+
+
 @app.route('/api/visitors', methods=['GET'])
 def get_visitor():
     if client:
@@ -68,21 +72,53 @@ def get_visitor():
 #  * [ "Bob", "Jane" ]
 #  * @return An array of all the visitor names
 #  */
+
+
 @app.route('/api/visitors', methods=['POST'])
 def put_visitor():
     user = request.json['name']
     if client:
-        data = {'name':user}
+        data = {'name': user}
         db.create_document(data)
         return 'Hello %s! I added you to the database.' % user
     else:
         print('No database')
         return 'Hello %s!' % user
 
+
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'csv'])
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'test' not in request.files:
+            # flash('No file part')
+            return "no file part"
+        file = request.files['test']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            # flash('No selected file')
+            return "no selected file"
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return 'upload succesfully!'
+    return ''
+
+
 @atexit.register
 def shutdown():
     if client:
         client.disconnect()
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port, debug=True)

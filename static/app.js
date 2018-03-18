@@ -9,11 +9,11 @@
         .config(function ($routeProvider) {
             $routeProvider
                 .when("/", {
-                    templateUrl: "main.html",
+                    templateUrl: "static/main.html",
                     controller: 'mainController',
                     controllerAs: "vm"
                 }).when("/train", {
-                    templateUrl: "train.html",
+                    templateUrl: "static/train.html",
                     controller: 'trainController',
                     controllerAs: "vm"
                 });
