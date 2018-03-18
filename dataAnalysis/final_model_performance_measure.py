@@ -48,70 +48,95 @@ def plot_confusion_matrix(cm, classes,
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
 
-BANK_TRAINING = "bank-training_new.csv"
-BANK_TESTING = "bank-testing_new.csv"
 
-COLUMNS = ["age","job","marital","education","default","balance","housing","loan","contact","day","month","duration",
-           "campaign","pdays","previous","poutcome","y"]
-CATEGORICAL_COLUMNS = ["job","marital","education","default","housing","loan","contact","day","month","poutcome"]
-CONTINUOUS_COLUMNS = ["age","balance","duration","campaign","pdays","previous"]
-CATEGORICAL_COLUMNS_2 = ["default","housing","loan","day","month","poutcome"]
-LABEL = "y"
+def run_model(train_file_name, models):
+    BANK_TRAINING = train_file_name
 
-standard_scaler = preprocessing.StandardScaler()
+    # BANK_TRAINING = "/upload/bank-training_new.csv"
+    BANK_TESTING = "./dataAnalysis/bank-testing_new.csv"
 
-############################
-training_set = pd.read_csv(BANK_TRAINING, names=COLUMNS, skipinitialspace=True, skiprows=1)
-training_label_set = deepcopy(training_set[LABEL])
-del training_set[LABEL]
+    COLUMNS = ["age", "job", "marital", "education", "default", "balance",
+               "housing", "loan", "contact", "day", "month", "duration",
+               "campaign", "pdays", "previous", "poutcome", "y"]
+    CATEGORICAL_COLUMNS = ["job", "marital", "education", "default", "housing",
+                           "loan", "contact", "day", "month", "poutcome"]
+    CONTINUOUS_COLUMNS = ["age", "balance", "duration", "campaign", "pdays",
+                          "previous"]
+    CATEGORICAL_COLUMNS_2 = ["default", "housing", "loan", "day", "month",
+                             "poutcome"]
+    LABEL = "y"
 
-#
-training_set_imputed = deepcopy(training_set)
-training_set_imputed = training_set_imputed.drop(['marital', 'job', 'contact'], axis=1)
-training_set_imputed['education'] = ternary_vectorizing(training_set_imputed['education'], ['primary', 'secondary', 'tertiary'])
-training_set_imputed['education'].replace('unknown', np.nan, inplace=True)
-training_set_imputed.fillna(training_set_imputed.mean(), inplace=True)
-training_set_imputed = one_hot(training_set_imputed, CATEGORICAL_COLUMNS_2)
-#
-training_label_set = binary_vectorizing(training_label_set, ['no', 'yes'])
-#
-training_set_sc_scaled_imputed = standard_scaler.fit_transform(training_set_imputed)
-training_set_sc_scaled_imputed = pd.DataFrame(training_set_sc_scaled_imputed)
-#
+    standard_scaler = preprocessing.StandardScaler()
 
-##########################
-validation_set = pd.read_csv(BANK_TESTING, names=COLUMNS, skipinitialspace=True, skiprows=1)
-validation_label_set = deepcopy(validation_set[LABEL])
-del validation_set[LABEL]
+    ############################
+    training_set = pd.read_csv(BANK_TRAINING, names=COLUMNS,
+                               skipinitialspace=True, skiprows=1)
+    training_label_set = deepcopy(training_set[LABEL])
+    del training_set[LABEL]
 
-#
-validation_set_imputed = deepcopy(validation_set)
-validation_set_imputed = validation_set_imputed.drop(['marital', 'job', 'contact'], axis=1)
-validation_set_imputed['education'] = ternary_vectorizing(validation_set_imputed['education'], ['primary', 'secondary', 'tertiary'])
-validation_set_imputed['education'].replace('unknown', np.nan, inplace=True)
-validation_set_imputed.fillna(validation_set_imputed.mean(), inplace=True)
-validation_set_imputed = one_hot(validation_set_imputed, CATEGORICAL_COLUMNS_2)
-#
-validation_label_set = binary_vectorizing(validation_label_set, ['no', 'yes'])
-#
-validation_set_sc_scaled_imputed = standard_scaler.fit_transform(validation_set_imputed)
-validation_set_sc_scaled_imputed = pd.DataFrame(validation_set_sc_scaled_imputed)
-#
+    #
+    training_set_imputed = deepcopy(training_set)
+    training_set_imputed = training_set_imputed.drop(
+        ['marital', 'job', 'contact'], axis=1)
+    training_set_imputed['education'] = ternary_vectorizing(
+        training_set_imputed['education'], ['primary', 'secondary', 'tertiary'])
+    training_set_imputed['education'].replace('unknown', np.nan, inplace=True)
+    training_set_imputed.fillna(training_set_imputed.mean(), inplace=True)
+    training_set_imputed = one_hot(training_set_imputed, CATEGORICAL_COLUMNS_2)
+    #
+    training_label_set = binary_vectorizing(training_label_set, ['no', 'yes'])
+    #
+    training_set_sc_scaled_imputed = standard_scaler.fit_transform(
+        training_set_imputed)
+    training_set_sc_scaled_imputed = pd.DataFrame(
+        training_set_sc_scaled_imputed)
+    #
+
+    ##########################
+    validation_set = pd.read_csv(BANK_TESTING, names=COLUMNS,
+                                 skipinitialspace=True, skiprows=1)
+    validation_label_set = deepcopy(validation_set[LABEL])
+    del validation_set[LABEL]
+
+    #
+    validation_set_imputed = deepcopy(validation_set)
+    validation_set_imputed = validation_set_imputed.drop(
+        ['marital', 'job', 'contact'], axis=1)
+    validation_set_imputed['education'] = ternary_vectorizing(
+        validation_set_imputed['education'],
+        ['primary', 'secondary', 'tertiary'])
+    validation_set_imputed['education'].replace('unknown', np.nan, inplace=True)
+    validation_set_imputed.fillna(validation_set_imputed.mean(), inplace=True)
+    validation_set_imputed = one_hot(validation_set_imputed,
+                                     CATEGORICAL_COLUMNS_2)
+    #
+    validation_label_set = binary_vectorizing(validation_label_set,
+                                              ['no', 'yes'])
+    #
+    validation_set_sc_scaled_imputed = standard_scaler.fit_transform(
+        validation_set_imputed)
+    validation_set_sc_scaled_imputed = pd.DataFrame(
+        validation_set_sc_scaled_imputed)
+    #
 
 
 
 
 
-#####################################################################
-#Array of Tuples of Model,Training Data, Validation Data, Description
-pipelines = {}
+    #####################################################################
+    # Array of Tuples of Model,Training Data, Validation Data, Description
+    pipelines = {}
 
-pipelines['lm'] = (lm.LogisticRegression(), training_set_sc_scaled_imputed, validation_set_sc_scaled_imputed, "Imputed->Standard-Scaled->Logistic Regression")
+    pipelines['lm'] = (lm.LogisticRegression(), training_set_sc_scaled_imputed,
+                       validation_set_sc_scaled_imputed,
+                       "Imputed->Standard-Scaled->Logistic Regression")
 
-pipelines['svm'] = (svm.SVC(kernel='rbf', degree=16,  max_iter=100), training_set_sc_scaled_imputed, validation_set_sc_scaled_imputed, "Imputed->Standard-Scaled->16RBF Support Vector Machine")
+    pipelines['svm'] = (svm.SVC(kernel='rbf', degree=16, max_iter=100),
+                        training_set_sc_scaled_imputed,
+                        validation_set_sc_scaled_imputed,
+                        "Imputed->Standard-Scaled->16RBF Support Vector Machine")
 
 
-def run_model(models):
     for model_name in models:
         print model_name
         pipeline = pipelines[model_name]
@@ -138,7 +163,7 @@ def main():
     parser.add_option('--models', dest='models', action="append", type="str")
 
     (options, args) = parser.parse_args()
-    run_model(options.models)
+    run_model('', options.models)
 
 
 if __name__ == '__main__':
