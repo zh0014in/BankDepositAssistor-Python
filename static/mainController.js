@@ -14,20 +14,11 @@
 
         function init() {
         }
-
-        $scope.multiple = false;
-        $scope.accept = "text/csv";
-        $scope.value = [];
-        $scope.uploadMode = "instantly";
-
-        $scope.options = {
-            uploadUrl: "/upload",
-            name: "test",
+        $scope.selectedModel = 'SVM';
+        $scope.simple = {
+            items: ['SVM','Decision Tree'],
             bindingOptions: {
-                multiple: "multiple",
-                accept: "accept",
-                value: "value",
-                uploadMode: "uploadMode"
+                value: "selectedModel"
             }
         };
 
