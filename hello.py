@@ -1,10 +1,12 @@
 from cloudant import Cloudant
-from flask import Flask, render_template, request, jsonify,redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 import atexit
 import cf_deployment_tracker
 import os
 import json
 from werkzeug.utils import secure_filename
+import csv
+import sys
 
 # Emit Bluemix deployment event
 cf_deployment_tracker.track()
@@ -87,12 +89,14 @@ def put_visitor():
 
 
 UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'csv'])
+ALLOWED_EXTENSIONS = set(['csv'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -109,7 +113,15 @@ def upload_file():
             return "no selected file"
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(fullfilename)
+
+            with open(fullfilename, 'rb') as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    data = {'train': row}
+                    db.create_document(data)
+
             return 'upload succesfully!'
     return ''
 

@@ -16,7 +16,7 @@
         }
 
         $scope.multiple = false;
-        $scope.accept = "*";
+        $scope.accept = "text/csv";
         $scope.value = [];
         $scope.uploadMode = "instantly";
 
