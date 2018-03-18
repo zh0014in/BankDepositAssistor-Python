@@ -11,10 +11,12 @@
         function myUploaderController($scope) {
             var vm = this;
 
-            init();
+            vm.$onInit = init;
 
             function init() {
-
+                if(!vm.path){
+                    vm.path = "/upload";
+                }
             }
 
             $scope.multiple = false;
@@ -23,7 +25,7 @@
             $scope.uploadMode = "instantly";
 
             $scope.options = {
-                uploadUrl: "/upload",
+                uploadUrl: vm.path,
                 name: "test",
                 bindingOptions: {
                     multiple: "multiple",
@@ -37,7 +39,7 @@
         return {
             templateUrl: 'static/myUploader.html',
             bindings: {
-
+                path: "@"
             },
             controller: myUploaderController,
             controllerAs: 'vm'

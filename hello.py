@@ -118,11 +118,41 @@ def upload_file():
 
             with open(fullfilename, 'rb') as f:
                 reader = csv.reader(f)
-                lis=[line.split() for line in f]
-                #save to db
+                lis = [line.split() for line in f]
+                # save to db
                 # for row in reader:
-                    # data = {'train': row}
-                    # db.create_document(data)
+                # data = {'train': row}
+                # db.create_document(data)
+
+                return jsonify(lis)
+    return ''
+
+
+@app.route('/uploadTrain', methods=['POST'])
+def upload_file_train():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'test' not in request.files:
+            # flash('No file part')
+            return "no file part"
+        file = request.files['test']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            # flash('No selected file')
+            return "no selected file"
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(fullfilename)
+
+            with open(fullfilename, 'rb') as f:
+                reader = csv.reader(f)
+                lis = [line.split() for line in f]
+                # save to db
+                # for row in reader:
+                # data = {'train': row}
+                # db.create_document(data)
 
                 return jsonify(lis)
     return ''
