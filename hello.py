@@ -120,11 +120,13 @@ def upload_file():
 
             with open(fullfilename, 'rb') as f:
                 reader = csv.reader(f)
-                for row in reader:
-                    data = {'train': row}
-                    db.create_document(data)
+                lis=[line.split() for line in f]
+                #save to db
+                # for row in reader:
+                    # data = {'train': row}
+                    # db.create_document(data)
 
-            return 'upload succesfully!'
+                return jsonify(lis)
     return ''
 
 
