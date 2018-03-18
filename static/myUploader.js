@@ -14,26 +14,27 @@
             vm.$onInit = init;
 
             function init() {
-                if(!vm.path){
+                if (!vm.path) {
                     vm.path = "/upload";
                 }
+                $scope.multiple = false;
+                $scope.accept = "text/csv";
+                $scope.value = [];
+                $scope.uploadMode = "instantly";
+
+                $scope.options = {
+                    uploadUrl: vm.path,
+                    name: "test",
+                    bindingOptions: {
+                        multiple: "multiple",
+                        accept: "accept",
+                        value: "value",
+                        uploadMode: "uploadMode"
+                    }
+                };
             }
 
-            $scope.multiple = false;
-            $scope.accept = "text/csv";
-            $scope.value = [];
-            $scope.uploadMode = "instantly";
 
-            $scope.options = {
-                uploadUrl: vm.path,
-                name: "test",
-                bindingOptions: {
-                    multiple: "multiple",
-                    accept: "accept",
-                    value: "value",
-                    uploadMode: "uploadMode"
-                }
-            };
         }
 
         return {

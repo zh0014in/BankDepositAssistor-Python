@@ -118,7 +118,8 @@ def upload_file():
             fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(fullfilename)
             print fullfilename
-            return run_model(fullfilename, ['svm'])
+            result = run_model(fullfilename, ['svm'])
+            return jsonify(result['svm'].tolist())
 
             # with open(fullfilename, 'rb') as f:
             #     reader = csv.reader(f)
