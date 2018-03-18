@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="static/css/dx.light.css">
 </head>
 
-<body data-ng-app="app" ng-cloak>
+<body data-ng-app="app" ng-cloak data-ng-controller="rootController">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">Bank Deposit Assistor</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -22,12 +22,12 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
+                <li class="nav-item" ng-class="{active:isActive('/')}">
                     <a class="nav-link" href="#!/">Analysis
                         <span class="sr-only">(current)</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" ng-class="{active:isActive('/train')}">
                     <a class="nav-link" href="#!/train">Train</a>
                 </li>
             </ul>
@@ -49,8 +49,10 @@
     <script src="/js/jszip.min.js"></script> -->
     <script src="static/js/dx.all.js"></script>
     <script src="static/app.js"></script>
+    <script src="static/rootController.js"></script>
     <script src="static/mainController.js"></script>
     <script src="static/trainController.js"></script>
+    <script src="static/myUploader.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
         crossorigin="anonymous"></script>
