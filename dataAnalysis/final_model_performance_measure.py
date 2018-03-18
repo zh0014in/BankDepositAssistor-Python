@@ -161,7 +161,6 @@ def run_model(train_file_name, models):
         return result
 
 
-
 def main():
     parser = OptionParser()
     parser.add_option('--models', dest='models', action="append", type="str")
