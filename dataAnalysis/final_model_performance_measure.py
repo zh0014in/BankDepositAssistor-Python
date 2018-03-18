@@ -7,6 +7,10 @@ import sklearn.linear_model as lm
 import numpy as np
 import itertools
 import matplotlib.pyplot as plt
+from sklearn.base import clone
+from optparse import OptionParser
+
+
 
 LOG_FILE = "log_final.txt"
 log = open(LOG_FILE, 'w+')
@@ -94,40 +98,82 @@ validation_set_sc_scaled_imputed = standard_scaler.fit_transform(validation_set_
 validation_set_sc_scaled_imputed = pd.DataFrame(validation_set_sc_scaled_imputed)
 #
 
+
+
+
+
 #####################################################################
 #Array of Tuples of Model,Training Data, Validation Data, Description
-pipelines = []
+pipelines = {}
 
-#pipelines.append((lm.LogisticRegression(), training_set_sc_scaled_imputed, validation_set_sc_scaled_imputed, "Imputed->Standard-Scaled->Logistic Regression"))
+pipelines['lm'] = (lm.LogisticRegression(), training_set_sc_scaled_imputed, validation_set_sc_scaled_imputed, "Imputed->Standard-Scaled->Logistic Regression")
 
-pipelines.append((svm.SVC(kernel='rbf', degree=16,  max_iter=1000000), training_set_sc_scaled_imputed, validation_set_sc_scaled_imputed, "Imputed->Standard-Scaled->16RBF Support Vector Machine"))
+pipelines['svm'] = (svm.SVC(kernel='rbf', degree=16,  max_iter=100), training_set_sc_scaled_imputed, validation_set_sc_scaled_imputed, "Imputed->Standard-Scaled->16RBF Support Vector Machine")
 
+
+def run_model(models):
+    for model_name in models:
+        print model_name
+        pipeline = pipelines[model_name]
+        mdl, train, validate, description = pipeline
+        print description
+
+        #Sci-Kit Learn Model
+
+        fit_model = mdl.fit(train, training_label_set) \
+
+        label_pred = fit_model.predict(validate)
+        # Compute confusion matrix
+        cnf_matrix = confusion_matrix(validation_label_set, label_pred)
+        np.set_printoptions(precision=2)
+
+        # Plot non-normalized confusion matrix
+        plt.figure()
+        plot_confusion_matrix(cnf_matrix, classes=['no', 'yes'],
+                              title='Confusion matrix, without normalization')
+
+
+def main():
+    parser = OptionParser()
+    parser.add_option('--models', dest='models', action="append", type="str")
+
+    (options, args) = parser.parse_args()
+    run_model(options.models)
+
+
+if __name__ == '__main__':
+    main()
 
 #####################################################################
-f = open(LOG_FILE, 'w+')
-
-for pipeline in pipelines:
-
-    mdl, train, validate, description = pipeline
-
-    #Sci-Kit Learn Model
-
-    label_pred = mdl.fit(train, training_label_set).predict(validate)
-
-    # Compute confusion matrix
-    cnf_matrix = confusion_matrix(validation_label_set, label_pred)
-    np.set_printoptions(precision=2)
-
-    # Plot non-normalized confusion matrix
-    plt.figure()
-    plot_confusion_matrix(cnf_matrix, classes=['no', 'yes'],
-                          title='Confusion matrix, without normalization')
-
-    # Plot normalized confusion matrix
-    plt.figure()
-    plot_confusion_matrix(cnf_matrix, classes=['no', 'yes'], normalize=True,
-                          title='Normalized confusion matrix')
-
-    plt.show()
-
-f.close()
+# f = open(LOG_FILE, 'w+')
+#
+# for pipeline in pipelines:
+#
+#     mdl, train, validate, description = pipeline
+#     print description
+#
+#     #Sci-Kit Learn Model
+#
+#     fit_model = mdl.fit(train, training_label_set) \
+#
+#     label_pred = fit_model.predict(validate)
+#
+#
+#
+#     # Compute confusion matrix
+#     cnf_matrix = confusion_matrix(validation_label_set, label_pred)
+#     np.set_printoptions(precision=2)
+#
+#     # Plot non-normalized confusion matrix
+#     plt.figure()
+#     plot_confusion_matrix(cnf_matrix, classes=['no', 'yes'],
+#                           title='Confusion matrix, without normalization')
+#
+#     # Plot normalized confusion matrix
+#     plt.figure()
+#     plot_confusion_matrix(cnf_matrix, classes=['no', 'yes'], normalize=True,
+#                           title='Normalized confusion matrix')
+#
+#     plt.show()
+#
+# f.close()

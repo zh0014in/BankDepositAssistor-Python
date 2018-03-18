@@ -8,6 +8,8 @@ from werkzeug.utils import secure_filename
 import csv
 import sys
 
+from final_model_performance_measure import run_model
+
 # Emit Bluemix deployment event
 cf_deployment_tracker.track()
 
