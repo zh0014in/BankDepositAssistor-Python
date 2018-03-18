@@ -52,7 +52,7 @@ def plot_confusion_matrix(cm, classes,
 def run_model(train_file_name, models):
     BANK_TRAINING = train_file_name
 
-    # BANK_TRAINING = "/upload/bank-training_new.csv"
+    # BANK_TRAINING = "bank-training_new.csv"
     BANK_TESTING = "./dataAnalysis/bank-testing_new.csv"
 
     COLUMNS = ["age", "job", "marital", "education", "default", "balance",
@@ -136,7 +136,7 @@ def run_model(train_file_name, models):
                         validation_set_sc_scaled_imputed,
                         "Imputed->Standard-Scaled->16RBF Support Vector Machine")
 
-
+    result = {}
     for model_name in models:
         print model_name
         pipeline = pipelines[model_name]
@@ -151,11 +151,15 @@ def run_model(train_file_name, models):
         # Compute confusion matrix
         cnf_matrix = confusion_matrix(validation_label_set, label_pred)
         np.set_printoptions(precision=2)
+        #
+        # # Plot non-normalized confusion matrix
+        # plt.figure()
+        # plot_confusion_matrix(cnf_matrix, classes=['no', 'yes'],
+        #                       title='Confusion matrix, without normalization')
+        result[model_name] = cnf_matrix
+        print model_name, cnf_matrix
+        return result
 
-        # Plot non-normalized confusion matrix
-        plt.figure()
-        plot_confusion_matrix(cnf_matrix, classes=['no', 'yes'],
-                              title='Confusion matrix, without normalization')
 
 
 def main():
