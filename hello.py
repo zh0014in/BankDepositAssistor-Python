@@ -100,7 +100,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/upload', methods=['POST'])
+@app.route('/uploadTrain', methods=['POST'])
 def upload_file_train():
     if request.method == 'POST':
         # check if the post request has the file part
@@ -132,7 +132,7 @@ def upload_file_train():
     return ''
 
 
-@app.route('/uploadTrain', methods=['POST'])
+@app.route('/uploadTest', methods=['POST'])
 def upload_file_test():
     if request.method == 'POST':
         # check if the post request has the file part
