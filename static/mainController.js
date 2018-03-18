@@ -6,30 +6,28 @@
         .controller('mainController', mainController)
 
     /** @ngInject */
-    mainController.$inject = ['$scope'];
-    function mainController($scope) {
+    mainController.$inject = ['$scope', '$http'];
+    function mainController($scope, $http) {
         var vm = this;
 
         init();
 
         function init() {
         }
-
-        $scope.multiple = false;
-        $scope.accept = "text/csv";
-        $scope.value = [];
-        $scope.uploadMode = "instantly";
-
-        $scope.options = {
-            uploadUrl: "/upload",
-            name: "test",
+        $scope.selectedModel = 'svm';
+        $scope.simple = {
+            items: ['svm', 'Decision Tree', 'lm'],
             bindingOptions: {
-                multiple: "multiple",
-                accept: "accept",
-                value: "value",
-                uploadMode: "uploadMode"
+                value: "selectedModel"
             }
         };
+
+        vm.train = function () {
+            console.log('train')
+            $http.post("/train", { model: $scope.selectedModel, trainFileName: vm.trainFileName }).then(function (data) {
+                console.log(data);
+            });
+        }
 
     }
 

@@ -100,8 +100,8 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/upload', methods=['POST'])
-def upload_file():
+@app.route('/uploadTrain', methods=['POST'])
+def upload_file_train():
     if request.method == 'POST':
         # check if the post request has the file part
         if 'test' not in request.files:
@@ -115,10 +115,10 @@ def upload_file():
             return "no selected file"
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(fullfilename)
-            print fullfilename
-            return run_model(fullfilename, ['svm'])
+            trainFileName = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(trainFileName)
+            print trainFileName
+            return trainFileName
 
             # with open(fullfilename, 'rb') as f:
             #     reader = csv.reader(f)
@@ -132,8 +132,8 @@ def upload_file():
     return ''
 
 
-@app.route('/uploadTrain', methods=['POST'])
-def upload_file_train():
+@app.route('/uploadTest', methods=['POST'])
+def upload_file_test():
     if request.method == 'POST':
         # check if the post request has the file part
         if 'test' not in request.files:
@@ -161,6 +161,13 @@ def upload_file_train():
                 return jsonify(lis)
     return ''
 
+
+@app.route('/train', methods=['POST'])
+def train():
+    model = request.json['model']
+    trainFileName = request.json['trainFileName']
+    result = run_model(trainFileName, [model])
+    return jsonify(result[model].tolist())
 
 @atexit.register
 def shutdown():
