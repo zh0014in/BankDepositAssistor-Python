@@ -13,9 +13,9 @@
                     templateUrl: "static/datasets.html",
                     controller: 'datasetsController',
                     controllerAs: "vm"
-                }).when("/test", {
-                    templateUrl: "static/test.html",
-                    controller: 'testController',
+                }).when("/analysis", {
+                    templateUrl: "static/analysis.html",
+                    controller: 'analysisController',
                     controllerAs: "vm"
                 }).when("/train", {
                     templateUrl: "static/train.html",
