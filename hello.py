@@ -45,6 +45,24 @@ elif os.path.isfile('vcap-local.json'):
 port = int(os.getenv('PORT', 8000))
 
 
+def isFile(object):
+    try:
+        os.listdir(object)  # tries to get the objects inside of this object
+        return False  # if it worked, it's a folder
+    except Exception:  # if not, it's a file
+        return True
+
+
+def findfiles(directory):
+    objects = os.listdir(directory)  # find all objects in a dir
+
+    files = []
+    for i in objects:  # check if very object in the folder ...
+        if isFile(directory + i):  # ... is a file.
+            files.append(i)  # if yes, append it.
+    return files
+
+
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -169,6 +187,23 @@ def train():
     # result = run_model(trainFileName, [model])
     # return jsonify(result[model].tolist())
     return 'wait for model train'
+
+
+@app.route('/uploadedFiles', methods=['GET'])
+def uploadedFiles():
+    return jsonify(findfiles(app.config['UPLOAD_FOLDER']))
+
+
+@app.route('/loadDistributionData', methods=['GET'])
+def loadDistributionData():
+    filename = request.args.get('filename')
+    fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+    with open(fullfilename, 'rb') as f:
+        reader = csv.DictReader(f)
+        out = json.dumps( [ row for row in reader ] )
+        return out
+
 
 @atexit.register
 def shutdown():
