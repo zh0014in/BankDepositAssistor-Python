@@ -24,6 +24,7 @@
 
                 $scope.options = {
                     uploadUrl: vm.path,
+                    showFileList:false,
                     name: "test",
                     bindingOptions: {
                         multiple: "multiple",

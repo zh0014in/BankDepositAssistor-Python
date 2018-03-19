@@ -16,12 +16,10 @@
         function init() {}
 
         $scope.selectedModel = 'svm';
-        $scope.simple = {
-            items: ['svm', 'Decision Tree', 'lm'],
-            bindingOptions: {
-                value: "selectedModel"
-            }
-        };
+
+        $scope.$on('modelSelectionChanged', function (event, args) {
+            $scope.selectedModel = args.model;
+        });
 
         vm.train = function () {
             console.log('train')

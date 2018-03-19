@@ -204,6 +204,18 @@ def loadDistributionData():
         out = json.dumps( [ row for row in reader ] )
         return out
 
+@app.route('/getFiledetails', methods=['GET'])
+def getFiledetails():
+    filename = request.args.get('filename')
+    fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    info = os.stat(fullfilename)
+    with open(fullfilename, 'rb') as f:
+        lis = [line.split() for line in f]
+    return jsonify({
+        'size': info.st_size,
+        'lines': len(lis),
+        'fields': lis[0]
+    })
 
 @atexit.register
 def shutdown():
