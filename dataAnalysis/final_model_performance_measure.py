@@ -25,8 +25,8 @@ MODELS = {
     'svm': svm.SVC(kernel='rbf', degree=16, max_iter=100)
 }
 
-def run_model(model_name, train_or_predict, file_name):
 
+def run_model(model_name, train_or_predict, file_name):
     def train():
         training_set = pd.read_csv(file_name, names=COLUMNS,
                                    skipinitialspace=True, skiprows=1)
@@ -59,7 +59,7 @@ def run_model(model_name, train_or_predict, file_name):
         joblib.dump(fit_model, model_file_name)
 
         print model_name, model_file_name
-        return model_name, model_file_name
+        return model_name, fit_model.get_params()
 
     def validate():
         fit_model = joblib.load(model_file_name)
@@ -136,7 +136,7 @@ def run_model(model_name, train_or_predict, file_name):
         label_pred = ['y'] + label_pred.tolist()
         result = []
 
-        with open(predict_file_name, 'r') as csvinput:
+        with open(file_name, 'r') as csvinput:
             for row in csv.reader(csvinput):
                 if i == 0:
                     result.append(COLUMNS)
