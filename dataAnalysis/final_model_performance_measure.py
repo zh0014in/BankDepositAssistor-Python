@@ -25,15 +25,10 @@ MODELS = {
     'svm': svm.SVC(kernel='rbf', degree=16, max_iter=100)
 }
 
-
-def run_model(model_name, train_or_predict,
-              train_file_name='bank-training_new.csv',
-              validate_file_name='bank-training_new.csv',
-              # predict_file_name='bank-testing_new.csv'):
-              predict_file_name='bank-predict3.csv'):
+def run_model(model_name, train_or_predict, file_name):
 
     def train():
-        training_set = pd.read_csv(train_file_name, names=COLUMNS,
+        training_set = pd.read_csv(file_name, names=COLUMNS,
                                    skipinitialspace=True, skiprows=1)
         training_label_set = deepcopy(training_set[LABEL])
         del training_set[LABEL]
@@ -69,7 +64,7 @@ def run_model(model_name, train_or_predict,
     def validate():
         fit_model = joblib.load(model_file_name)
 
-        validation_set = pd.read_csv(validate_file_name, names=COLUMNS,
+        validation_set = pd.read_csv(file_name, names=COLUMNS,
                                      skipinitialspace=True, skiprows=1)
         validation_label_set = deepcopy(validation_set[LABEL])
         del validation_set[LABEL]
@@ -110,7 +105,7 @@ def run_model(model_name, train_or_predict,
     def predict():
         fit_model = joblib.load(model_file_name)
 
-        predict_set = pd.read_csv(predict_file_name, names=COLUMNS,
+        predict_set = pd.read_csv(file_name, names=COLUMNS,
                                   skipinitialspace=True, skiprows=1)
         del predict_set[LABEL]
 
@@ -139,19 +134,18 @@ def run_model(model_name, train_or_predict,
         label_pred = fit_model.predict(predict_set_sc_scaled_imputed)
         i = 0
         label_pred = ['y'] + label_pred.tolist()
+        result = []
+
         with open(predict_file_name, 'r') as csvinput:
-            with open('result_' + predict_file_name, 'w') as csvoutput:
-                writer = csv.writer(csvoutput)
+            for row in csv.reader(csvinput):
+                if i == 0:
+                    result.append(COLUMNS)
+                else:
+                    row[-1] = 'no' if label_pred[i] == 0 else 'yes'
+                    result.append(row)
+                i += 1
 
-                for row in csv.reader(csvinput):
-                    if i == 0:
-                        writer.writerow(COLUMNS)
-                    else:
-                        row[-1] = 'no' if label_pred[i] == 0 else 'yes'
-                        writer.writerow(row)
-                    i += 1
-
-        return model_name, 'result_' + predict_file_name
+        return model_name, result
 
     assert model_name is not None
     assert train_or_predict is not None
@@ -169,13 +163,19 @@ def run_model(model_name, train_or_predict,
     if 'predict' == train_or_predict:
         return predict()
 
+
 def main():
     parser = OptionParser()
     parser.add_option('--model-name', dest='model_name', type="str")
     parser.add_option('--tp', dest='tp', type="str")
-
+    parser.add_option('--file-name', dest='file_name', type="str")
     (options, args) = parser.parse_args()
-    print run_model(options.model_name, options.tp)
+
+    print run_model(options.model_name, options.tp, options.file_name)
+    # train_file_name='bank-training_new.csv',
+    # validate_file_name='bank-training_new.csv',
+    # # predict_file_name='bank-testing_new.csv'):
+    # predict_file_name='bank-predict3.csv'):
 
 
 if __name__ == '__main__':
