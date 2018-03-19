@@ -22,16 +22,31 @@
             vm.monthChart;
             vm.monthChartOptions = {
                 dataSource: [],
-                series: {
+                commonSeriesSettings: {
                     argumentField: "key",
-                    valueField: "value",
-                    name: "Month",
-                    type: "bar",
-                    // color: '#ffaa66'
+                    type: "stackedBar"
                 },
+                series: [
+                    { valueField: "y", name: "yes" },
+                    { valueField: "n", name: "no" }
+                ],
                 rotated: false,
                 size: {
                     width: 800
+                },
+                legend: {
+                    horizontalAlignment: "right",
+                    position: "inside",
+                    border: { visible: true }
+                },
+                tooltip: {
+                    enabled: true,
+                    location: "edge",
+                    customizeTooltip: function (arg) {
+                        return {
+                            text: arg.seriesName + " count: " + arg.valueText
+                        };
+                    }
                 },
                 onInitialized: function (e) {
                     vm.monthChart = e.component;
@@ -46,19 +61,36 @@
             });
             vm.countByColumn = countByColumn;
             function countByColumn(column) {
-                if(!vm.data){
+                if (!vm.data) {
                     return;
                 }
-                var groupByMonth = vm.data.groupBy(function (t) {
+                var groupByColumn = vm.data.groupBy(function (t) {
                     return t[column]
                 }).select(function (t) {
                     return {
                         key: t.key,
-                        value: t.length
+                        value: t.length,
+                        y: t.filter(x => x.y === 'yes').length,
+                        n: t.filter(x => x.y === 'no').length
                     }
                 });
-                console.log(groupByMonth);
-                vm.monthChart.option('dataSource', groupByMonth);
+                if (column === 'month') {
+                    var sorting = { 'jan': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'may': 4, 'jun': 5, 'jul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'nov': 10, 'dec': 11 };
+                    // sort the data array
+                    groupByColumn.sort(function (a, b) {
+                        // sort based on the value in the monthNames object
+                        return sorting[a.key] - sorting[b.key];
+                    });
+                } else {
+                    groupByColumn.sort(function (a, b) {
+                        // sort based on the value in the monthNames object
+                        return a.key - b.key;
+                    });
+                }
+                console.log(groupByColumn);
+                vm.monthChart.option('series.name', column);
+                vm.monthChart.option('dataSource', groupByColumn);
+                // vm.monthChart.render();
                 vm.showChart = true;
             }
         }

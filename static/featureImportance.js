@@ -31,6 +31,11 @@
                     type: "bar",
                     // color: '#ffaa66'
                 },
+                legend: {
+                    horizontalAlignment: "right",
+                    position: "inside",
+                    border: { visible: true }
+                },
                 rotated: true,
                 size: {
                     width: 800
