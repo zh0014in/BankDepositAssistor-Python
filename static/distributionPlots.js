@@ -22,13 +22,14 @@
             vm.monthChart;
             vm.monthChartOptions = {
                 dataSource: [],
-                series: {
+                commonSeriesSettings: {
                     argumentField: "key",
-                    valueField: "value",
-                    name: "",
-                    type: "bar",
-                    visible: true
+                    type: "stackedBar"
                 },
+                series: [
+                    { valueField: "y", name: "yes" },
+                    { valueField: "n", name: "no" }
+                ],
                 rotated: false,
                 size: {
                     width: 800
@@ -37,6 +38,15 @@
                     horizontalAlignment: "right",
                     position: "inside",
                     border: { visible: true }
+                },
+                tooltip: {
+                    enabled: true,
+                    location: "edge",
+                    customizeTooltip: function (arg) {
+                        return {
+                            text: arg.seriesName + " count: " + arg.valueText
+                        };
+                    }
                 },
                 onInitialized: function (e) {
                     vm.monthChart = e.component;
@@ -59,7 +69,9 @@
                 }).select(function (t) {
                     return {
                         key: t.key,
-                        value: t.length
+                        value: t.length,
+                        y: t.filter(x => x.y === 'yes').length,
+                        n: t.filter(x => x.y === 'no').length
                     }
                 });
                 if (column === 'month') {
@@ -69,10 +81,10 @@
                         // sort based on the value in the monthNames object
                         return sorting[a.key] - sorting[b.key];
                     });
-                }else{
+                } else {
                     groupByColumn.sort(function (a, b) {
                         // sort based on the value in the monthNames object
-                        return a.key-b.key;
+                        return a.key - b.key;
                     });
                 }
                 console.log(groupByColumn);
