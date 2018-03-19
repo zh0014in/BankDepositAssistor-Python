@@ -7,10 +7,47 @@ import sklearn.linear_model as lm
 import numpy as np
 import csv
 import itertools
+# import matplotlib.pyplot as plt
 from sklearn.base import clone
 from optparse import OptionParser
 import pickle
 from sklearn.externals import joblib
+
+# LOG_FILE = "log_final.txt"
+# log = open(LOG_FILE, 'w+')
+
+# def plot_confusion_matrix(cm, classes,
+#                           normalize=False,
+#                           title='Confusion matrix',
+#                           cmap=plt.cm.Blues):
+#     """
+#     This function prints and plots the confusion matrix.
+#     Normalization can be applied by setting `normalize=True`.
+#     """
+#     plt.imshow(cm, interpolation='nearest', cmap=cmap)
+#     plt.title(title)
+#     plt.colorbar()
+#     tick_marks = np.arange(len(classes))
+#     plt.xticks(tick_marks, classes, rotation=45)
+#     plt.yticks(tick_marks, classes)
+#
+#     if normalize:
+#         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+#         print("Normalized confusion matrix")
+#     else:
+#         print('Confusion matrix, without normalization')
+#
+#     print(cm)
+#
+#     thresh = cm.max() / 2.
+#     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+#         plt.text(j, i, cm[i, j],
+#                  horizontalalignment="center",
+#                  color="white" if cm[i, j] > thresh else "black")
+#
+#     plt.tight_layout()
+#     plt.ylabel('True label')
+#     plt.xlabel('Predicted label')
 
 COLUMNS = ["age", "job", "marital", "education", "default", "balance",
            "housing", "loan", "contact", "day", "month", "duration",
@@ -35,6 +72,7 @@ def run_model(model_name, train_or_predict,
               predict_file_name='bank-training_new.csv'):
 
     def train():
+        ############################
         training_set = pd.read_csv(train_file_name, names=COLUMNS,
                                    skipinitialspace=True, skiprows=1)
         training_label_set = deepcopy(training_set[LABEL])
@@ -69,6 +107,7 @@ def run_model(model_name, train_or_predict,
             return model_name, model_file_name
 
     def validate():
+        print 123
         fit_model = joblib.load(model_file_name)
 
         validation_set = pd.read_csv(validate_file_name, names=COLUMNS,
@@ -110,6 +149,7 @@ def run_model(model_name, train_or_predict,
             return model_name, cnf_matrix
 
     def predict():
+        print 123
         fit_model = joblib.load(model_file_name)
 
         predict_set = pd.read_csv(predict_file_name, names=COLUMNS,

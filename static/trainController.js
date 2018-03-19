@@ -6,29 +6,32 @@
         .controller('trainController', trainController)
 
     /** @ngInject */
-    trainController.$inject = ['$scope','$http']
-    function trainController($scope,$http) {
+    trainController.$inject = ['$scope', '$http']
+
+    function trainController($scope, $http) {
         var vm = this;
 
         init();
 
-        function init() {
-        }
+        function init() {}
 
         $scope.selectedModel = 'svm';
-        $scope.simple = {
-            items: ['svm', 'Decision Tree', 'lm'],
-            bindingOptions: {
-                value: "selectedModel"
-            }
-        };
+
+        $scope.$on('modelSelectionChanged', function (event, args) {
+            $scope.selectedModel = args.model;
+        });
 
         vm.train = function () {
             console.log('train')
-            $http.post("/train", { model: $scope.selectedModel, trainFileName: vm.trainFileName }).then(function (data) {
+            $http.post("/train", {
+                model: $scope.selectedModel,
+                trainFileName: vm.trainFileName
+            }).then(function (data) {
                 console.log(data);
             });
         }
+
+
     }
 
 }());
