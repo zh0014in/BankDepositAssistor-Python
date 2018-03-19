@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 import csv
 import sys
 
-from dataAnalysis.final_model_performance_measure import run_model
+# from dataAnalysis.final_model_performance_measure import run_model
 
 # Emit Bluemix deployment event
 cf_deployment_tracker.track()
@@ -166,8 +166,9 @@ def upload_file_test():
 def train():
     model = request.json['model']
     trainFileName = request.json['trainFileName']
-    result = run_model(trainFileName, [model])
-    return jsonify(result[model].tolist())
+    # result = run_model(trainFileName, [model])
+    # return jsonify(result[model].tolist())
+    return 'wait for model train'
 
 @atexit.register
 def shutdown():
