@@ -6,6 +6,8 @@ from sklearn.metrics import confusion_matrix
 import sklearn.linear_model as lm
 import numpy as np
 import csv
+from sklearn.ensemble import RandomForestClassifier
+
 from optparse import OptionParser
 from sklearn.externals import joblib
 
@@ -21,6 +23,7 @@ CATEGORICAL_COLUMNS_2 = ["default", "housing", "loan", "day", "month",
 LABEL = "y"
 
 MODELS = {
+    'rf': RandomForestClassifier(max_depth=3, random_state=1),
     'lm': lm.LogisticRegression(),
     'svm': svm.SVC(kernel='rbf', degree=16, max_iter=100)
 }
@@ -55,7 +58,7 @@ def run_model(model_name, train_or_predict, file_name):
 
         fit_model = MODELS[model_name].fit(training_set_sc_scaled_imputed,
                                            training_label_set)
-
+        # print fit_model.feature_importances_
         joblib.dump(fit_model, model_file_name)
 
         print model_name, model_file_name
