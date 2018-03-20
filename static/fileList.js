@@ -17,18 +17,9 @@
                 $http.get('/uploadedFilesWithDetails').then(function (response) {
                     // $scope.selectedFile = data[0];
                     console.log(response.data);
-                    vm.list.option('dataSource', response.data);
+                    vm.files = response.data;
                 });
             }
-
-            vm.list;
-            $scope.listOptions = {
-                dataSource: [],
-                height: "100%",
-                onInitialized: function (e) {
-                    vm.list = e.component;
-                }
-            };
         }
 
         return {

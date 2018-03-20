@@ -1,8 +1,10 @@
-<div dx-list="listOptions" dx-item-alias="product">
-    <div data-options="dxTemplate: {name: 'item'}">
-        <div class="product">
-            <div>{{product.filename}}</div>
-            <div class="price">{{product.size/1000 + 'KB'}}</div>
+<div class="list-group">
+    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start" data-ng-repeat="file in vm.files">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1" data-ng-bind="file.filename"></h5>
+            <small data-ng-bind="file.size/1000 + 'KB'"></small>
         </div>
-    </div>
+        <p class="mb-1" data-ng-bind="file.lines + ' lines of data'"></p>
+        <!-- <small>Donec id elit non mi porta.</small> -->
+    </a>
 </div>
