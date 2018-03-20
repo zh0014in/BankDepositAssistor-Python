@@ -19,7 +19,7 @@
             }
             $scope.selectedModel = 'svm';
             vm.simple = {
-                items: ['svm', 'lm'],
+                items: ['svm', 'lm', 'rf'],
                 bindingOptions: {
                     value: "selectedModel"
                 },

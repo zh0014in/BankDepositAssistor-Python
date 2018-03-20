@@ -7,6 +7,7 @@ import json
 from werkzeug.utils import secure_filename
 import csv
 import sys
+import datetime
 
 from dataAnalysis.final_model_performance_measure import run_model
 
@@ -194,6 +195,7 @@ def train():
 def uploadedFiles():
     return jsonify(findfiles(app.config['UPLOAD_FOLDER']))
 
+
 @app.route('/uploadedFilesWithDetails', methods=['GET'])
 def uploadedFilesWithDetails():
     files = findfiles(app.config['UPLOAD_FOLDER'])
@@ -207,19 +209,29 @@ def uploadedFilesWithDetails():
             'size': info.st_size,
             'lines': len(lis),
             'fields': lis[0],
-            'filename': file
-        });
+            'filename': file,
+            'createdAt': datetime.datetime.fromtimestamp(
+                int(info.st_ctime)
+            ).strftime('%Y-%m-%d %H:%M:%S')
+        })
     return jsonify(result)
+
+
+def dumpCsvToJson(filename):
+    with open(filename, 'rb') as f:
+        reader = csv.DictReader(f)
+        out = json.dumps([row for row in reader])
+        return out
+
 
 @app.route('/loadDistributionData', methods=['GET'])
 def loadDistributionData():
     filename = request.args.get('filename')
     fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-
-    with open(fullfilename, 'rb') as f:
-        reader = csv.DictReader(f)
-        out = json.dumps([row for row in reader])
-        return out
+    if os.path.isfile(fullfilename):
+        return dumpCsvToJson(fullfilename)
+    elif os.path.isfile(filename):
+        return dumpCsvToJson(filename)
 
 
 @app.route('/getFiledetails', methods=['GET'])

@@ -1,7 +1,10 @@
 <span data-ng-show="vm.showChart">
-    <h2>Some Insights of the Data</h2>
+    <!-- <h2>Some Insights of the Data</h2> -->
     <button type="button" class="btn btn-primary" data-ng-click="vm.countByColumn('month')">month</button>
     <button type="button" class="btn btn-secondary" data-ng-click="vm.countByColumn('age')">age</button>
     <button type="button" class="btn btn-success" data-ng-click="vm.countByColumn('campaign')">campaign</button>
     <div dx-chart="vm.monthChartOptions"></div>
+</span>
+<span data-ng-hide="vm.showChart">
+    <p>Select a dataset to get an insight of the data</p>
 </span>

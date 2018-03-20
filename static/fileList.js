@@ -7,28 +7,27 @@
 
 
     function fileList() {
-        fileListController.$inject = ["$scope", '$http'];
-        function fileListController($scope, $http) {
+        fileListController.$inject = ["$scope", '$http', '$rootScope'];
+        function fileListController($scope, $http, $rootScope) {
             var vm = this;
-
+            vm.selectedfile = null;
             vm.$onInit = init();
 
             function init() {
                 $http.get('/uploadedFilesWithDetails').then(function (response) {
                     // $scope.selectedFile = data[0];
                     console.log(response.data);
-                    vm.list.option('dataSource', response.data);
+                    vm.files = response.data;
                 });
             }
 
-            vm.list;
-            $scope.listOptions = {
-                dataSource: [],
-                height: "100%",
-                onInitialized: function (e) {
-                    vm.list = e.component;
-                }
-            };
+            vm.fileSelected = function (file) {
+                vm.selectedfile = file;
+                $rootScope.$broadcast('fileSelectionChanged', {
+                    file: file.filename
+                });
+            }
+
         }
 
         return {
