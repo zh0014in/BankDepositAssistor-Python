@@ -60,6 +60,7 @@ def run_model(model_name, train_or_predict, file_name):
                                            training_label_set)
         # print fit_model.feature_importances_
         importances = []
+        feature_importance_output = ""
         if (model_name == "rf"):
             importances = fit_model.feature_importances_
             feature_importance_output = "rf_feature_importance.csv"
@@ -68,20 +69,20 @@ def run_model(model_name, train_or_predict, file_name):
             feature_importance_output = "lm_feature_importance.csv"
 
         if (len(importances)):
-            print importances
-            print len(importances)
             feature_names = training_set_imputed.keys()
             indices = np.argsort(importances)[::-1]
             df = pd.DataFrame(columns=['features', 'importance'])
             for f in range(training_set_sc_scaled_imputed.shape[1]):
-                print("%d. feature %s (%f)" % (f + 1, feature_names[indices[f]], importances[indices[f]]))
                 df.loc[f] = [feature_names[indices[f]], importances[indices[f]]]
             df.to_csv(feature_importance_output)
 
         joblib.dump(fit_model, model_file_name)
 
         print model_name, model_file_name
-        return model_name, fit_model.get_params(), feature_importance_output
+        if (not feature_importance_output):
+            return model_name, fit_model.get_params()
+        else:
+            return model_name, fit_model.get_params(), feature_importance_output
 
     def validate():
         fit_model = joblib.load(model_file_name)
