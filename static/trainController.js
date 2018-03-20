@@ -6,9 +6,9 @@
         .controller('trainController', trainController)
 
     /** @ngInject */
-    trainController.$inject = ['$scope', '$http', 'runModel']
+    trainController.$inject = ['$scope', '$http', 'runModel', '$rootScope']
 
-    function trainController($scope, $http, runModel) {
+    function trainController($scope, $http, runModel, $rootScope) {
         var vm = this;
 
         init();
@@ -27,6 +27,13 @@
                 vm.parameters = response.data[1];
                 console.log(vm.parameters);
                 vm.parameterNames = Object.keys(response.data[1]);
+                if (response.data.length > 2) {
+                    var importanceFilename = response.data[2];
+                    $http.get('/loadDistributionData?filename=' + importanceFilename).then(function (response) {
+                        console.log(response.data);
+                        $rootScope.$broadcast('featureimportance', { data: response.data });
+                    });
+                }
             });
         }
 

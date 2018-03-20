@@ -211,16 +211,20 @@ def uploadedFilesWithDetails():
         });
     return jsonify(result)
 
-@app.route('/loadDistributionData', methods=['GET'])
-def loadDistributionData():
-    filename = request.args.get('filename')
-    fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-
-    with open(fullfilename, 'rb') as f:
+def dumpCsvToJson(filename):
+    with open(filename, 'rb') as f:
         reader = csv.DictReader(f)
         out = json.dumps([row for row in reader])
         return out
 
+@app.route('/loadDistributionData', methods=['GET'])
+def loadDistributionData():
+    filename = request.args.get('filename')
+    fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    if os.path.isfile(fullfilename):
+        return dumpCsvToJson(fullfilename)
+    elif os.path.isfile(filename):
+        return dumpCsvToJson(filename)
 
 @app.route('/getFiledetails', methods=['GET'])
 def getFiledetails():

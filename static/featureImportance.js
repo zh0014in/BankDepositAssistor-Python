@@ -7,29 +7,26 @@
 
 
     function featureImportance() {
-
-        function featureImportanceController() {
+        featureImportanceController.$inject = ['$scope'];
+        function featureImportanceController($scope) {
             var vm = this;
-
+            vm.show = false;
             init();
 
             function init() {
 
             }
-
-            var dataSource = new DevExpress.data.CustomStore({
-                load: function (loadOptions) {
-                    return jQuery.getJSON('/static/featureImportance.json');
-                }
+            $scope.$on('featureimportance', function (event, args) {
+                vm.chart.option('dataSource', args.data);
+                vm.show = true;
             });
             vm.chartOptions = {
-                dataSource: dataSource,
+                dataSource: [],
                 series: {
-                    argumentField: "key",
-                    valueField: "value",
+                    argumentField: "features",
+                    valueField: "importance",
                     name: "Feature Importance",
                     type: "bar",
-                    // color: '#ffaa66'
                 },
                 legend: {
                     horizontalAlignment: "right",
@@ -39,6 +36,9 @@
                 rotated: true,
                 size: {
                     width: 800
+                },
+                onInitialized: function (e) {
+                    vm.chart = e.component;
                 }
             };
         }
