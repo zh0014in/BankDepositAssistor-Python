@@ -6,14 +6,14 @@
         .controller('trainController', trainController)
 
     /** @ngInject */
-    trainController.$inject = ['$scope', '$http']
+    trainController.$inject = ['$scope', '$http', 'runModel']
 
-    function trainController($scope, $http) {
+    function trainController($scope, $http, runModel) {
         var vm = this;
 
         init();
 
-        function init() {}
+        function init() { }
 
         $scope.selectedModel = 'svm';
 
@@ -23,15 +23,16 @@
 
         vm.train = function () {
             console.log('train')
-            $http.post("/train", {
-                model: $scope.selectedModel,
-                trainFileName: vm.trainFileName
-            }).then(function (data) {
-                console.log(data);
+            runModel.run($scope.selectedModel, 'train', vm.trainFileName, function (response) {
+                vm.parameters = response.data[1];
+                console.log(vm.parameters);
+                vm.parameterNames = Object.keys(response.data[1]);
             });
         }
 
-
+        $scope.$on('fileSelectionChanged', function (event, args) {
+            vm.trainFileName = args.file;
+        });
     }
 
 }());

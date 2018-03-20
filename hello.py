@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 import csv
 import sys
 
-# from dataAnalysis.final_model_performance_measure import run_model
+from dataAnalysis.final_model_performance_measure import run_model
 
 # Emit Bluemix deployment event
 cf_deployment_tracker.track()
@@ -183,10 +183,11 @@ def upload_file_test():
 @app.route('/train', methods=['POST'])
 def train():
     model = request.json['model']
-    trainFileName = request.json['trainFileName']
-    # result = run_model(trainFileName, [model])
-    # return jsonify(result[model].tolist())
-    return 'wait for model train'
+    mode = request.json['mode']
+    filename = request.json['filename']
+    fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    result = run_model(model, mode, fullfilename)
+    return jsonify(result)
 
 
 @app.route('/uploadedFiles', methods=['GET'])
@@ -201,8 +202,9 @@ def loadDistributionData():
 
     with open(fullfilename, 'rb') as f:
         reader = csv.DictReader(f)
-        out = json.dumps( [ row for row in reader ] )
+        out = json.dumps([row for row in reader])
         return out
+
 
 @app.route('/getFiledetails', methods=['GET'])
 def getFiledetails():
@@ -216,6 +218,7 @@ def getFiledetails():
         'lines': len(lis),
         'fields': lis[0]
     })
+
 
 @atexit.register
 def shutdown():

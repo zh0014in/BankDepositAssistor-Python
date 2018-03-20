@@ -13,7 +13,16 @@
     </div>
 </div>
 <div class="row">
-    <distribution-plots></distribution-plots>
+    <table class="table">
+        <thead>
+            <th data-ng-repeat="p in vm.parameterNames">{{p}}</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td data-ng-repeat="p in vm.parameters">{{p}}</td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 <div class="row">
     <feature-importance></feature-importance>
