@@ -44,7 +44,7 @@
         }
 
         return {
-            templateUrl: 'static/featureImportance.html',
+            templateUrl: 'static/html/featureImportance.html',
             bindings: {
 
             },

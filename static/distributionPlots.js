@@ -96,7 +96,7 @@
         }
 
         return {
-            templateUrl: 'static/distributionPlots.html',
+            templateUrl: 'static/html/distributionPlots.html',
             bindings: {
 
             },

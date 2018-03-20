@@ -27,7 +27,7 @@
         }
 
         return {
-            templateUrl: "static/fileDetails.html",
+            templateUrl: "static/html/fileDetails.html",
             bindings: {
 
             },
