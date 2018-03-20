@@ -7,10 +7,10 @@
 
 
     function fileList() {
-        fileListController.$inject = ["$scope", '$http'];
-        function fileListController($scope, $http) {
+        fileListController.$inject = ["$scope", '$http', '$rootScope'];
+        function fileListController($scope, $http, $rootScope) {
             var vm = this;
-
+            vm.selectedfile = null;
             vm.$onInit = init();
 
             function init() {
@@ -20,6 +20,14 @@
                     vm.files = response.data;
                 });
             }
+
+            vm.fileSelected = function (file) {
+                vm.selectedfile = file;
+                $rootScope.$broadcast('fileSelectionChanged', {
+                    file: file.filename
+                });
+            }
+
         }
 
         return {
