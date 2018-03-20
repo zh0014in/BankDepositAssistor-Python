@@ -36,13 +36,13 @@
                 });
             }
 
-            $scope.$on('refreshFiles', function(){
+            $scope.$on('refreshFiles', function () {
                 init();
             });
         }
 
         return {
-            templateUrl: "static/uploadedFiles.html",
+            templateUrl: "static/html/uploadedFiles.html",
             bindings: {
 
             },

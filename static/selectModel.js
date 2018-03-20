@@ -32,7 +32,7 @@
         }
 
         return {
-            templateUrl: 'static/selectModel.html',
+            templateUrl: 'static/html/selectModel.html',
             bindings: {
 
             },

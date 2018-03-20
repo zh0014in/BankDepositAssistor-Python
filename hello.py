@@ -194,6 +194,22 @@ def train():
 def uploadedFiles():
     return jsonify(findfiles(app.config['UPLOAD_FOLDER']))
 
+@app.route('/uploadedFilesWithDetails', methods=['GET'])
+def uploadedFilesWithDetails():
+    files = findfiles(app.config['UPLOAD_FOLDER'])
+    result = []
+    for file in files:
+        fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], file)
+        info = os.stat(fullfilename)
+        with open(fullfilename, 'rb') as f:
+            lis = [line.split() for line in f]
+        result.append({
+            'size': info.st_size,
+            'lines': len(lis),
+            'fields': lis[0],
+            'filename': file
+        });
+    return jsonify(result)
 
 @app.route('/loadDistributionData', methods=['GET'])
 def loadDistributionData():

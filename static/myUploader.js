@@ -33,8 +33,8 @@
                         uploadMode: "uploadMode"
                     },
                     onUploaded: function(e){
-                        console.log(e);
                         vm.savedPath = e.request.response;
+                        DevExpress.ui.notify("Uploaded successfully!", "success", 3000);
                     }
                 };
             }
@@ -43,7 +43,7 @@
         }
 
         return {
-            templateUrl: 'static/myUploader.html',
+            templateUrl: 'static/html/myUploader.html',
             bindings: {
                 path: "@",
                 savedPath: "="

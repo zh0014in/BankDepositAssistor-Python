@@ -10,15 +10,15 @@
         .config(function ($routeProvider) {
             $routeProvider
                 .when("/datasets", {
-                    templateUrl: "static/datasets.html",
+                    templateUrl: "static/html/datasets.html",
                     controller: 'datasetsController',
                     controllerAs: "vm"
                 }).when("/analysis", {
-                    templateUrl: "static/analysis.html",
+                    templateUrl: "static/html/analysis.html",
                     controller: 'analysisController',
                     controllerAs: "vm"
                 }).when("/train", {
-                    templateUrl: "static/train.html",
+                    templateUrl: "static/html/train.html",
                     controller: 'trainController',
                     controllerAs: "vm"
                 }).otherwise({
