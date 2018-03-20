@@ -74,6 +74,15 @@ def run_model(model_name, train_or_predict, file_name):
             df = pd.DataFrame(columns=['features', 'importance'])
             for f in range(training_set_sc_scaled_imputed.shape[1]):
                 df.loc[f] = [feature_names[indices[f]], importances[indices[f]]]
+            f_dict = {}
+            for index, row in df.iterrows():
+                key = row['features'].split('_', 1)[0]
+                print key, row['importance']
+                if key in f_dict:
+                    f_dict[key] += row['importance']
+                else:
+                    f_dict[key] = row['importance']
+            print f_dict
             df.to_csv(feature_importance_output)
 
         joblib.dump(fit_model, model_file_name)
