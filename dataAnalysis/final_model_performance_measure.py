@@ -31,9 +31,6 @@ MODELS = {
 
 
 def run_model(model_name, train_or_predict, file_name, selected_columns=COLUMNS):
-    selected_columns = ["age", "job", "marital", "education", "default", "balance",
-           "housing", "loan", "contact",
-           "campaign", "pdays", "previous", "y"]
 
     print selected_columns
 
