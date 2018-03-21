@@ -5,7 +5,8 @@
         .module('app', [
             'ngRoute',
             'dx',
-            'hl.sticky'
+            'hl.sticky',
+            'ngAnimate'
         ])
         .config(function ($routeProvider) {
             $routeProvider

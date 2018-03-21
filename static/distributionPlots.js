@@ -7,9 +7,9 @@
 
 
     function distributionPlots() {
-        distributionPlotsController.$inject = ['$http', '$scope'];
+        distributionPlotsController.$inject = ['$http', '$scope','runModel'];
 
-        function distributionPlotsController($http, $scope) {
+        function distributionPlotsController($http, $scope,runModel) {
             var vm = this;
 
             init();
@@ -54,11 +54,35 @@
             };
 
             $scope.$on('fileSelectionChanged', function (event, args) {
+                vm.filename = args.file;
                 $http.get('/loadDistributionData?filename=' + args.file).then(function (response) {
                     vm.data = response.data;
                     countByColumn('month')
                 });
             });
+
+            $scope.selectedModel = 'svm';
+
+            $scope.$on('modelSelectionChanged', function (event, args) {
+                $scope.selectedModel = args.model;
+            });
+
+            vm.train = function () {
+                console.log('train')
+                runModel.run($scope.selectedModel, 'train', vm.filename, function (response) {
+                    vm.parameters = response.data[1];
+                    console.log(vm.parameters);
+                    vm.parameterNames = Object.keys(response.data[1]);
+                    if (response.data.length > 2) {
+                        var importanceFilename = response.data[2];
+                        $http.get('/loadDistributionData?filename=' + importanceFilename).then(function (response) {
+                            console.log(response.data);
+                            $rootScope.$broadcast('featureimportance', { data: response.data });
+                        });
+                    }
+                });
+            }
+
             vm.countByColumn = countByColumn;
             function countByColumn(column) {
                 if (!vm.data) {

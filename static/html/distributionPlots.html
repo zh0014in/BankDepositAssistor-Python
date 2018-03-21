@@ -3,6 +3,10 @@
     <button type="button" class="btn btn-primary" data-ng-click="vm.countByColumn('month')">month</button>
     <button type="button" class="btn btn-secondary" data-ng-click="vm.countByColumn('age')">age</button>
     <button type="button" class="btn btn-success" data-ng-click="vm.countByColumn('campaign')">campaign</button>
+    <span class="col-md-4 offset-md-7">
+            <button type="button" class="btn btn-info" data-ng-click="vm.train()">train</button>
+    </span>
+    
     <div dx-chart="vm.monthChartOptions"></div>
 </span>
 <span data-ng-hide="vm.showChart">
