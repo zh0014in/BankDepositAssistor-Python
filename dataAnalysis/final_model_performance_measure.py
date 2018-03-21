@@ -138,7 +138,10 @@ def run_model(model_name, train_or_predict, file_name, selected_columns=COLUMNS)
         np.set_printoptions(precision=2)
         print model_name, cnf_matrix
 
-        return model_name, cnf_matrix
+        tn, fp, fn, tp = confusion_matrix(validation_label_set, label_pred).ravel()
+        validate_result = {'True Negative': tn, 'False Positive': fp, 'False Negative': fn, 'True Positive': tp}
+
+        return model_name, json.dumps(validate_result)
 
     def predict(selected_columns):
         fit_model = joblib.load(model_file_name)
