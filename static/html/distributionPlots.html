@@ -4,8 +4,10 @@
         <button type="button" class="btn btn-primary" data-ng-click="vm.countByColumn('month')">month</button>
         <button type="button" class="btn btn-secondary" data-ng-click="vm.countByColumn('age')">age</button>
         <button type="button" class="btn btn-success" data-ng-click="vm.countByColumn('campaign')">campaign</button>
-        <span class="col-md-4 offset-md-7">
+        <span class="col-md-4 offset-md-4">
             <button type="button" class="btn btn-info" data-ng-click="vm.train()">train</button>
+            <button type="button" class="btn btn-light" data-ng-click="vm.validate()">validate</button>
+            <button type="button" class="btn btn-warning" data-ng-click="vm.predict()">predict</button>
         </span>
 
         <div dx-chart="vm.monthChartOptions"></div>
