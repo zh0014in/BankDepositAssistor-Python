@@ -196,6 +196,11 @@ def run_model(model_name, train_or_predict, file_name):
         return predict()
 
 
+def view_saved_model(model_name):
+    fit_model = joblib.load('./dataAnalysis/' + model_name + '.pkl')
+    return fit_model.get_params()
+
+
 def main():
     parser = OptionParser()
     parser.add_option('--model-name', dest='model_name', type="str")
