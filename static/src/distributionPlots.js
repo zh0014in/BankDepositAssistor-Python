@@ -7,9 +7,9 @@
 
 
     function distributionPlots() {
-        distributionPlotsController.$inject = ['$http', '$scope','runModel','spinnerService'];
+        distributionPlotsController.$inject = ['$http', '$scope', 'runModel', 'spinnerService', '$rootScope'];
 
-        function distributionPlotsController($http, $scope,runModel,spinnerService) {
+        function distributionPlotsController($http, $scope, runModel, spinnerService, $rootScope) {
             var vm = this;
 
             init();
@@ -72,9 +72,10 @@
             vm.train = function () {
                 console.log('train')
                 runModel.run($scope.selectedModel, 'train', vm.filename, function (response) {
+                    console.log(response.data);
                     vm.parameters = response.data[1];
-                    console.log(vm.parameters);
                     vm.parameterNames = Object.keys(response.data[1]);
+                    $rootScope.$broadcast('trainparameters', {data: vm.parameters});
                     if (response.data.length > 2) {
                         var importanceFilename = response.data[2];
                         $http.get('/loadDistributionData?filename=' + importanceFilename).then(function (response) {
@@ -82,12 +83,20 @@
                             $rootScope.$broadcast('featureimportance', { data: response.data });
                         });
                     }
+                    $rootScope.$broadcast('traincomplete');
                 });
             }
 
             vm.countByColumn = countByColumn;
             function countByColumn(column) {
                 if (!vm.data) {
+                    vm.showChart = false;
+                    return;
+                }
+                
+                if (vm.data.all(function (t) { return !t.y; })) {
+                    console.log(vm.data);
+                    vm.showChart = false;
                     return;
                 }
                 var groupByColumn = vm.data.groupBy(function (t) {

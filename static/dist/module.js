@@ -116,7 +116,8 @@ var linq={EqualityComparer:function(t,r){return t===r||t.valueOf()===r.valueOf()
             'ngRoute',
             'dx',
             'hl.sticky',
-            'ngAnimate'
+            'ngAnimate',
+            'sarsha.spinner'
         ])
         .config(function ($routeProvider) {
             $routeProvider
@@ -135,6 +136,8 @@ var linq={EqualityComparer:function(t,r){return t===r||t.valueOf()===r.valueOf()
                 }).otherwise({
                     redirectTo: '/datasets'
                 });
+        }).config(function ($httpProvider) {
+            $httpProvider.interceptors.push('spinnerHttpInterceptor');
         });
 
 }());
@@ -210,9 +213,9 @@ class AntiXSS {
 
 
     function distributionPlots() {
-        distributionPlotsController.$inject = ['$http', '$scope','runModel'];
+        distributionPlotsController.$inject = ['$http', '$scope', 'runModel', 'spinnerService', '$rootScope'];
 
-        function distributionPlotsController($http, $scope,runModel) {
+        function distributionPlotsController($http, $scope, runModel, spinnerService, $rootScope) {
             var vm = this;
 
             init();
@@ -257,10 +260,12 @@ class AntiXSS {
             };
 
             $scope.$on('fileSelectionChanged', function (event, args) {
+                spinnerService.show('distributionplotsspinner');
                 vm.filename = args.file;
                 $http.get('/loadDistributionData?filename=' + args.file).then(function (response) {
                     vm.data = response.data;
                     countByColumn('month')
+                    spinnerService.close('distributionplotsspinner');
                 });
             });
 
@@ -273,9 +278,10 @@ class AntiXSS {
             vm.train = function () {
                 console.log('train')
                 runModel.run($scope.selectedModel, 'train', vm.filename, function (response) {
+                    console.log(response.data);
                     vm.parameters = response.data[1];
-                    console.log(vm.parameters);
                     vm.parameterNames = Object.keys(response.data[1]);
+                    $rootScope.$broadcast('trainparameters', {data: vm.parameters});
                     if (response.data.length > 2) {
                         var importanceFilename = response.data[2];
                         $http.get('/loadDistributionData?filename=' + importanceFilename).then(function (response) {
@@ -283,12 +289,20 @@ class AntiXSS {
                             $rootScope.$broadcast('featureimportance', { data: response.data });
                         });
                     }
+                    $rootScope.$broadcast('traincomplete');
                 });
             }
 
             vm.countByColumn = countByColumn;
             function countByColumn(column) {
                 if (!vm.data) {
+                    vm.showChart = false;
+                    return;
+                }
+                
+                if (vm.data.all(function (t) { return !t.y; })) {
+                    console.log(vm.data);
+                    vm.showChart = false;
                     return;
                 }
                 var groupByColumn = vm.data.groupBy(function (t) {
@@ -659,6 +673,81 @@ class AntiXSS {
     }
 
 }());
+(function () {
+    'use strict';
+
+    angular
+        .module ('app')
+        .component ('trainParameters', trainParameters());
+
+
+    function trainParameters() {
+        trainParametersController.$inject = ['$scope']
+        function trainParametersController($scope){
+            var vm = this;
+            
+            init();
+
+            function init(){
+
+            }
+
+            $scope.$on('trainparameters', function(event, args){
+                vm.parameters = args.data;
+                vm.parameterNames = Object.keys(vm.parameters);
+            });
+        }
+
+        return {
+            templateUrl: 'static/html/trainParameters.html',
+            bindings: {
+
+            },
+            controller: trainParametersController,
+            controllerAs: 'vm'
+        }
+    }
+
+} ());
+(function () {
+    'use strict';
+
+    angular
+        .module ('app')
+        .component ('trainResult', trainResult());
+
+
+    function trainResult() {
+        trainResultController.$inject = ['$scope'];
+        function trainResultController($scope){
+            var vm = this;
+            
+            vm.$onInit = init;
+
+            function init(){
+                vm.show = false;
+            }
+
+            $scope.$on('traincomplete', function(){
+                vm.show = true;
+            });
+
+            $scope.$on('closetrainresult', function(){
+                vm.show = false;
+            });
+        }
+
+        return {
+            templateUrl: "static/html/trainResult.html",
+            bindings: {
+
+            },
+            controller: trainResultController,
+            controllerAs: 'vm'
+        }
+    }
+
+} ());
 (function () {
     'use strict';
 

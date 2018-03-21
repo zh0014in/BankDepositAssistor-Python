@@ -8,9 +8,9 @@ gulp.task('default', function () {
     return gulp.src([
             'js/*.js',
             'node_modules/sarsha-loading-spinner/loading-spinner.min.js',
-            './*.js',
+            './app.js',
             'src/*.js',
         ])
         .pipe(concat('module.js'))
-        .pipe(gulp.dest('static/dist'));
+        .pipe(gulp.dest('dist'));
 });
