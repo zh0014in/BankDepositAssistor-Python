@@ -176,18 +176,27 @@ def run_model(model_name, train_or_predict, file_name, selected_columns=COLUMNS)
         label_pred = fit_model.predict(predict_set_sc_scaled_imputed)
         i = 0
         label_pred = ['y'] + label_pred.tolist()
-        result = {}
+        result = []
 
         with open(file_name, 'r') as csvinput:
             for row in csv.reader(csvinput):
                 if i == 0:
-                    result[i] = COLUMNS
+                    result.append(COLUMNS)
                 else:
                     row[-1] = 'no' if label_pred[i] == 0 else 'yes'
-                    result[i] = row
+                    result.append(row)
                 i += 1
 
-        return model_name, json.dumps(result)
+        with open("output.csv", "w") as f:
+            writer = csv.writer(f)
+            writer.writerows(result)
+
+        out = None
+        with open('output.csv', 'r') as f:
+            reader = csv.DictReader(f)
+            out = json.dumps([row for row in reader])
+
+        return model_name, out
 
     assert model_name is not None
     assert train_or_predict is not None
