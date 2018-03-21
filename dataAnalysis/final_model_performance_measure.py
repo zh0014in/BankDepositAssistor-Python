@@ -1,5 +1,6 @@
 from copy import deepcopy
 import pandas as pd
+import os
 from data_encoding import one_hot, binary_vectorizing, ternary_vectorizing
 from sklearn import svm, preprocessing
 from sklearn.metrics import confusion_matrix
@@ -29,16 +30,19 @@ MODELS = {
 }
 
 
-def run_model(model_name, train_or_predict, file_name):
-    def train():
-        training_set = pd.read_csv(file_name, names=COLUMNS,
+def run_model(model_name, train_or_predict, file_name, selected_columns=COLUMNS):
+    if LABEL not in selected_columns:
+        selected_columns += [LABEL]
+
+    def train(selected_columns):
+        training_set = pd.read_csv(file_name, names= COLUMNS,
                                    skipinitialspace=True, skiprows=1)
         training_label_set = deepcopy(training_set[LABEL])
         del training_set[LABEL]
 
         training_set_imputed = deepcopy(training_set)
-        training_set_imputed = training_set_imputed.drop(
-            ['marital', 'job', 'contact'], axis=1)
+        remove_list = list(set(COLUMNS) - set(selected_columns))
+        training_set_imputed = training_set_imputed.drop(remove_list + ['marital', 'job', 'contact'], axis=1)
         training_set_imputed['education'] = ternary_vectorizing(
             training_set_imputed['education'],
             ['primary', 'secondary', 'tertiary'])
@@ -46,7 +50,7 @@ def run_model(model_name, train_or_predict, file_name):
                                                   inplace=True)
         training_set_imputed.fillna(training_set_imputed.mean(), inplace=True)
         training_set_imputed = one_hot(training_set_imputed,
-                                       CATEGORICAL_COLUMNS_2)
+                                       list(set(CATEGORICAL_COLUMNS_2).intersection(set(selected_columns))))
         #
         training_label_set = binary_vectorizing(training_label_set,
                                                 ['no', 'yes'])
@@ -93,7 +97,7 @@ def run_model(model_name, train_or_predict, file_name):
         else:
             return model_name, fit_model.get_params(), feature_importance_output
 
-    def validate():
+    def validate(selected_columns):
         fit_model = joblib.load(model_file_name)
 
         validation_set = pd.read_csv(file_name, names=COLUMNS,
@@ -103,8 +107,9 @@ def run_model(model_name, train_or_predict, file_name):
 
         #
         validation_set_imputed = deepcopy(validation_set)
+        remove_list = list(set(COLUMNS) - set(selected_columns))
         validation_set_imputed = validation_set_imputed.drop(
-            ['marital', 'job', 'contact'], axis=1)
+            remove_list + ['marital', 'job', 'contact'], axis=1)
         validation_set_imputed['education'] = ternary_vectorizing(
             validation_set_imputed['education'],
             ['primary', 'secondary', 'tertiary'])
@@ -113,7 +118,8 @@ def run_model(model_name, train_or_predict, file_name):
         validation_set_imputed.fillna(validation_set_imputed.mean(),
                                       inplace=True)
         validation_set_imputed = one_hot(validation_set_imputed,
-                                         CATEGORICAL_COLUMNS_2)
+                                         list(set(CATEGORICAL_COLUMNS_2).intersection(
+                                             set(selected_columns))))
         #
         validation_label_set = binary_vectorizing(validation_label_set,
                                                   ['no', 'yes'])
@@ -134,7 +140,7 @@ def run_model(model_name, train_or_predict, file_name):
 
         return model_name, cnf_matrix
 
-    def predict():
+    def predict(selected_columns):
         fit_model = joblib.load(model_file_name)
 
         predict_set = pd.read_csv(file_name, names=COLUMNS,
@@ -143,8 +149,11 @@ def run_model(model_name, train_or_predict, file_name):
 
         #
         predict_set_imputed = deepcopy(predict_set)
+
+        remove_list = list(set(COLUMNS) - set(selected_columns))
         predict_set_imputed = predict_set_imputed.drop(
-            ['marital', 'job', 'contact'], axis=1)
+            remove_list + ['marital', 'job', 'contact'], axis=1)
+
         predict_set_imputed['education'] = ternary_vectorizing(
             predict_set_imputed['education'],
             ['primary', 'secondary', 'tertiary'])
@@ -153,7 +162,8 @@ def run_model(model_name, train_or_predict, file_name):
         predict_set_imputed.fillna(predict_set_imputed.mean(),
                                    inplace=True)
         predict_set_imputed = one_hot(predict_set_imputed,
-                                      CATEGORICAL_COLUMNS_2)
+                                      list(set(CATEGORICAL_COLUMNS_2).intersection(
+                                          set(selected_columns))))
 
         predict_set_sc_scaled_imputed = standard_scaler.fit_transform(
             predict_set_imputed)
@@ -182,18 +192,23 @@ def run_model(model_name, train_or_predict, file_name):
     assert model_name is not None
     assert train_or_predict is not None
 
-    model_file_name = model_name + '.pkl'
+    hash_value = str(hash(','.join(sorted(selected_columns))))
+
+    model_file_name = model_name + '_' + hash_value + '.pkl'
     print train_or_predict
     standard_scaler = preprocessing.StandardScaler()
 
     if 'train' == train_or_predict:
-        return train()
+        return train(selected_columns)
 
     if 'validate' == train_or_predict:
-        return validate()
+        assert os.path.exists(model_file_name)
+
+        return validate(selected_columns)
 
     if 'predict' == train_or_predict:
-        return predict()
+        assert os.path.exists(model_file_name)
+        return predict(selected_columns)
 
 
 def view_saved_model(model_name):
@@ -206,9 +221,11 @@ def main():
     parser.add_option('--model-name', dest='model_name', type="str")
     parser.add_option('--tp', dest='tp', type="str")
     parser.add_option('--file-name', dest='file_name', type="str")
+    parser.add_option('--columns', dest='columns', type="str", action='append', default=COLUMNS)
+
     (options, args) = parser.parse_args()
 
-    print run_model(options.model_name, options.tp, options.file_name)
+    print run_model(options.model_name, options.tp, options.file_name, options.columns)
     # train_file_name='bank-training_new.csv',
     # validate_file_name='bank-training_new.csv',
     # # predict_file_name='bank-testing_new.csv'):
