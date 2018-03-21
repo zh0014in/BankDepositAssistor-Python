@@ -1,0 +1,25 @@
+<div class="alert-center text-center animate-slide" data-ng-show="vm.show">
+    <button type="button" class="btn btn-info" data-ng-click="vm.train();">go</button>
+    <div class="row">
+        <div class="col">
+            <ul class="list-unstyled">
+                <li data-ng-repeat="column in vm.columns">
+                    <a href="javascript:;" data-ng-click="vm.remove(column);">
+                        <i class="fas fa-times text-danger"></i>
+                    </a> {{column}}
+                </li>
+            </ul>
+        </div>
+        <div class="col">
+            <ul class="list-unstyled">
+                <li data-ng-repeat="column in vm.removedColumns">
+                    <a href="javascript:;" data-ng-click="vm.add(column);">
+                        <i class="fas fa-redo text-success"></i>
+                    </a> {{column}}
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+</div>

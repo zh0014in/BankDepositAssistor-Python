@@ -24,7 +24,8 @@
             vm.fileSelected = function (file) {
                 vm.selectedfile = file;
                 $rootScope.$broadcast('fileSelectionChanged', {
-                    file: file.filename
+                    file: file.filename,
+                    fields: file.fields
                 });
             }
 

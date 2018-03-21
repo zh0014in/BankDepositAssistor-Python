@@ -55,7 +55,6 @@
 
             $scope.$on('fileSelectionChanged', function (event, args) {
                 spinnerService.show('distributionplotsspinner');
-                vm.filename = args.file;
                 $http.get('/loadDistributionData?filename=' + args.file).then(function (response) {
                     vm.data = response.data;
                     countByColumn('month')
@@ -63,39 +62,22 @@
                 });
             });
 
-            $scope.selectedModel = 'svm';
-
-            $scope.$on('modelSelectionChanged', function (event, args) {
-                $scope.selectedModel = args.model;
-            });
+            
 
             vm.train = function () {
                 console.log('train')
-                runModel.run($scope.selectedModel, 'train', vm.filename, function (response) {
-                    console.log(response.data);
-                    vm.parameters = response.data[1];
-                    vm.parameterNames = Object.keys(response.data[1]);
-                    $rootScope.$broadcast('trainparameters', { data: vm.parameters });
-                    if (response.data.length > 2) {
-                        var importanceFilename = response.data[2];
-                        $http.get('/loadDistributionData?filename=' + importanceFilename).then(function (response) {
-                            console.log(response.data);
-                            $rootScope.$broadcast('featureimportance', { data: response.data });
-                        });
-                    }
-                    $rootScope.$broadcast('traincomplete');
-                });
+                $rootScope.$broadcast('trainstart', {data: $rootScope.fields});
             }
             vm.validate = function () {
                 console.log('validate')
-                runModel.run($scope.selectedModel, 'validate', vm.filename, function (response) {
+                runModel.run($rootScope.selectedModel, 'validate', $rootScope.filename, function (response) {
                     console.log(response.data);
                     $rootScope.$broadcast('validatecomplete');
                 });
             }
             vm.predict = function () {
                 console.log('predict')
-                runModel.run($scope.selectedModel, 'predict', vm.filename, function (response) {
+                runModel.run($rootScope.selectedModel, 'predict', $rootScope.filename, function (response) {
                     console.log(response.data);
                     $rootScope.$broadcast('predictcomplete');
                 });
