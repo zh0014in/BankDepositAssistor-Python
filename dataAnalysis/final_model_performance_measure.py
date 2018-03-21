@@ -31,6 +31,12 @@ MODELS = {
 
 
 def run_model(model_name, train_or_predict, file_name, selected_columns=COLUMNS):
+    selected_columns = ["age", "job", "marital", "education", "default", "balance",
+           "housing", "loan", "contact",
+           "campaign", "pdays", "previous", "y"]
+
+    print selected_columns
+
     if LABEL not in selected_columns:
         selected_columns += [LABEL]
 
@@ -92,6 +98,27 @@ def run_model(model_name, train_or_predict, file_name, selected_columns=COLUMNS)
         joblib.dump(fit_model, model_file_name)
 
         print model_name, model_file_name
+        if not os.path.exists('existingmodel.json'):
+            open('existingmodel.json', 'a').close()
+
+        with open('existingmodel.json', 'r') as f:
+
+            jd = {}
+
+            try:
+                jd = json.load(f)
+                print '-----------------', jd
+            except:
+                pass
+
+
+            with open('existingmodel.json', 'w') as f1:
+                jd[model_file_name] = selected_columns
+
+                print '-----------------123  ', jd
+                json.dump(jd, f1)
+
+
         if (not feature_importance_output):
             return model_name, fit_model.get_params()
         else:
@@ -227,6 +254,11 @@ def view_saved_model(model_name, selected_columns=COLUMNS):
     hash_value = str(hash(','.join(sorted(selected_columns))))
     fit_model = joblib.load(model_name + '_' + hash_value + '.pkl')
     return fit_model.get_params()
+
+
+def getexistingmodeljsonfile():
+    with open('existingmodel.json', 'r') as f:
+        return json.load(f)
 
 
 def main():
