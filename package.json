@@ -1,0 +1,30 @@
+{
+  "name": "bankdepositassistor-python",
+  "version": "1.0.0",
+  "description": "bank deposit assistor",
+  "main": "hello.py",
+  "dependencies": {
+    "gulp": "3.9.1",
+    "gulp-concat": "2.6.1",
+    "sarsha-loading-spinner": "1.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zh0014in/BankDepositAssistor-Python.git"
+  },
+  "keywords": [
+    "python",
+    "bank",
+    "deposit"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zh0014in/BankDepositAssistor-Python/issues"
+  },
+  "homepage": "https://github.com/zh0014in/BankDepositAssistor-Python#readme"
+}

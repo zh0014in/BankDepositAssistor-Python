@@ -7,9 +7,9 @@
 
 
     function distributionPlots() {
-        distributionPlotsController.$inject = ['$http', '$scope','runModel'];
+        distributionPlotsController.$inject = ['$http', '$scope','runModel','spinnerService'];
 
-        function distributionPlotsController($http, $scope,runModel) {
+        function distributionPlotsController($http, $scope,runModel,spinnerService) {
             var vm = this;
 
             init();
@@ -54,10 +54,12 @@
             };
 
             $scope.$on('fileSelectionChanged', function (event, args) {
+                spinnerService.show('distributionplotsspinner');
                 vm.filename = args.file;
                 $http.get('/loadDistributionData?filename=' + args.file).then(function (response) {
                     vm.data = response.data;
                     countByColumn('month')
+                    spinnerService.close('distributionplotsspinner');
                 });
             });
 

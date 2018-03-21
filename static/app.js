@@ -6,7 +6,8 @@
             'ngRoute',
             'dx',
             'hl.sticky',
-            'ngAnimate'
+            'ngAnimate',
+            'sarsha.spinner'
         ])
         .config(function ($routeProvider) {
             $routeProvider
@@ -25,6 +26,8 @@
                 }).otherwise({
                     redirectTo: '/datasets'
                 });
+        }).config(function ($httpProvider) {
+            $httpProvider.interceptors.push('spinnerHttpInterceptor');
         });
 
 }());
