@@ -176,15 +176,15 @@ def run_model(model_name, train_or_predict, file_name, selected_columns=COLUMNS)
         label_pred = fit_model.predict(predict_set_sc_scaled_imputed)
         i = 0
         label_pred = ['y'] + label_pred.tolist()
-        result = []
+        result = {}
 
         with open(file_name, 'r') as csvinput:
             for row in csv.reader(csvinput):
                 if i == 0:
-                    result.append(COLUMNS)
+                    result[i] = COLUMNS
                 else:
                     row[-1] = 'no' if label_pred[i] == 0 else 'yes'
-                    result.append(row)
+                    result[i] = row
                 i += 1
 
         return model_name, json.dumps(result)
