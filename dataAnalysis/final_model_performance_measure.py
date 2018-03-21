@@ -211,8 +211,9 @@ def run_model(model_name, train_or_predict, file_name, selected_columns=COLUMNS)
         return predict(selected_columns)
 
 
-def view_saved_model(model_name):
-    fit_model = joblib.load('./dataAnalysis/' + model_name + '.pkl')
+def view_saved_model(model_name, selected_columns=COLUMNS):
+    hash_value = str(hash(','.join(sorted(selected_columns))))
+    fit_model = joblib.load(model_name + '_' + hash_value + '.pkl')
     return fit_model.get_params()
 
 
