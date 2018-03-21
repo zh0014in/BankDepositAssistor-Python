@@ -8,7 +8,7 @@ import sklearn.linear_model as lm
 import numpy as np
 import csv
 from sklearn.ensemble import RandomForestClassifier
-
+import json
 from optparse import OptionParser
 from sklearn.externals import joblib
 
@@ -187,7 +187,7 @@ def run_model(model_name, train_or_predict, file_name, selected_columns=COLUMNS)
                     result.append(row)
                 i += 1
 
-        return model_name, result
+        return model_name, json.dumps(result)
 
     assert model_name is not None
     assert train_or_predict is not None
