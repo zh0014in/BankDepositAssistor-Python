@@ -4,6 +4,7 @@
   "description": "bank deposit assistor",
   "main": "hello.py",
   "dependencies": {
+    "angular-ui-bootstrap": "^2.5.6",
     "gulp": "3.9.1",
     "gulp-concat": "2.6.1",
     "sarsha-loading-spinner": "1.0.0"

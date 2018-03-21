@@ -4,12 +4,13 @@
 
 
 .animate-slide {
-  background:#30373f;
+  background:grey;
   position:absolute;
   width: 320px;
   height:100%;
   top: 0;
   right:0px;
+  z-index: 999;
 }
 
 .animate-slide.ng-hide-add,
