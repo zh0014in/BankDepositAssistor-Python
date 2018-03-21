@@ -75,7 +75,7 @@
                     console.log(response.data);
                     vm.parameters = response.data[1];
                     vm.parameterNames = Object.keys(response.data[1]);
-                    $rootScope.$broadcast('trainparameters', {data: vm.parameters});
+                    $rootScope.$broadcast('trainparameters', { data: vm.parameters });
                     if (response.data.length > 2) {
                         var importanceFilename = response.data[2];
                         $http.get('/loadDistributionData?filename=' + importanceFilename).then(function (response) {
@@ -86,6 +86,20 @@
                     $rootScope.$broadcast('traincomplete');
                 });
             }
+            vm.validate = function () {
+                console.log('validate')
+                runModel.run($scope.selectedModel, 'validate', vm.filename, function (response) {
+                    console.log(response.data);
+                    $rootScope.$broadcast('validatecomplete');
+                });
+            }
+            vm.predict = function () {
+                console.log('predict')
+                runModel.run($scope.selectedModel, 'predict', vm.filename, function (response) {
+                    console.log(response.data);
+                    $rootScope.$broadcast('predictcomplete');
+                });
+            }
 
             vm.countByColumn = countByColumn;
             function countByColumn(column) {
@@ -93,7 +107,7 @@
                     vm.showChart = false;
                     return;
                 }
-                
+
                 if (vm.data.all(function (t) { return !t.y; })) {
                     console.log(vm.data);
                     vm.showChart = false;

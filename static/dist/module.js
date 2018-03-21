@@ -281,7 +281,7 @@ class AntiXSS {
                     console.log(response.data);
                     vm.parameters = response.data[1];
                     vm.parameterNames = Object.keys(response.data[1]);
-                    $rootScope.$broadcast('trainparameters', {data: vm.parameters});
+                    $rootScope.$broadcast('trainparameters', { data: vm.parameters });
                     if (response.data.length > 2) {
                         var importanceFilename = response.data[2];
                         $http.get('/loadDistributionData?filename=' + importanceFilename).then(function (response) {
@@ -292,6 +292,20 @@ class AntiXSS {
                     $rootScope.$broadcast('traincomplete');
                 });
             }
+            vm.validate = function () {
+                console.log('validate')
+                runModel.run($scope.selectedModel, 'validate', vm.filename, function (response) {
+                    console.log(response.data);
+                    $rootScope.$broadcast('validatecomplete');
+                });
+            }
+            vm.predict = function () {
+                console.log('predict')
+                runModel.run($scope.selectedModel, 'predict', vm.filename, function (response) {
+                    console.log(response.data);
+                    $rootScope.$broadcast('predictcomplete');
+                });
+            }
 
             vm.countByColumn = countByColumn;
             function countByColumn(column) {
@@ -299,7 +313,7 @@ class AntiXSS {
                     vm.showChart = false;
                     return;
                 }
-                
+
                 if (vm.data.all(function (t) { return !t.y; })) {
                     console.log(vm.data);
                     vm.showChart = false;
@@ -677,23 +691,27 @@ class AntiXSS {
     'use strict';
 
     angular
-        .module ('app')
-        .component ('trainParameters', trainParameters());
+        .module('app')
+        .component('trainParameters', trainParameters());
 
 
     function trainParameters() {
         trainParametersController.$inject = ['$scope']
-        function trainParametersController($scope){
+        function trainParametersController($scope) {
             var vm = this;
-            
+
             init();
 
-            function init(){
+            function init() {
 
             }
 
-            $scope.$on('trainparameters', function(event, args){
-                vm.parameters = args.data;
+            $scope.$on('trainparameters', function (event, args) {
+                vm.parameters = Object.keys(args.data).reduce(function (r, e) {
+                    if (args.data[e] != null) r[e] = args.data[e];
+                    return r;
+                }, {});
+                console.log(args.data);
                 vm.parameterNames = Object.keys(vm.parameters);
             });
         }
@@ -708,7 +726,7 @@ class AntiXSS {
         }
     }
 
-} ());
+}());
 (function () {
     'use strict';
 

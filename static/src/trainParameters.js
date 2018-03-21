@@ -2,23 +2,27 @@
     'use strict';
 
     angular
-        .module ('app')
-        .component ('trainParameters', trainParameters());
+        .module('app')
+        .component('trainParameters', trainParameters());
 
 
     function trainParameters() {
         trainParametersController.$inject = ['$scope']
-        function trainParametersController($scope){
+        function trainParametersController($scope) {
             var vm = this;
-            
+
             init();
 
-            function init(){
+            function init() {
 
             }
 
-            $scope.$on('trainparameters', function(event, args){
-                vm.parameters = args.data;
+            $scope.$on('trainparameters', function (event, args) {
+                vm.parameters = Object.keys(args.data).reduce(function (r, e) {
+                    if (args.data[e] != null) r[e] = args.data[e];
+                    return r;
+                }, {});
+                console.log(args.data);
                 vm.parameterNames = Object.keys(vm.parameters);
             });
         }
@@ -33,4 +37,4 @@
         }
     }
 
-} ());
+}());
