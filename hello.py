@@ -10,6 +10,8 @@ import sys
 import datetime
 
 from dataAnalysis.final_model_performance_measure import run_model
+from dataAnalysis.final_model_performance_measure import getexistingmodeljsonfile
+from dataAnalysis.final_model_performance_measure import view_saved_model
 
 # Emit Bluemix deployment event
 cf_deployment_tracker.track()
@@ -187,6 +189,8 @@ def train():
     mode = request.json['mode']
     filename = request.json['filename']
     columns = request.json['columns']
+    if columns is None:
+        columns = []
     fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     result = run_model(model, mode, fullfilename, selected_columns=columns)
     return jsonify(result)
@@ -247,6 +251,21 @@ def getFiledetails():
         'lines': len(lis),
         'fields': lis[0]
     })
+
+
+@app.route('/getexistingmodels', methods=['GET'])
+def getexistingmodels():
+    result = getexistingmodeljsonfile()
+    return jsonify(result)
+
+
+@app.route('/getSavedModel', methods=['POST'])
+def getSavedModel():
+    model = request.json['model']
+    columns = request.json['columns']
+    # model = model[:-4]
+    result = view_saved_model(model, columns)
+    return jsonify(result)
 
 
 @atexit.register

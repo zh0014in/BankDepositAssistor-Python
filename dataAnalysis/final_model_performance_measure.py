@@ -163,9 +163,9 @@ def run_model(model_name, train_or_predict, file_name, selected_columns=COLUMNS)
         print model_name, cnf_matrix
 
         tn, fp, fn, tp = confusion_matrix(validation_label_set, label_pred).ravel()
-        validate_result = {'True Negative': tn, 'False Positive': fp, 'False Negative': fn, 'True Positive': tp}
+        validate_result = {'TrueNegative': tn, 'FalsePositive': fp, 'FalseNegative': fn, 'TruePositive': tp}
 
-        return model_name, json.dumps(validate_result)
+        return model_name, validate_result
 
     def predict(selected_columns):
         fit_model = joblib.load(model_file_name)
@@ -248,8 +248,8 @@ def run_model(model_name, train_or_predict, file_name, selected_columns=COLUMNS)
 
 
 def view_saved_model(model_name, selected_columns=COLUMNS):
-    hash_value = str(hash(','.join(sorted(selected_columns))))
-    fit_model = joblib.load(model_name + '_' + hash_value + '.pkl')
+    # hash_value = str(hash(','.join(sorted(selected_columns))))
+    fit_model = joblib.load(model_name)
     return fit_model.get_params()
 
 
