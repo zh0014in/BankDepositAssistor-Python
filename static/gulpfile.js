@@ -17,6 +17,7 @@ gulp.task('default', ['css'], function () {
             'js/*.js',
             'node_modules/sarsha-loading-spinner/loading-spinner.min.js',
             'node_modules/angular-sticky-plugin/dist/angular-sticky.min.js',
+            'node_modules/angular-scroll/angular-scroll.min.js',
             // 'node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js',
             './app.js',
             'src/*.js',

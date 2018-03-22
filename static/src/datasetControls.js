@@ -7,9 +7,9 @@
 
 
     function datasetControls() {
-        datasetControlsController.$inject = ['$rootScope', '$scope', '$http', 'runModel']
+        datasetControlsController.$inject = ['$rootScope', '$scope', '$http', 'runModel', '$document']
 
-        function datasetControlsController($rootScope, $scope, $http, runModel) {
+        function datasetControlsController($rootScope, $scope, $http, runModel, $document) {
             var vm = this;
 
             vm.$onInit = init;
@@ -49,6 +49,11 @@
                     }
                     $rootScope.$broadcast('traincomplete');
                 });
+            });
+
+            $scope.$on('traincomplete', function () {
+                var someElement = angular.element(document.getElementById('trainResult'));
+                $document.scrollToElementAnimated(someElement);
             });
 
             vm.validate = function () {
