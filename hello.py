@@ -186,8 +186,9 @@ def train():
     model = request.json['model']
     mode = request.json['mode']
     filename = request.json['filename']
+    columns = request.json['columns']
     fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    result = run_model(model, mode, fullfilename)
+    result = run_model(model, mode, fullfilename, selected_columns=columns)
     return jsonify(result)
 
 

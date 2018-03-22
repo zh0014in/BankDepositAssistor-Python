@@ -4,6 +4,7 @@
   "description": "bank deposit assistor",
   "main": "hello.py",
   "dependencies": {
+    "angular-sticky-plugin": "^0.4.2",
     "angular-ui-bootstrap": "^2.5.6",
     "gulp": "3.9.1",
     "gulp-concat": "2.6.1",

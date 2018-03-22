@@ -7,7 +7,8 @@
             'dx',
             'hl.sticky',
             'ngAnimate',
-            'sarsha.spinner'
+            'sarsha.spinner',
+            'hl.sticky'
         ])
         .config(function ($routeProvider) {
             $routeProvider
