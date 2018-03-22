@@ -37,8 +37,15 @@
                     value: "selectedPkl"
                 },
                 onSelectionChanged: function (e) {
-                    $rootScope.$broadcast('pklSelectionChanged', {
-                        pkl: e.selectedItem
+                    $http.post('/getSavedModel', {
+                        model: e.selectedItem,
+                        columns: vm.pkls[e.selectedItem]
+                    }).then(function (response) {
+                        console.log(response.data);
+                        $rootScope.$broadcast('pklSelectionChanged', {
+                            pkl: vm.pkls[e.selectedItem],
+                            parameters: response.data
+                        });
                     });
                 },
                 onInitialized: function (e) {

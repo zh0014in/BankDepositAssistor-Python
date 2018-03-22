@@ -19,9 +19,12 @@
             }
 
             $scope.$on('traincomplete', function () {
+                vm.title = 'train completed';
                 vm.show = true;
             });
-
+            $scope.$on('pklSelectionChanged', function (event, args) {
+                vm.show = true;
+            });
             $scope.$on('closetrainresult', function () {
                 vm.show = false;
             });

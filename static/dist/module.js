@@ -844,8 +844,15 @@ class AntiXSS {
                     value: "selectedPkl"
                 },
                 onSelectionChanged: function (e) {
-                    $rootScope.$broadcast('pklSelectionChanged', {
-                        pkl: e.selectedItem
+                    $http.post('/getSavedModel', {
+                        model: e.selectedItem,
+                        columns: vm.pkls[e.selectedItem]
+                    }).then(function (response) {
+                        console.log(response.data);
+                        $rootScope.$broadcast('pklSelectionChanged', {
+                            pkl: vm.pkls[e.selectedItem],
+                            parameters: response.data
+                        });
                     });
                 },
                 onInitialized: function (e) {
@@ -881,17 +888,27 @@ class AntiXSS {
 
             vm.$onInit = init;
 
-            function init() {
-            }
+            function init() {}
 
             $scope.$on('trainparameters', function (event, args) {
-                vm.parameters = Object.keys(args.data).reduce(function (r, e) {
-                    if (args.data[e] != null) r[e] = args.data[e];
+                getParameters(args.data);
+            });
+            $scope.$on('columnSelected', function (event, args) {
+                vm.columns = args.columns;
+            });
+            $scope.$on('pklSelectionChanged', function (event, args) {
+                vm.columns = args.pkl;
+                getParameters(args.parameters);
+            });
+
+            function getParameters(data) {
+                vm.parameters = Object.keys(data).reduce(function (r, e) {
+                    if (data[e] != null) r[e] = data[e];
                     return r;
                 }, {});
-                console.log(args.data);
+                console.log(data);
                 vm.parameterNames = Object.keys(vm.parameters);
-            });
+            }
         }
 
         return {
@@ -926,9 +943,12 @@ class AntiXSS {
             }
 
             $scope.$on('traincomplete', function () {
+                vm.title = 'train completed';
                 vm.show = true;
             });
-
+            $scope.$on('pklSelectionChanged', function (event, args) {
+                vm.show = true;
+            });
             $scope.$on('closetrainresult', function () {
                 vm.show = false;
             });

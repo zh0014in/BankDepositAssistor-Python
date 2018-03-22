@@ -14,17 +14,27 @@
 
             vm.$onInit = init;
 
-            function init() {
-            }
+            function init() {}
 
             $scope.$on('trainparameters', function (event, args) {
-                vm.parameters = Object.keys(args.data).reduce(function (r, e) {
-                    if (args.data[e] != null) r[e] = args.data[e];
+                getParameters(args.data);
+            });
+            $scope.$on('columnSelected', function (event, args) {
+                vm.columns = args.columns;
+            });
+            $scope.$on('pklSelectionChanged', function (event, args) {
+                vm.columns = args.pkl;
+                getParameters(args.parameters);
+            });
+
+            function getParameters(data) {
+                vm.parameters = Object.keys(data).reduce(function (r, e) {
+                    if (data[e] != null) r[e] = data[e];
                     return r;
                 }, {});
-                console.log(args.data);
+                console.log(data);
                 vm.parameterNames = Object.keys(vm.parameters);
-            });
+            }
         }
 
         return {
