@@ -140,14 +140,6 @@ var duScrollDefaultEasing=function(e){"use strict";return e<.5?Math.pow(2*e,2)/2
                     templateUrl: "static/html/datasets.html",
                     controller: 'datasetsController',
                     controllerAs: "vm"
-                }).when("/analysis", {
-                    templateUrl: "static/html/analysis.html",
-                    controller: 'analysisController',
-                    controllerAs: "vm"
-                }).when("/train", {
-                    templateUrl: "static/html/train.html",
-                    controller: 'trainController',
-                    controllerAs: "vm"
                 }).otherwise({
                     redirectTo: '/datasets'
                 });
@@ -155,26 +147,6 @@ var duScrollDefaultEasing=function(e){"use strict";return e<.5?Math.pow(2*e,2)/2
             $httpProvider.interceptors.push('spinnerHttpInterceptor');
         });
 
-}());
-
-(function () {
-    'use strict';
-
-    angular
-        .module('app')
-        .controller('analysisController', analysisController)
-
-    /** @ngInject */
-    analysisController.$inject = ['$scope', '$http'];
-    function analysisController($scope, $http) {
-        var vm = this;
-
-        init();
-
-        function init() {
-        }
-
-    }
 }());
 /*
 * Copyright IBM Corporation 2017
@@ -574,45 +546,6 @@ class AntiXSS {
 
     angular
         .module('app')
-        .component('fileDetails', fileDetails());
-
-
-    function fileDetails() {
-        fileDetailsController.$inject = ['$scope', '$http']
-
-        function fileDetailsController($scope, $http) {
-            var vm = this;
-
-            init();
-
-            function init() {
-
-            }
-
-            $scope.$on('fileSelectionChanged', function (event, args) {
-                $http.get('/getFiledetails?filename=' + args.file).then(function (response) {
-                    vm.details = response.data;
-                    console.log(vm.details);
-                });
-            });
-        }
-
-        return {
-            templateUrl: "static/html/fileDetails.html",
-            bindings: {
-
-            },
-            controller: fileDetailsController,
-            controllerAs: 'vm'
-        }
-    }
-
-}());
-(function () {
-    'use strict';
-
-    angular
-        .module('app')
         .component('fileList', fileList());
 
 
@@ -848,26 +781,6 @@ class AntiXSS {
             controller: selectModelController,
             controllerAs: 'vm'
         }
-    }
-
-}());
-(function () {
-    'use strict';
-
-    angular
-        .module('app')
-        .controller('trainController', trainController)
-
-    /** @ngInject */
-    trainController.$inject = ['$scope', '$http', '$rootScope']
-
-    function trainController($scope, $http, $rootScope) {
-        var vm = this;
-
-        init();
-
-        function init() { }
-
     }
 
 }());
