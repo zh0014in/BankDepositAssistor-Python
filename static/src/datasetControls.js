@@ -51,13 +51,15 @@
                 });
             });
 
-            
+
 
             vm.validate = function () {
                 console.log('validate')
                 runModel.run($rootScope.selectedModel, 'validate', $rootScope.filename, vm.columns, function (response) {
                     console.log(response.data);
-                    $rootScope.$broadcast('validatecomplete');
+                    $rootScope.$broadcast('validatecomplete', {
+                        data: response.data
+                    });
                 });
             }
             vm.predict = function () {

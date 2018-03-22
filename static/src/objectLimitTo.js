@@ -10,7 +10,9 @@
         return objectLimitToFn;
 
         function objectLimitToFn(obj, limit, startIndex) {
-
+            if(!obj){
+                return [];
+            }
             var keys = Object.keys(obj);
             if (keys.length < 1) {
                 return [];

@@ -288,13 +288,15 @@ class AntiXSS {
                 });
             });
 
-            
+
 
             vm.validate = function () {
                 console.log('validate')
                 runModel.run($rootScope.selectedModel, 'validate', $rootScope.filename, vm.columns, function (response) {
                     console.log(response.data);
-                    $rootScope.$broadcast('validatecomplete');
+                    $rootScope.$broadcast('validatecomplete', {
+                        data: response.data
+                    });
                 });
             }
             vm.predict = function () {
@@ -651,7 +653,9 @@ class AntiXSS {
         return objectLimitToFn;
 
         function objectLimitToFn(obj, limit, startIndex) {
-
+            if(!obj){
+                return [];
+            }
             var keys = Object.keys(obj);
             if (keys.length < 1) {
                 return [];
@@ -711,6 +715,11 @@ class AntiXSS {
 
         $scope.$on('modelSelectionChanged', function (event, args) {
             var someElement = angular.element(document.getElementById('plots'));
+            $document.scrollToElementAnimated(someElement);
+        });
+
+        $scope.$on('validatecomplete', function () {
+            var someElement = angular.element(document.getElementById('validateResult'));
             $document.scrollToElementAnimated(someElement);
         });
     }
@@ -916,6 +925,47 @@ class AntiXSS {
 
             },
             controller: uploadedFilesController,
+            controllerAs: 'vm'
+        }
+    }
+
+}());
+(function () {
+    'use strict';
+
+    angular
+        .module('app')
+        .component('validateResult', validateResult());
+
+
+    function validateResult() {
+        validateResultController.$inject = ['$scope']
+
+        function validateResultController($scope) {
+            var vm = this;
+
+            vm.$onInit = init;
+
+            function init() {
+                vm.show = false;
+            }
+
+            $scope.$on('validatecomplete', function (event, args) {
+                vm.data = args.data[1];
+                vm.show = true;
+            });
+
+            $scope.$on('modelSelectionChanged', function (event, args) {
+                vm.show = false;
+            });
+        }
+
+        return {
+            templateUrl: "static/html/validateResult.html",
+            bindings: {
+
+            },
+            controller: validateResultController,
             controllerAs: 'vm'
         }
     }

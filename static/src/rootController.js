@@ -38,6 +38,11 @@
             var someElement = angular.element(document.getElementById('plots'));
             $document.scrollToElementAnimated(someElement);
         });
+
+        $scope.$on('validatecomplete', function () {
+            var someElement = angular.element(document.getElementById('validateResult'));
+            $document.scrollToElementAnimated(someElement);
+        });
     }
 
 }());
