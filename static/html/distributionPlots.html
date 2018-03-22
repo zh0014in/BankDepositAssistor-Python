@@ -1,14 +1,17 @@
 <div>
     <span data-ng-show="vm.showChart">
         <!-- <h2>Some Insights of the Data</h2> -->
-        <button type="button" class="btn btn-primary" data-ng-click="vm.countByColumn('month')">month</button>
-        <button type="button" class="btn btn-secondary" data-ng-click="vm.countByColumn('age')">age</button>
-        <button type="button" class="btn btn-success" data-ng-click="vm.countByColumn('campaign')">campaign</button>
-        <span class="col-md-4 offset-md-4">
-            <button type="button" class="btn btn-info" data-ng-click="vm.train()">train</button>
-            <button type="button" class="btn btn-light" data-ng-click="vm.validate()">validate</button>
-            <button type="button" class="btn btn-warning" data-ng-click="vm.predict()">predict</button>
-        </span>
+        count by:
+        <a href="javascript:;" data-ng-click="vm.countByColumn('month')">
+            <u>month</u>
+        </a>
+        <a href="javascript:;" data-ng-click="vm.countByColumn('age')">
+            <u>age</u>
+        </a>
+        <a href="javascript:;" data-ng-click="vm.countByColumn('campaign')">
+            <u>campaign</u>
+        </a>
+
 
         <div dx-chart="vm.monthChartOptions"></div>
         <column-selector></column-selector>

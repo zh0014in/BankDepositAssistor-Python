@@ -71,50 +71,6 @@
 
 
 
-            vm.train = function () {
-                console.log('train')
-                $rootScope.$broadcast('trainstart', {
-                    data: $rootScope.fields
-                });
-            }
-
-            $scope.$on('columnSelected', function (event, args) {
-                vm.columns = args.columns;
-                runModel.run($rootScope.selectedModel, 'train', $rootScope.filename, vm.columns, function (response) {
-                    console.log(response.data);
-                    vm.parameters = response.data[1];
-                    vm.parameterNames = Object.keys(response.data[1]);
-                    $rootScope.$broadcast('trainparameters', {
-                        data: vm.parameters
-                    });
-                    if (response.data.length > 2) {
-                        var importanceFilename = response.data[2];
-                        $http.get('/loadDistributionData?filename=' + importanceFilename).then(function (response) {
-                            console.log(response.data);
-                            $rootScope.$broadcast('featureimportance', {
-                                data: response.data
-                            });
-                        });
-                    }
-                    $rootScope.$broadcast('traincomplete');
-                });
-            });
-            
-            vm.validate = function () {
-                console.log('validate')
-                runModel.run($rootScope.selectedModel, 'validate', $rootScope.filename, vm.columns, function (response) {
-                    console.log(response.data);
-                    $rootScope.$broadcast('validatecomplete');
-                });
-            }
-            vm.predict = function () {
-                console.log('predict')
-                runModel.run($rootScope.selectedModel, 'predict', $rootScope.filename, vm.columns, function (response) {
-                    console.log(response.data);
-                    $rootScope.$broadcast('predictcomplete');
-                });
-            }
-
             vm.countByColumn = countByColumn;
 
             function countByColumn(column) {
