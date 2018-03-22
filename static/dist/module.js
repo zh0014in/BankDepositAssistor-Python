@@ -256,10 +256,10 @@ class AntiXSS {
             }
 
             $scope.$on('fileSelectionChanged', function () {
-                
+
             });
 
-            $scope.$on('fileloaded', function(event, args){ 
+            $scope.$on('fileloaded', function (event, args) {
                 $scope.isTestFile = args.isTestFile;
                 vm.show = true;
             });
@@ -293,7 +293,9 @@ class AntiXSS {
                 });
             });
 
-
+            $scope.$on('pklSelectionChanged', function (event, args) {
+                vm.columns = args.pkl;
+            });
 
             vm.validate = function () {
                 console.log('validate')
@@ -305,6 +307,14 @@ class AntiXSS {
                 });
             }
             vm.predict = function () {
+                if (!$scope.isTestFile) {
+                    DevExpress.ui.notify('select a test file to do the prediction', 'error', 1000);
+                    return;
+                }
+                if (!vm.columns) {
+                    DevExpress.ui.notify('select a model or train a model to do prediction', 'error', 1000);
+                    return;
+                }
                 console.log('predict')
                 runModel.run($rootScope.selectedModel, 'predict', $rootScope.filename, vm.columns, function (response) {
                     console.log(response.data);
