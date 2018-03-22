@@ -84,8 +84,15 @@
                     })) {
                     console.log(vm.data);
                     vm.showChart = false;
+                    $rootScope.$broadcast('fileloaded', {
+                        isTestFile: true
+                    });
+                    console.log('test file');
                     return;
                 }
+                $rootScope.$broadcast('fileloaded', {
+                    isTestFile: false
+                });
                 var groupByColumn = vm.data.groupBy(function (t) {
                     return t[column]
                 }).select(function (t) {

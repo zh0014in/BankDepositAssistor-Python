@@ -19,6 +19,11 @@
             }
 
             $scope.$on('fileSelectionChanged', function () {
+                
+            });
+
+            $scope.$on('fileloaded', function(event, args){ 
+                $scope.isTestFile = args.isTestFile;
                 vm.show = true;
             });
 
