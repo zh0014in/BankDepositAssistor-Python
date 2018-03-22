@@ -8,13 +8,13 @@
 
     function trainParameters() {
         trainParametersController.$inject = ['$scope']
+
         function trainParametersController($scope) {
             var vm = this;
 
-            init();
+            vm.$onInit = init;
 
             function init() {
-
             }
 
             $scope.$on('trainparameters', function (event, args) {

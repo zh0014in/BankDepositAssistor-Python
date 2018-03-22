@@ -316,10 +316,7 @@ class AntiXSS {
                 });
             });
 
-            $scope.$on('traincomplete', function () {
-                var someElement = angular.element(document.getElementById('trainResult'));
-                $document.scrollToElementAnimated(someElement);
-            });
+            
 
             vm.validate = function () {
                 console.log('validate')
@@ -520,6 +517,7 @@ class AntiXSS {
 
     function featureImportance() {
         featureImportanceController.$inject = ['$scope'];
+
         function featureImportanceController($scope) {
             var vm = this;
             vm.show = false;
@@ -543,7 +541,9 @@ class AntiXSS {
                 legend: {
                     horizontalAlignment: "right",
                     position: "inside",
-                    border: { visible: true }
+                    border: {
+                        visible: true
+                    }
                 },
                 rotated: true,
                 size: {
@@ -553,6 +553,9 @@ class AntiXSS {
                     vm.chart = e.component;
                 }
             };
+            $scope.$on('modelSelectionChanged', function (event, args) {
+                vm.show = false;
+            });
         }
 
         return {
@@ -745,14 +748,14 @@ class AntiXSS {
         .controller('rootController', rootController)
 
     /** @ngInject */
-    rootController.$inject = ['$scope', '$location', '$rootScope']
-    function rootController($scope, $location, $rootScope) {
+    rootController.$inject = ['$scope', '$location', '$rootScope', '$document']
+
+    function rootController($scope, $location, $rootScope, $document) {
         var vm = this;
 
         init();
 
-        function init() {
-        }
+        function init() {}
         $scope.isActive = function (route) {
             return route === $location.path();
         }
@@ -766,6 +769,16 @@ class AntiXSS {
         $scope.$on('fileSelectionChanged', function (event, args) {
             $rootScope.filename = args.file;
             $rootScope.fields = args.fields[0].split(",");
+        });
+
+        $scope.$on('traincomplete', function () {
+            var someElement = angular.element(document.getElementById('trainResult'));
+            $document.scrollToElementAnimated(someElement);
+        });
+
+        $scope.$on('modelSelectionChanged', function (event, args) {
+            var someElement = angular.element(document.getElementById('plots'));
+            $document.scrollToElementAnimated(someElement);
         });
     }
 
@@ -868,13 +881,13 @@ class AntiXSS {
 
     function trainParameters() {
         trainParametersController.$inject = ['$scope']
+
         function trainParametersController($scope) {
             var vm = this;
 
-            init();
+            vm.$onInit = init;
 
             function init() {
-
             }
 
             $scope.$on('trainparameters', function (event, args) {
@@ -902,26 +915,30 @@ class AntiXSS {
     'use strict';
 
     angular
-        .module ('app')
-        .component ('trainResult', trainResult());
+        .module('app')
+        .component('trainResult', trainResult());
 
 
     function trainResult() {
         trainResultController.$inject = ['$scope'];
-        function trainResultController($scope){
+
+        function trainResultController($scope) {
             var vm = this;
-            
+
             vm.$onInit = init;
 
-            function init(){
+            function init() {
                 vm.show = false;
             }
 
-            $scope.$on('traincomplete', function(){
+            $scope.$on('traincomplete', function () {
                 vm.show = true;
             });
 
-            $scope.$on('closetrainresult', function(){
+            $scope.$on('closetrainresult', function () {
+                vm.show = false;
+            });
+            $scope.$on('modelSelectionChanged', function (event, args) {
                 vm.show = false;
             });
         }
@@ -936,7 +953,7 @@ class AntiXSS {
         }
     }
 
-} ());
+}());
 (function () {
     'use strict';
 

@@ -2,26 +2,30 @@
     'use strict';
 
     angular
-        .module ('app')
-        .component ('trainResult', trainResult());
+        .module('app')
+        .component('trainResult', trainResult());
 
 
     function trainResult() {
         trainResultController.$inject = ['$scope'];
-        function trainResultController($scope){
+
+        function trainResultController($scope) {
             var vm = this;
-            
+
             vm.$onInit = init;
 
-            function init(){
+            function init() {
                 vm.show = false;
             }
 
-            $scope.$on('traincomplete', function(){
+            $scope.$on('traincomplete', function () {
                 vm.show = true;
             });
 
-            $scope.$on('closetrainresult', function(){
+            $scope.$on('closetrainresult', function () {
+                vm.show = false;
+            });
+            $scope.$on('modelSelectionChanged', function (event, args) {
                 vm.show = false;
             });
         }
@@ -36,4 +40,4 @@
         }
     }
 
-} ());
+}());

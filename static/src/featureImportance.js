@@ -8,6 +8,7 @@
 
     function featureImportance() {
         featureImportanceController.$inject = ['$scope'];
+
         function featureImportanceController($scope) {
             var vm = this;
             vm.show = false;
@@ -31,7 +32,9 @@
                 legend: {
                     horizontalAlignment: "right",
                     position: "inside",
-                    border: { visible: true }
+                    border: {
+                        visible: true
+                    }
                 },
                 rotated: true,
                 size: {
@@ -41,6 +44,9 @@
                     vm.chart = e.component;
                 }
             };
+            $scope.$on('modelSelectionChanged', function (event, args) {
+                vm.show = false;
+            });
         }
 
         return {

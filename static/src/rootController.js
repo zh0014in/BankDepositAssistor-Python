@@ -6,14 +6,14 @@
         .controller('rootController', rootController)
 
     /** @ngInject */
-    rootController.$inject = ['$scope', '$location', '$rootScope']
-    function rootController($scope, $location, $rootScope) {
+    rootController.$inject = ['$scope', '$location', '$rootScope', '$document']
+
+    function rootController($scope, $location, $rootScope, $document) {
         var vm = this;
 
         init();
 
-        function init() {
-        }
+        function init() {}
         $scope.isActive = function (route) {
             return route === $location.path();
         }
@@ -27,6 +27,16 @@
         $scope.$on('fileSelectionChanged', function (event, args) {
             $rootScope.filename = args.file;
             $rootScope.fields = args.fields[0].split(",");
+        });
+
+        $scope.$on('traincomplete', function () {
+            var someElement = angular.element(document.getElementById('trainResult'));
+            $document.scrollToElementAnimated(someElement);
+        });
+
+        $scope.$on('modelSelectionChanged', function (event, args) {
+            var someElement = angular.element(document.getElementById('plots'));
+            $document.scrollToElementAnimated(someElement);
         });
     }
 

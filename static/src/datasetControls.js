@@ -51,10 +51,7 @@
                 });
             });
 
-            $scope.$on('traincomplete', function () {
-                var someElement = angular.element(document.getElementById('trainResult'));
-                $document.scrollToElementAnimated(someElement);
-            });
+            
 
             vm.validate = function () {
                 console.log('validate')
