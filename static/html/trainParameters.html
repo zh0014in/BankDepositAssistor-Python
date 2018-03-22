@@ -1,10 +1,24 @@
+<p>
+    <strong>Tuned parameters in training</strong>
+</p>
 <table class="table">
     <thead>
-        <th data-ng-repeat="p in vm.parameterNames">{{p}}</th>
+        <th data-ng-repeat="p in vm.parameterNames | limitTo: 5:0">{{p}}</th>
     </thead>
     <tbody>
         <tr>
-            <td data-ng-repeat="p in vm.parameters">{{p}}</td>
+            <td data-ng-repeat="p in vm.parameters | objectLimitTo: 5:0">{{p}}</td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="table" data-ng-show="vm.parameterNames.length > 5">
+    <thead>
+        <th data-ng-repeat="p in vm.parameterNames | limitTo: 5:5">{{p}}</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td data-ng-repeat="p in vm.parameters | objectLimitTo: 5:5">{{p}}</td>
         </tr>
     </tbody>
 </table>
