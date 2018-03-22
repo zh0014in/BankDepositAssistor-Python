@@ -575,6 +575,7 @@ class AntiXSS {
 
     function fileList() {
         fileListController.$inject = ["$scope", '$http', '$rootScope'];
+
         function fileListController($scope, $http, $rootScope) {
             var vm = this;
             vm.selectedfile = null;
@@ -596,6 +597,9 @@ class AntiXSS {
                 });
             }
 
+            $scope.$on('fileuploaded', function () {
+                init();
+            });
         }
 
         return {
@@ -616,8 +620,8 @@ class AntiXSS {
 
 
     function myUploader() {
-        myUploaderController.$inject = ['$scope']
-        function myUploaderController($scope) {
+        myUploaderController.$inject = ['$scope', '$rootScope']
+        function myUploaderController($scope, $rootScope) {
             var vm = this;
 
             vm.$onInit = init;
@@ -643,6 +647,7 @@ class AntiXSS {
                     },
                     onUploaded: function(e){
                         vm.savedPath = e.request.response;
+                        $rootScope.$broadcast('fileuploaded');
                         DevExpress.ui.notify("Uploaded successfully!", "success", 3000);
                     }
                 };

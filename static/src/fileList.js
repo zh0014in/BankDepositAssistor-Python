@@ -8,6 +8,7 @@
 
     function fileList() {
         fileListController.$inject = ["$scope", '$http', '$rootScope'];
+
         function fileListController($scope, $http, $rootScope) {
             var vm = this;
             vm.selectedfile = null;
@@ -29,6 +30,9 @@
                 });
             }
 
+            $scope.$on('fileuploaded', function () {
+                init();
+            });
         }
 
         return {

@@ -7,8 +7,8 @@
 
 
     function myUploader() {
-        myUploaderController.$inject = ['$scope']
-        function myUploaderController($scope) {
+        myUploaderController.$inject = ['$scope', '$rootScope']
+        function myUploaderController($scope, $rootScope) {
             var vm = this;
 
             vm.$onInit = init;
@@ -34,6 +34,7 @@
                     },
                     onUploaded: function(e){
                         vm.savedPath = e.request.response;
+                        $rootScope.$broadcast('fileuploaded');
                         DevExpress.ui.notify("Uploaded successfully!", "success", 3000);
                     }
                 };
