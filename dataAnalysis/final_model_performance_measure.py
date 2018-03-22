@@ -11,6 +11,11 @@ from sklearn.ensemble import RandomForestClassifier
 import json
 from optparse import OptionParser
 from sklearn.externals import joblib
+import sys
+if sys.version_info[0] < 3:
+    from StringIO import StringIO
+else:
+    from io import StringIO
 
 COLUMNS = ["age", "job", "marital", "education", "default", "balance",
            "housing", "loan", "contact", "day", "month", "duration",
@@ -30,7 +35,8 @@ MODELS = {
 }
 
 
-def run_model(model_name, train_or_predict, file_name, selected_columns=COLUMNS):
+def run_model(model_name, train_or_predict, file_name, selected_columns=COLUMNS, file_content='', db=None):
+    csvdata = StringIO(file_content)
 
     print selected_columns
 
@@ -38,7 +44,7 @@ def run_model(model_name, train_or_predict, file_name, selected_columns=COLUMNS)
         selected_columns += [LABEL]
 
     def train(selected_columns):
-        training_set = pd.read_csv(file_name, names= COLUMNS,
+        training_set = pd.read_csv(csvdata, names= COLUMNS,
                                    skipinitialspace=True, skiprows=1)
         training_label_set = deepcopy(training_set[LABEL])
         del training_set[LABEL]
@@ -124,7 +130,7 @@ def run_model(model_name, train_or_predict, file_name, selected_columns=COLUMNS)
     def validate(selected_columns):
         fit_model = joblib.load(model_file_name)
 
-        validation_set = pd.read_csv(file_name, names=COLUMNS,
+        validation_set = pd.read_csv(csvdata, names=COLUMNS,
                                      skipinitialspace=True, skiprows=1)
         validation_label_set = deepcopy(validation_set[LABEL])
         del validation_set[LABEL]
@@ -170,7 +176,7 @@ def run_model(model_name, train_or_predict, file_name, selected_columns=COLUMNS)
     def predict(selected_columns):
         fit_model = joblib.load(model_file_name)
 
-        predict_set = pd.read_csv(file_name, names=COLUMNS,
+        predict_set = pd.read_csv(csvdata, names=COLUMNS,
                                   skipinitialspace=True, skiprows=1)
         del predict_set[LABEL]
 
