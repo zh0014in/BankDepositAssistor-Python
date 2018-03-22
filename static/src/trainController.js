@@ -6,9 +6,9 @@
         .controller('trainController', trainController)
 
     /** @ngInject */
-    trainController.$inject = ['$scope', '$http', 'runModel', '$rootScope']
+    trainController.$inject = ['$scope', '$http', '$rootScope']
 
-    function trainController($scope, $http, runModel, $rootScope) {
+    function trainController($scope, $http, $rootScope) {
         var vm = this;
 
         init();

@@ -11,11 +11,12 @@
 
         this.run = run;
 
-        function run(model, mode, filename, callback) {
+        function run(model, mode, filename, columns, callback) {
             $http.post("/train", {
                 model: model,
                 filename: filename,
-                mode: mode
+                mode: mode,
+                columns: columns
             }).then(callback);
         }
     }

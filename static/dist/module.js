@@ -194,8 +194,9 @@ class AntiXSS {
 
 
     function columnSelector() {
-        columnSelectorController.$inject = ['$scope', 'runModel', '$rootScope'];
-        function columnSelectorController($scope, runModel, $rootScope) {
+        columnSelectorController.$inject = ['$scope', '$rootScope'];
+
+        function columnSelectorController($scope, $rootScope) {
             var vm = this;
 
             vm.$onInit = init;
@@ -208,6 +209,11 @@ class AntiXSS {
                 vm.columns = args.data;
                 vm.show = true;
             });
+
+            vm.open = function (columns) {
+                vm.columns = columns;
+                vm.show = true;
+            }
 
             vm.remove = function (column) {
                 var index = vm.columns.indexOf(column);
@@ -227,20 +233,7 @@ class AntiXSS {
 
             vm.train = function () {
                 vm.show = false;
-                runModel.run($rootScope.selectedModel, 'train', $rootScope.filename, function (response) {
-                    console.log(response.data);
-                    vm.parameters = response.data[1];
-                    vm.parameterNames = Object.keys(response.data[1]);
-                    $rootScope.$broadcast('trainparameters', { data: vm.parameters });
-                    if (response.data.length > 2) {
-                        var importanceFilename = response.data[2];
-                        $http.get('/loadDistributionData?filename=' + importanceFilename).then(function (response) {
-                            console.log(response.data);
-                            $rootScope.$broadcast('featureimportance', { data: response.data });
-                        });
-                    }
-                    $rootScope.$broadcast('traincomplete');
-                });
+                $rootScope.$broadcast('columnSelected', {columns: vm.columns});
             }
         }
 
@@ -302,9 +295,14 @@ class AntiXSS {
                     argumentField: "key",
                     type: "stackedBar"
                 },
-                series: [
-                    { valueField: "y", name: "yes" },
-                    { valueField: "n", name: "no" }
+                series: [{
+                        valueField: "y",
+                        name: "yes"
+                    },
+                    {
+                        valueField: "n",
+                        name: "no"
+                    }
                 ],
                 rotated: false,
                 size: {
@@ -313,7 +311,9 @@ class AntiXSS {
                 legend: {
                     horizontalAlignment: "right",
                     position: "inside",
-                    border: { visible: true }
+                    border: {
+                        visible: true
+                    }
                 },
                 tooltip: {
                     enabled: true,
@@ -338,35 +338,63 @@ class AntiXSS {
                 });
             });
 
-            
+
 
             vm.train = function () {
                 console.log('train')
-                $rootScope.$broadcast('trainstart', {data: $rootScope.fields});
+                $rootScope.$broadcast('trainstart', {
+                    data: $rootScope.fields
+                });
             }
+
+            $scope.$on('columnSelected', function (event, args) {
+                vm.columns = args.columns;
+                runModel.run($rootScope.selectedModel, 'train', $rootScope.filename, vm.columns, function (response) {
+                    console.log(response.data);
+                    vm.parameters = response.data[1];
+                    vm.parameterNames = Object.keys(response.data[1]);
+                    $rootScope.$broadcast('trainparameters', {
+                        data: vm.parameters
+                    });
+                    if (response.data.length > 2) {
+                        var importanceFilename = response.data[2];
+                        $http.get('/loadDistributionData?filename=' + importanceFilename).then(function (response) {
+                            console.log(response.data);
+                            $rootScope.$broadcast('featureimportance', {
+                                data: response.data
+                            });
+                        });
+                    }
+                    $rootScope.$broadcast('traincomplete');
+                });
+            });
+            
             vm.validate = function () {
                 console.log('validate')
-                runModel.run($rootScope.selectedModel, 'validate', $rootScope.filename, function (response) {
+                runModel.run($rootScope.selectedModel, 'validate', $rootScope.filename, vm.columns, function (response) {
                     console.log(response.data);
                     $rootScope.$broadcast('validatecomplete');
                 });
             }
             vm.predict = function () {
                 console.log('predict')
-                runModel.run($rootScope.selectedModel, 'predict', $rootScope.filename, function (response) {
+                runModel.run($rootScope.selectedModel, 'predict', $rootScope.filename, vm.columns, function (response) {
                     console.log(response.data);
                     $rootScope.$broadcast('predictcomplete');
                 });
             }
 
             vm.countByColumn = countByColumn;
+
             function countByColumn(column) {
                 if (!vm.data) {
                     vm.showChart = false;
                     return;
                 }
 
-                if (vm.data.all(function (t) { return !t.y; })) {
+                if (vm.data.all(function (t) {
+                        return !t.y;
+                    })) {
                     console.log(vm.data);
                     vm.showChart = false;
                     return;
@@ -382,7 +410,20 @@ class AntiXSS {
                     }
                 });
                 if (column === 'month') {
-                    var sorting = { 'jan': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'may': 4, 'jun': 5, 'jul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'nov': 10, 'dec': 11 };
+                    var sorting = {
+                        'jan': 0,
+                        'feb': 1,
+                        'mar': 2,
+                        'apr': 3,
+                        'may': 4,
+                        'jun': 5,
+                        'jul': 6,
+                        'aug': 7,
+                        'sep': 8,
+                        'oct': 9,
+                        'nov': 10,
+                        'dec': 11
+                    };
                     // sort the data array
                     groupByColumn.sort(function (a, b) {
                         // sort based on the value in the monthNames object
@@ -652,11 +693,12 @@ class AntiXSS {
 
         this.run = run;
 
-        function run(model, mode, filename, callback) {
+        function run(model, mode, filename, columns, callback) {
             $http.post("/train", {
                 model: model,
                 filename: filename,
-                mode: mode
+                mode: mode,
+                columns: columns
             }).then(callback);
         }
     }
@@ -714,9 +756,9 @@ class AntiXSS {
         .controller('trainController', trainController)
 
     /** @ngInject */
-    trainController.$inject = ['$scope', '$http', 'runModel', '$rootScope']
+    trainController.$inject = ['$scope', '$http', '$rootScope']
 
-    function trainController($scope, $http, runModel, $rootScope) {
+    function trainController($scope, $http, $rootScope) {
         var vm = this;
 
         init();

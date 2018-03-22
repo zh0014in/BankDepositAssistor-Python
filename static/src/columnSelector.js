@@ -7,8 +7,9 @@
 
 
     function columnSelector() {
-        columnSelectorController.$inject = ['$scope', 'runModel', '$rootScope'];
-        function columnSelectorController($scope, runModel, $rootScope) {
+        columnSelectorController.$inject = ['$scope', '$rootScope'];
+
+        function columnSelectorController($scope, $rootScope) {
             var vm = this;
 
             vm.$onInit = init;
@@ -21,6 +22,11 @@
                 vm.columns = args.data;
                 vm.show = true;
             });
+
+            vm.open = function (columns) {
+                vm.columns = columns;
+                vm.show = true;
+            }
 
             vm.remove = function (column) {
                 var index = vm.columns.indexOf(column);
@@ -40,20 +46,7 @@
 
             vm.train = function () {
                 vm.show = false;
-                runModel.run($rootScope.selectedModel, 'train', $rootScope.filename, function (response) {
-                    console.log(response.data);
-                    vm.parameters = response.data[1];
-                    vm.parameterNames = Object.keys(response.data[1]);
-                    $rootScope.$broadcast('trainparameters', { data: vm.parameters });
-                    if (response.data.length > 2) {
-                        var importanceFilename = response.data[2];
-                        $http.get('/loadDistributionData?filename=' + importanceFilename).then(function (response) {
-                            console.log(response.data);
-                            $rootScope.$broadcast('featureimportance', { data: response.data });
-                        });
-                    }
-                    $rootScope.$broadcast('traincomplete');
-                });
+                $rootScope.$broadcast('columnSelected', {columns: vm.columns});
             }
         }
 

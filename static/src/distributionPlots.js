@@ -26,9 +26,14 @@
                     argumentField: "key",
                     type: "stackedBar"
                 },
-                series: [
-                    { valueField: "y", name: "yes" },
-                    { valueField: "n", name: "no" }
+                series: [{
+                        valueField: "y",
+                        name: "yes"
+                    },
+                    {
+                        valueField: "n",
+                        name: "no"
+                    }
                 ],
                 rotated: false,
                 size: {
@@ -37,7 +42,9 @@
                 legend: {
                     horizontalAlignment: "right",
                     position: "inside",
-                    border: { visible: true }
+                    border: {
+                        visible: true
+                    }
                 },
                 tooltip: {
                     enabled: true,
@@ -62,35 +69,63 @@
                 });
             });
 
-            
+
 
             vm.train = function () {
                 console.log('train')
-                $rootScope.$broadcast('trainstart', {data: $rootScope.fields});
+                $rootScope.$broadcast('trainstart', {
+                    data: $rootScope.fields
+                });
             }
+
+            $scope.$on('columnSelected', function (event, args) {
+                vm.columns = args.columns;
+                runModel.run($rootScope.selectedModel, 'train', $rootScope.filename, vm.columns, function (response) {
+                    console.log(response.data);
+                    vm.parameters = response.data[1];
+                    vm.parameterNames = Object.keys(response.data[1]);
+                    $rootScope.$broadcast('trainparameters', {
+                        data: vm.parameters
+                    });
+                    if (response.data.length > 2) {
+                        var importanceFilename = response.data[2];
+                        $http.get('/loadDistributionData?filename=' + importanceFilename).then(function (response) {
+                            console.log(response.data);
+                            $rootScope.$broadcast('featureimportance', {
+                                data: response.data
+                            });
+                        });
+                    }
+                    $rootScope.$broadcast('traincomplete');
+                });
+            });
+            
             vm.validate = function () {
                 console.log('validate')
-                runModel.run($rootScope.selectedModel, 'validate', $rootScope.filename, function (response) {
+                runModel.run($rootScope.selectedModel, 'validate', $rootScope.filename, vm.columns, function (response) {
                     console.log(response.data);
                     $rootScope.$broadcast('validatecomplete');
                 });
             }
             vm.predict = function () {
                 console.log('predict')
-                runModel.run($rootScope.selectedModel, 'predict', $rootScope.filename, function (response) {
+                runModel.run($rootScope.selectedModel, 'predict', $rootScope.filename, vm.columns, function (response) {
                     console.log(response.data);
                     $rootScope.$broadcast('predictcomplete');
                 });
             }
 
             vm.countByColumn = countByColumn;
+
             function countByColumn(column) {
                 if (!vm.data) {
                     vm.showChart = false;
                     return;
                 }
 
-                if (vm.data.all(function (t) { return !t.y; })) {
+                if (vm.data.all(function (t) {
+                        return !t.y;
+                    })) {
                     console.log(vm.data);
                     vm.showChart = false;
                     return;
@@ -106,7 +141,20 @@
                     }
                 });
                 if (column === 'month') {
-                    var sorting = { 'jan': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'may': 4, 'jun': 5, 'jul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'nov': 10, 'dec': 11 };
+                    var sorting = {
+                        'jan': 0,
+                        'feb': 1,
+                        'mar': 2,
+                        'apr': 3,
+                        'may': 4,
+                        'jun': 5,
+                        'jul': 6,
+                        'aug': 7,
+                        'sep': 8,
+                        'oct': 9,
+                        'nov': 10,
+                        'dec': 11
+                    };
                     // sort the data array
                     groupByColumn.sort(function (a, b) {
                         // sort based on the value in the monthNames object
