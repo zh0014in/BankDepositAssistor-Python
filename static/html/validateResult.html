@@ -1,32 +1,34 @@
-<div data-ng-show="vm.show">
+<div data-ng-show="vm.show" class="card">
     <hr/>
-    <h2>validate completed</h2>
-    <p>
-        <strong>
-            Confusion Matrix
-        </strong>
-    </p>
-    <table class="table table-striped table-bordered">
-        <tbody>
-            <tr>
-                <td></td>
-                <td>
-                    Positive
-                </td>
-                <td>
-                    Negative
-                </td>
-            </tr>
-            <tr>
-                <td>True</td>
-                <td data-ng-bind="vm.data.TruePositive"></td>
-                <td data-ng-bind="vm.data.TrueNegative"></td>
-            </tr>
-            <tr>
-                <td>False</td>
-                <td data-ng-bind="vm.data.FalsePositive"></td>
-                <td data-ng-bind="vm.data.FalseNegative"></td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="card-body">
+        <h2 class="card-title">validate completed</h2>
+        <p>
+            <strong>
+                Confusion Matrix
+            </strong>
+        </p>
+        <table class="table table-striped table-bordered">
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td>
+                        Positive
+                    </td>
+                    <td>
+                        Negative
+                    </td>
+                </tr>
+                <tr>
+                    <td>True</td>
+                    <td data-ng-bind="vm.data.TruePositive"></td>
+                    <td data-ng-bind="vm.data.TrueNegative"></td>
+                </tr>
+                <tr>
+                    <td>False</td>
+                    <td data-ng-bind="vm.data.FalsePositive"></td>
+                    <td data-ng-bind="vm.data.FalseNegative"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

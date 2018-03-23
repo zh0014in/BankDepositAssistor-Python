@@ -31,10 +31,12 @@
   z-index: 1;
   top: 150px;
 }
-
+.sarsha-spinner-container{
+  position: fixed !important;
+}
 .animate-slide {
   background: lightgray;
-  position: absolute;
+  position: fixed;
   width: 320px;
   height: 100%;
   top: 135px;
