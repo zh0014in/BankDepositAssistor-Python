@@ -375,7 +375,7 @@ class AntiXSS {
 
             }
 
-            vm.showChart = false;
+            vm.showMonthChart = false;
             vm.monthChart;
             vm.monthChartOptions = {
                 dataSource: [],
@@ -417,6 +417,41 @@ class AntiXSS {
                 }
             };
 
+            vm.showTestChart = false;
+            vm.testChart;
+            vm.testChartOptions = {
+                dataSource: [],
+                series: {
+                    argumentField: "key",
+                    valueField: "value",
+                    name: "",
+                    type: "bar"
+                },
+                rotated: false,
+                size: {
+                    width: 800
+                },
+                legend: {
+                    horizontalAlignment: "right",
+                    position: "inside",
+                    border: {
+                        visible: true
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    location: "edge",
+                    customizeTooltip: function (arg) {
+                        return {
+                            text: arg.valueText
+                        };
+                    }
+                },
+                onInitialized: function (e) {
+                    vm.testChart = e.component;
+                }
+            };
+
             $scope.$on('fileSelectionChanged', function (event, args) {
                 spinnerService.show('distributionplotsspinner');
                 $http.get('/loadDistributionData?filename=' + args.file).then(function (response) {
@@ -426,13 +461,12 @@ class AntiXSS {
                 });
             });
 
-
-
             vm.countByColumn = countByColumn;
 
             function countByColumn(column) {
                 if (!vm.data) {
-                    vm.showChart = false;
+                    vm.showMonthChart = false;
+                    vm.showTestChart = false;
                     return;
                 }
 
@@ -440,11 +474,26 @@ class AntiXSS {
                         return !t.y;
                     })) {
                     console.log(vm.data);
-                    vm.showChart = false;
                     $rootScope.$broadcast('fileloaded', {
                         isTestFile: true
                     });
                     console.log('test file');
+
+                    var groupByColumn = vm.data.groupBy(function (t) {
+                        return t[column]
+                    }).select(function (t) {
+                        return {
+                            key: t.key,
+                            value: t.length
+                        }
+                    });
+                    sortData(groupByColumn, column);
+                    console.log(groupByColumn);
+                    vm.testChart.option('series.name', column);
+                    vm.testChart.option('dataSource', groupByColumn);
+                    // vm.monthChart.render();
+                    vm.showTestChart = true;
+                    vm.showMonthChart = false;
                     return;
                 }
                 $rootScope.$broadcast('fileloaded', {
@@ -460,6 +509,15 @@ class AntiXSS {
                         n: t.filter(x => x.y === 'no').length
                     }
                 });
+                sortData(groupByColumn, column);
+                console.log(groupByColumn);
+                vm.monthChart.option('series.name', column);
+                vm.monthChart.option('dataSource', groupByColumn);
+                vm.showMonthChart = true;
+                vm.showTestChart = false;
+            }
+
+            function sortData(groupByColumn, column) {
                 if (column === 'month') {
                     var sorting = {
                         'jan': 0,
@@ -486,11 +544,6 @@ class AntiXSS {
                         return a.key - b.key;
                     });
                 }
-                console.log(groupByColumn);
-                vm.monthChart.option('series.name', column);
-                vm.monthChart.option('dataSource', groupByColumn);
-                // vm.monthChart.render();
-                vm.showChart = true;
             }
         }
 
@@ -665,7 +718,7 @@ class AntiXSS {
                     onUploaded: function(e){
                         vm.savedPath = e.request.response;
                         $rootScope.$broadcast('fileuploaded');
-                        DevExpress.ui.notify("Uploaded successfully!", "success", 3000);
+                        DevExpress.ui.notify("Uploaded successfully!", "success", 1000);
                     }
                 };
             }
@@ -863,6 +916,7 @@ class AntiXSS {
         $scope.$on('traincomplete', function () {
             var someElement = angular.element(document.getElementById('trainResult'));
             $document.scrollToElementAnimated(someElement);
+            DevExpress.ui.notify("train completed!", "success", 1000);
         });
 
         $scope.$on('modelSelectionChanged', function (event, args) {
@@ -873,11 +927,13 @@ class AntiXSS {
         $scope.$on('validatecomplete', function () {
             var someElement = angular.element(document.getElementById('validateResult'));
             $document.scrollToElementAnimated(someElement);
+            DevExpress.ui.notify("validate completed!", "success", 1000);
         });
 
         $scope.$on('predictcomplete', function () {
             var someElement = angular.element(document.getElementById('predictResult'));
             $document.scrollToElementAnimated(someElement);
+            DevExpress.ui.notify("predict completed!", "success", 1000);
         });
     }
 
@@ -978,6 +1034,10 @@ class AntiXSS {
             }
 
             $scope.$on('modelSelectionChanged', function () {
+                init();
+            });
+
+            $scope.$on('traincomplete', function () {
                 init();
             });
 

@@ -29,6 +29,10 @@
                 init();
             });
 
+            $scope.$on('traincomplete', function () {
+                init();
+            });
+
             $scope.selectedPkl = '';
             vm.simple = {
                 items: [],

@@ -35,7 +35,7 @@
                     onUploaded: function(e){
                         vm.savedPath = e.request.response;
                         $rootScope.$broadcast('fileuploaded');
-                        DevExpress.ui.notify("Uploaded successfully!", "success", 3000);
+                        DevExpress.ui.notify("Uploaded successfully!", "success", 1000);
                     }
                 };
             }

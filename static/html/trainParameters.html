@@ -48,5 +48,15 @@
                 </tr>
             </tbody>
         </table>
+        <table class="table" data-ng-show="vm.parameterNames.length > 10">
+            <thead>
+                <th data-ng-repeat="p in vm.parameterNames | limitTo: 5:10">{{p}}</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td data-ng-repeat="p in vm.parameters | objectLimitTo: 5:10">{{p}}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </span>
