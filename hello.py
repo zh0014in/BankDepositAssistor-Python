@@ -235,18 +235,19 @@ def uploadedFilesWithDetails():
     result = []
     for file in files:
         fullfilename = file #os.path.join(app.config['UPLOAD_FOLDER'], file)
-        info = os.stat(fullfilename)
-        with open(fullfilename, 'rb') as f:
-            lis = [line.split() for line in f]
-        result.append({
-            'size': info.st_size,
-            'lines': len(lis),
-            'fields': lis[0],
-            'filename': file,
-            'createdAt': datetime.datetime.fromtimestamp(
-                int(info.st_ctime)
-            ).strftime('%Y-%m-%d %H:%M:%S')
-        })
+        if os.path.isfile(fullfilename):
+            info = os.stat(fullfilename)
+            with open(fullfilename, 'rb') as f:
+                lis = [line.split() for line in f]
+            result.append({
+                'size': info.st_size,
+                'lines': len(lis),
+                'fields': lis[0],
+                'filename': file,
+                'createdAt': datetime.datetime.fromtimestamp(
+                    int(info.st_ctime)
+                ).strftime('%Y-%m-%d %H:%M:%S')
+            })
     return jsonify(result)
 
 
