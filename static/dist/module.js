@@ -525,7 +525,13 @@ class AntiXSS {
 
             }
             $scope.$on('featureimportance', function (event, args) {
-                vm.chart.option('dataSource', args.data);
+                vm.data = args.data.filter(function (t) {
+                    return t.importance > 0;
+                });
+                for (var i = 0; i < vm.data.length; i++) {
+                    vm.data[i].importance = Math.round(vm.data[i].importance * 100) / 100;
+                }
+                vm.chart.option('dataSource', vm.data);
                 vm.show = true;
             });
             vm.chartOptions = {
@@ -543,7 +549,16 @@ class AntiXSS {
                         visible: true
                     }
                 },
-                rotated: true,
+                tooltip: {
+                    enabled: true,
+                    location: "edge",
+                    customizeTooltip: function (arg) {
+                        return {
+                            text: arg.valueText
+                        };
+                    }
+                },
+                rotated: false,
                 size: {
                     width: 800
                 },

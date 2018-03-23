@@ -1,46 +1,52 @@
-<p>
-    <strong>Selected columns in training</strong>
-</p>
-<table class="table">
-    <tbody>
-        <tr>
-            <td data-ng-repeat="p in vm.columns | limitTo: 5:0">{{p}}</td>
-        </tr>
-        <tr data-ng-show="vm.columns.length > 5">
-            <td data-ng-repeat="p in vm.columns | limitTo: 5:5">{{p}}</td>
-        </tr>
-        <tr data-ng-show="vm.columns.length > 10">
-            <td data-ng-repeat="p in vm.columns | limitTo: 5:10">{{p}}</td>
-        </tr>
-        <tr data-ng-show="vm.columns.length > 15">
-            <td data-ng-repeat="p in vm.columns | limitTo: 5:15">{{p}}</td>
-        </tr>
-    </tbody>
-</table>
+<div class="card">
+    <div class="card-body">
+        <p class="card-title">
+            <strong>Selected columns in training</strong>
+        </p>
+        <table class="table">
+            <tbody>
+                <tr>
+                    <td data-ng-repeat="p in vm.columns | limitTo: 5:0">{{p}}</td>
+                </tr>
+                <tr data-ng-show="vm.columns.length > 5">
+                    <td data-ng-repeat="p in vm.columns | limitTo: 5:5">{{p}}</td>
+                </tr>
+                <tr data-ng-show="vm.columns.length > 10">
+                    <td data-ng-repeat="p in vm.columns | limitTo: 5:10">{{p}}</td>
+                </tr>
+                <tr data-ng-show="vm.columns.length > 15">
+                    <td data-ng-repeat="p in vm.columns | limitTo: 5:15">{{p}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
-<span data-ng-show="vm.parameterNames">
-    <p>
-        <strong>Tuned parameters in training</strong>
-    </p>
-    <table class="table">
-        <thead>
-            <th data-ng-repeat="p in vm.parameterNames | limitTo: 5:0">{{p}}</th>
-        </thead>
-        <tbody>
-            <tr>
-                <td data-ng-repeat="p in vm.parameters | objectLimitTo: 5:0">{{p}}</td>
-            </tr>
-        </tbody>
-    </table>
+<span data-ng-show="vm.parameterNames" class="card">
+    <div class="card-body">
+        <p class="card-title">
+            <strong>Tuned parameters in training</strong>
+        </p>
+        <table class="table">
+            <thead>
+                <th data-ng-repeat="p in vm.parameterNames | limitTo: 5:0">{{p}}</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td data-ng-repeat="p in vm.parameters | objectLimitTo: 5:0">{{p}}</td>
+                </tr>
+            </tbody>
+        </table>
 
-    <table class="table" data-ng-show="vm.parameterNames.length > 5">
-        <thead>
-            <th data-ng-repeat="p in vm.parameterNames | limitTo: 5:5">{{p}}</th>
-        </thead>
-        <tbody>
-            <tr>
-                <td data-ng-repeat="p in vm.parameters | objectLimitTo: 5:5">{{p}}</td>
-            </tr>
-        </tbody>
-    </table>
+        <table class="table" data-ng-show="vm.parameterNames.length > 5">
+            <thead>
+                <th data-ng-repeat="p in vm.parameterNames | limitTo: 5:5">{{p}}</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td data-ng-repeat="p in vm.parameters | objectLimitTo: 5:5">{{p}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </span>
