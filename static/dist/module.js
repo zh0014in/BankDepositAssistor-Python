@@ -690,8 +690,9 @@ class AntiXSS {
 
 
     function myUploader() {
-        myUploaderController.$inject = ['$scope', '$rootScope']
-        function myUploaderController($scope, $rootScope) {
+        myUploaderController.$inject = ['$scope', '$rootScope', 'spinnerService']
+
+        function myUploaderController($scope, $rootScope, spinnerService) {
             var vm = this;
 
             vm.$onInit = init;
@@ -707,7 +708,7 @@ class AntiXSS {
 
                 $scope.options = {
                     uploadUrl: vm.path,
-                    showFileList:false,
+                    showFileList: false,
                     name: "test",
                     bindingOptions: {
                         multiple: "multiple",
@@ -715,10 +716,14 @@ class AntiXSS {
                         value: "value",
                         uploadMode: "uploadMode"
                     },
-                    onUploaded: function(e){
+                    onUploadStarted: function () {
+                        spinnerService.show('distributionplotsspinner');
+                    },
+                    onUploaded: function (e) {
                         vm.savedPath = e.request.response;
                         $rootScope.$broadcast('fileuploaded');
                         DevExpress.ui.notify("Uploaded successfully!", "success", 1000);
+                        spinnerService.close('distributionplotsspinner');
                     }
                 };
             }
