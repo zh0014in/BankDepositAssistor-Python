@@ -81,7 +81,9 @@
                 console.log('predict')
                 runModel.run($rootScope.selectedModel, 'predict', $rootScope.filename, vm.columns, function (response) {
                     console.log(response.data);
-                    $rootScope.$broadcast('predictcomplete');
+                    $rootScope.$broadcast('predictcomplete', {
+                        data: response.data
+                    });
                 });
             }
         }

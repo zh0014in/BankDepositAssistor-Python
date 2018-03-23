@@ -43,6 +43,11 @@
             var someElement = angular.element(document.getElementById('validateResult'));
             $document.scrollToElementAnimated(someElement);
         });
+
+        $scope.$on('predictcomplete', function () {
+            var someElement = angular.element(document.getElementById('predictResult'));
+            $document.scrollToElementAnimated(someElement);
+        });
     }
 
 }());

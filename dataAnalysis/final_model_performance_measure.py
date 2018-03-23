@@ -227,7 +227,7 @@ def run_model(model_name, train_or_predict, file_name, selected_columns=COLUMNS,
         out = None
         with open('output.csv', 'r') as f:
             reader = csv.DictReader(f)
-            out = json.dumps([row for row in reader])
+            out = [row for row in reader]
 
         return model_name, out
 
