@@ -9,6 +9,7 @@
   height: 100%;
   padding-left: 370px;
   transition: all .4s ease 0s;
+  
 }
 
 #wrapper #sidebar-wrapper {
@@ -28,6 +29,7 @@
   transition: all .4s ease 0s;
   width: 370px;
   z-index: 1;
+  top: 150px;
 }
 
 .animate-slide {
