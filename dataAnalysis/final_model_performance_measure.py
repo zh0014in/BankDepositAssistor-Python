@@ -260,12 +260,14 @@ def view_saved_model(model_name, selected_columns=COLUMNS):
 
 
 def getexistingmodeljsonfile(username):
-    result = json.dumps({})
+    print username
+    result = {}
     with open('existingmodel.json', 'r') as f:
         data = json.load(f)
         for key, value in data.items():
+            print key, value
             if key.startswith(username):
-                result[key]= value
+                result[key] = value
     return result
 
 

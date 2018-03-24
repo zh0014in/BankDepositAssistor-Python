@@ -61,18 +61,20 @@ def isFile(object):
         return True
 
 
-def findfiles(directory):
-    objects = os.listdir(directory)  # find all objects in a dir
-
-    files = []
-    for i in objects:  # check if very object in the folder ...
-        if isFile(directory + i):  # ... is a file.
-            files.append(i)  # if yes, append it.
-    return files
+# def findfiles(directory):
+#     objects = os.listdir(directory)  # find all objects in a dir
+#
+#     files = []
+#     for i in objects:  # check if very object in the folder ...
+#         if isFile(directory + i):  # ... is a file.
+#             files.append(i)  # if yes, append it.
+#     return files
 
 
 def findfilesfromdb(username):
-    return map(str, db[username].get_attachment())
+    if Document(db, username).exists():
+        return map(str, db[username]['_attachments'].keys())
+    return []
 
 
 def get_data_from_db(key, filename):
@@ -143,7 +145,6 @@ def upload_file_train():
 
             print 123
             with open(trainFileName, 'rb') as f:
-                reader = csv.reader(f)
                 # lis=[line.split() for line in f]
                 #save to db
 
@@ -152,12 +153,13 @@ def upload_file_train():
                 uploaded_file_content = b64encode(f.read())
                 print 1234, trainFileName
                 # data = {'file_name': trainFileName}
-                if db[username].exists():
-                    db[username].put_attachment(attachment=trainFileName, data=uploaded_file_content)
+                if Document(db, username).exists():
+                    db[username].put_attachment(attachment=trainFileName, content_type="application/octet-stream", data=uploaded_file_content)
                 else:
                     data = {'_id': username, '_attachments': {
-                        trainFileName: {'data': uploaded_file_content}}}
+                        trainFileName: {'data': uploaded_file_content, 'content_type': "application/octet-stream"}}}
                     db.create_document(data)
+                    db.update('')
 
             return trainFileName
     return ''
@@ -174,6 +176,7 @@ def train():
     #fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     print fullfilename
     file_content = get_data_from_db(username, fullfilename)
+    print file_content
     result = run_model(model, mode, fullfilename, username, selected_columns=columns, file_content=file_content)
     return jsonify(result)
 
@@ -239,7 +242,7 @@ def loadDistributionData():
 
 @app.route('/getexistingmodels', methods=['GET'])
 def getexistingmodels():
-    result = getexistingmodeljsonfile(username=request.json['username'])
+    result = getexistingmodeljsonfile(username=request.args.get('username'))
     return jsonify(result)
 
 
