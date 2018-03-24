@@ -6,7 +6,10 @@
             <h5 class="mb-1" data-ng-bind="file.filename"></h5>
             <small data-ng-bind="file.size/1000 + 'KB'"></small>
         </div>
-        <p class="mb-1" data-ng-bind="file.lines + ' lines of data'"></p>
+        <div class="d-flex w-100 justify-content-between">
+            <p class="mb-1" data-ng-bind="file.lines + ' lines of data'"></p>
+            <button type="button" data-ng-click="vm.viewFile(file); $event.stopPropagation();">View</button>
+        </div>
         <small data-ng-bind="'uploaded at ' + file.createdAt"></small>
     </a>
     <div data-ng-hide="vm.files && vm.files.length > 0">
