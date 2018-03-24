@@ -74,8 +74,8 @@ def findfilesfromdb():
     return map(str, db.keys(remote=True))
 
 
-def get_data_from_db(key):
-    return db[key].get_attachment(key)
+def get_data_from_db(key, filename):
+    return db[key].get_attachment(filename)
 
 
 @app.route('/')
@@ -141,6 +141,7 @@ def upload_file_train():
             # flash('No file part')
             return "no file part"
         file = request.files['test']
+        username = request.json['username']
         # if user does not select file, browser also
         # submit a empty part without filename
         if file.filename == '':
@@ -148,7 +149,7 @@ def upload_file_train():
             return "no selected file"
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            trainFileName = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            trainFileName = os.path.join(filename)
             file.save(trainFileName)
             print trainFileName
 
@@ -164,69 +165,34 @@ def upload_file_train():
                 print 1234, trainFileName
                 # data = {'file_name': trainFileName}
 
-                data = {'_id': trainFileName, '_attachments': {
+                data = {'_id': username, '_attachments': {
                     trainFileName: {'data': uploaded_file_content}}}
                 print data['_id']
                 db.create_document(data)
 
-                #
-                # result_collection = Result(db.all_docs)
-                # db.list_design_documents()
-                # Query(db, )
-                # print result_collection
-
             return trainFileName
     return ''
-
-#
-# @app.route('/uploadTest', methods=['POST'])
-# def upload_file_test():
-#     if request.method == 'POST':
-#         # check if the post request has the file part
-#         if 'test' not in request.files:
-#             # flash('No file part')
-#             return "no file part"
-#         file = request.files['test']
-#         # if user does not select file, browser also
-#         # submit a empty part without filename
-#         if file.filename == '':
-#             # flash('No selected file')
-#             return "no selected file"
-#         if file and allowed_file(file.filename):
-#             filename = secure_filename(file.filename)
-#             fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-#             file.save(fullfilename)
-#
-#             with open(fullfilename, 'rb') as f:
-#                 reader = csv.reader(f)
-#                 lis = [line.split() for line in f]
-#                 # save to db
-#                 # for row in reader:
-#                 # data = {'train': row}
-#                 # db.create_document(data)
-#
-#                 return jsonify(lis)
-#     return ''
 
 
 @app.route('/train', methods=['POST'])
 def train():
     model = request.json['model']
     mode = request.json['mode']
+    username = request.json['username']
     fullfilename = request.json['filename']
     columns = request.json['columns']
     if columns is None:
         columns = []
     #fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     print fullfilename
-    file_content = get_data_from_db(fullfilename)
-    result = run_model(model, mode, fullfilename, selected_columns=columns, file_content=file_content)
+    file_content = get_data_from_db(username, fullfilename)
+    result = run_model(model, mode, fullfilename, username, selected_columns=columns, file_content=file_content)
     return jsonify(result)
 
 
-@app.route('/uploadedFiles', methods=['GET'])
-def uploadedFiles():
-    return jsonify(findfiles(app.config['UPLOAD_FOLDER']))
+# @app.route('/uploadedFiles', methods=['GET'])
+# def uploadedFiles():
+#     return jsonify(findfiles(app.config['UPLOAD_FOLDER']))
 
 
 @app.route('/uploadedFilesWithDetails', methods=['GET'])
@@ -268,23 +234,23 @@ def loadDistributionData():
         return dumpCsvToJson(filename)
 
 
-@app.route('/getFiledetails', methods=['GET'])
-def getFiledetails():
-    filename = request.args.get('filename')
-    fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    info = os.stat(fullfilename)
-    with open(fullfilename, 'rb') as f:
-        lis = [line.split() for line in f]
-    return jsonify({
-        'size': info.st_size,
-        'lines': len(lis),
-        'fields': lis[0]
-    })
+# @app.route('/getFiledetails', methods=['GET'])
+# def getFiledetails():
+#     filename = request.args.get('filename')
+#     fullfilename = os.path.join(filename)
+#     info = os.stat(fullfilename)
+#     with open(fullfilename, 'rb') as f:
+#         lis = [line.split() for line in f]
+#     return jsonify({
+#         'size': info.st_size,
+#         'lines': len(lis),
+#         'fields': lis[0]
+#     })
 
 
 @app.route('/getexistingmodels', methods=['GET'])
 def getexistingmodels():
-    result = getexistingmodeljsonfile()
+    result = getexistingmodeljsonfile(username=request.json['username'])
     return jsonify(result)
 
 
