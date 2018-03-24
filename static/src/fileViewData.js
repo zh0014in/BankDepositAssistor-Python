@@ -7,9 +7,9 @@
 
 
     function fileViewData() {
-        fileViewDataController.$inject = ['$scope', '$http']
+        fileViewDataController.$inject = ['$scope', '$http', '$rootScope']
 
-        function fileViewDataController($scope, $http) {
+        function fileViewDataController($scope, $http, $rootScope) {
             var vm = this;
 
             init();
@@ -20,6 +20,7 @@
 
             vm.dataGrid;
             vm.gridOptions = {
+                columnAutoWidth: true,
                 dataSource: [],
                 onInitialized: function (e) {
                 vm.dataGrid = e.component;
@@ -31,9 +32,9 @@
                 columns: []
             }
 
-            $scope.$on('fileClickViewData', function (event, args) {
+            $scope.$on('fileSelectionChanged', function (event, args) {
                 vm.show = false;
-                $http.get('/getFileData?filename=' + args.file).then(function (response) {
+                $http.get('/getFileData?filename=' + args.file+'&username='+$rootScope.user.username).then(function (response) {
                     vm.fileName = args.file;
                     vm.fileData = angular.fromJson(response.data.data);
                     vm.columns = response.data.columns;

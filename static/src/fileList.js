@@ -38,13 +38,6 @@
                 });
             }
 
-            vm.viewFile = function (file) {
-                vm.selectedfile = file;
-                $rootScope.$broadcast('fileClickViewData', {
-                    file: file.filename
-                });
-            }
-
             $scope.$on('fileuploaded', function () {
                 init();
             });

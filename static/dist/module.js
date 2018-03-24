@@ -334,7 +334,7 @@ class AntiXSS {
                     });
                     if (response.data.length > 2) {
                         var importanceFilename = response.data[2];
-                        $http.get('/loadDistributionData?filename=' + importanceFilename).then(function (response) {
+                        $http.get('/loadDistributionData?filename=' + importanceFilename+'&username='+$rootScope.user.username).then(function (response) {
                             console.log(response.data);
                             $rootScope.$broadcast('featureimportance', {
                                 data: response.data
@@ -745,13 +745,6 @@ class AntiXSS {
                 });
             }
 
-            vm.viewFile = function (file) {
-                vm.selectedfile = file;
-                $rootScope.$broadcast('fileClickViewData', {
-                    file: file.filename
-                });
-            }
-
             $scope.$on('fileuploaded', function () {
                 init();
             });
@@ -784,9 +777,9 @@ class AntiXSS {
 
 
     function fileViewData() {
-        fileViewDataController.$inject = ['$scope', '$http']
+        fileViewDataController.$inject = ['$scope', '$http', '$rootScope']
 
-        function fileViewDataController($scope, $http) {
+        function fileViewDataController($scope, $http, $rootScope) {
             var vm = this;
 
             init();
@@ -797,6 +790,7 @@ class AntiXSS {
 
             vm.dataGrid;
             vm.gridOptions = {
+                columnAutoWidth: true,
                 dataSource: [],
                 onInitialized: function (e) {
                 vm.dataGrid = e.component;
@@ -808,9 +802,9 @@ class AntiXSS {
                 columns: []
             }
 
-            $scope.$on('fileClickViewData', function (event, args) {
+            $scope.$on('fileSelectionChanged', function (event, args) {
                 vm.show = false;
-                $http.get('/getFileData?filename=' + args.file).then(function (response) {
+                $http.get('/getFileData?filename=' + args.file+'&username='+$rootScope.user.username).then(function (response) {
                     vm.fileName = args.file;
                     vm.fileData = angular.fromJson(response.data.data);
                     vm.columns = response.data.columns;
