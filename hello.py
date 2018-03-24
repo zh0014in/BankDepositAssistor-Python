@@ -72,7 +72,8 @@ def findfiles(directory):
 
 
 def findfilesfromdb(username):
-    return map(str, db[username].get_attachment())
+    print db[username]['_attachments'].keys()
+    return map(str, db[username]['_attachments'].keys())
 
 
 def get_data_from_db(key, filename):
@@ -152,8 +153,8 @@ def upload_file_train():
                 uploaded_file_content = b64encode(f.read())
                 print 1234, trainFileName
                 # data = {'file_name': trainFileName}
-                if db[username].exists():
-                    db[username].put_attachment(attachment=trainFileName, data=uploaded_file_content)
+                if Document(db, username).exists():
+                    db[username].put_attachment(attachment=trainFileName, content_type="application/octet-stream", data=uploaded_file_content)
                 else:
                     data = {'_id': username, '_attachments': {
                         trainFileName: {'data': uploaded_file_content}}}
