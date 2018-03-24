@@ -50,6 +50,10 @@
                         DevExpress.ui.notify("Uploaded successfully!", "success", 1000);
                         spinnerService.close('distributionplotsspinner');
                     },
+                    onUploadError: function(e){
+                        DevExpress.ui.notify("Uploaded failed!", "error", 1000);
+                        spinnerService.close('distributionplotsspinner');
+                    },
                     onInitialized: function(e){
                         vm.uploader = e.component;
                     }
