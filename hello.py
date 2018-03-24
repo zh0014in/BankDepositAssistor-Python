@@ -202,17 +202,14 @@ def uploadedFilesWithDetails():
     username = request.args.get('username')
     files = findfilesfromdb(username)  # findfiles(app.config['UPLOAD_FOLDER'])
     result = []
-    for file in files:
-        fullfilename = file  # os.path.join(app.config['UPLOAD_FOLDER'], file)
-        if os.path.isfile(fullfilename):
-            info = os.stat(fullfilename)
-            with open(fullfilename, 'rb') as f:
-                lis = [line.split() for line in f]
-            result.append({
-                'size': info.st_size,
+    for filename in files:
+        data = db[username].get_attachment(attachment=filename)
+        lis = [row for row in csv.DictReader(StringIO(data))]
+        result.append({
+                'size': lis.__sizeof__(),
                 'lines': len(lis),
                 'fields': lis[0],
-                'filename': file
+                'filename': filename
             })
     return jsonify(result)
 
