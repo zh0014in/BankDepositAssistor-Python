@@ -1,5 +1,5 @@
 from cloudant import Cloudant
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for, send_file
 from cloudant.error import CloudantException
 from cloudant.result import Result, ResultByKey
 from cloudant.query import Query
@@ -296,6 +296,21 @@ def getSavedModel():
     result = view_saved_model(model, columns)
     return jsonify(result)
 
+@app.route('/getFileData', methods=['GET'])
+def getFileData():
+    filename = request.args.get('filename')
+    fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    if os.path.isfile(fullfilename):
+        return dumpFileData(fullfilename)
+    elif os.path.isfile(filename):
+        return dumpFileData(filename)
+
+def dumpFileData(filename):
+    with open(filename, 'rb') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            break
+    return jsonify({'columns': row, 'data': dumpCsvToJson(filename)})
 
 @atexit.register
 def shutdown():
