@@ -32,6 +32,7 @@
         $scope.$on('traincomplete', function () {
             var someElement = angular.element(document.getElementById('trainResult'));
             $document.scrollToElementAnimated(someElement);
+            DevExpress.ui.notify("train completed!", "success", 1000);
         });
 
         $scope.$on('modelSelectionChanged', function (event, args) {
@@ -42,6 +43,13 @@
         $scope.$on('validatecomplete', function () {
             var someElement = angular.element(document.getElementById('validateResult'));
             $document.scrollToElementAnimated(someElement);
+            DevExpress.ui.notify("validate completed!", "success", 1000);
+        });
+
+        $scope.$on('predictcomplete', function () {
+            var someElement = angular.element(document.getElementById('predictResult'));
+            $document.scrollToElementAnimated(someElement);
+            DevExpress.ui.notify("predict completed!", "success", 1000);
         });
 
     }

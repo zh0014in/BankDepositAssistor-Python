@@ -1,5 +1,5 @@
 <div>
-    <span data-ng-show="vm.showChart">
+    <span data-ng-show="vm.showMonthChart || vm.showTestChart">
         <!-- <h2>Some Insights of the Data</h2> -->
         count by:
         <a href="javascript:;" data-ng-click="vm.countByColumn('month')">
@@ -11,13 +11,24 @@
         <a href="javascript:;" data-ng-click="vm.countByColumn('campaign')">
             <u>campaign</u>
         </a>
-
-
-        <div dx-chart="vm.monthChartOptions"></div>
+        <a href="javascript:;" data-ng-click="vm.countByColumn('marital')">
+            <u>marital</u>
+        </a>
+        <a href="javascript:;" data-ng-click="vm.countByColumn('education')">
+            <u>education</u>
+        </a>
+        <a href="javascript:;" data-ng-click="vm.countByColumn('housing')">
+            <u>housing</u>
+        </a>
+        <a href="javascript:;" data-ng-click="vm.countByColumn('loan')">
+            <u>loan</u>
+        </a>
+        <div dx-chart="vm.monthChartOptions" data-ng-show="vm.showMonthChart"></div>
+        <div dx-chart="vm.testChartOptions" data-ng-show="vm.showTestChart"></div>
         <column-selector></column-selector>
     </span>
-    <span data-ng-hide="vm.showChart">
+    <span data-ng-hide="vm.showMonthChart || vm.showTestChart">
         <p>Select a dataset to get an insight of the data</p>
     </span>
-    
+
 </div>

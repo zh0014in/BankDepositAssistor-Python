@@ -1,5 +1,9 @@
 from cloudant import Cloudant
 from flask import Flask, render_template, request, jsonify, redirect, url_for
+from cloudant.error import CloudantException
+from cloudant.result import Result, ResultByKey
+from cloudant.query import Query
+from cloudant.index import Index
 import atexit
 import cf_deployment_tracker
 import os
@@ -64,6 +68,14 @@ def findfiles(directory):
         if isFile(directory + i):  # ... is a file.
             files.append(i)  # if yes, append it.
     return files
+
+
+def findfilesfromdb():
+    return map(str, db.keys(remote=True))
+
+
+def get_data_from_db(key):
+    return db[key].get_attachment(key)
 
 
 @app.route('/')
@@ -139,60 +151,76 @@ def upload_file_train():
             trainFileName = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(trainFileName)
             print trainFileName
-            return trainFileName
 
-            # with open(fullfilename, 'rb') as f:
-            #     reader = csv.reader(f)
-            #     lis=[line.split() for line in f]
-            #     #save to db
-            #     # for row in reader:
-            #         # data = {'train': row}
-            #         # db.create_document(data)
-            #
-            #     return jsonify(lis)
-    return ''
-
-
-@app.route('/uploadTest', methods=['POST'])
-def upload_file_test():
-    if request.method == 'POST':
-        # check if the post request has the file part
-        if 'test' not in request.files:
-            # flash('No file part')
-            return "no file part"
-        file = request.files['test']
-        # if user does not select file, browser also
-        # submit a empty part without filename
-        if file.filename == '':
-            # flash('No selected file')
-            return "no selected file"
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(fullfilename)
-
-            with open(fullfilename, 'rb') as f:
+            print 123
+            with open(trainFileName, 'rb') as f:
                 reader = csv.reader(f)
-                lis = [line.split() for line in f]
-                # save to db
-                # for row in reader:
-                # data = {'train': row}
-                # db.create_document(data)
+                # lis=[line.split() for line in f]
+                #save to db
 
-                return jsonify(lis)
+                from base64 import b64encode
+
+                uploaded_file_content = b64encode(f.read())
+                print 1234, trainFileName
+                # data = {'file_name': trainFileName}
+
+                data = {'_id': trainFileName, '_attachments': {
+                    trainFileName: {'data': uploaded_file_content}}}
+                print data['_id']
+                db.create_document(data)
+
+                #
+                # result_collection = Result(db.all_docs)
+                # db.list_design_documents()
+                # Query(db, )
+                # print result_collection
+
+            return trainFileName
     return ''
+
+#
+# @app.route('/uploadTest', methods=['POST'])
+# def upload_file_test():
+#     if request.method == 'POST':
+#         # check if the post request has the file part
+#         if 'test' not in request.files:
+#             # flash('No file part')
+#             return "no file part"
+#         file = request.files['test']
+#         # if user does not select file, browser also
+#         # submit a empty part without filename
+#         if file.filename == '':
+#             # flash('No selected file')
+#             return "no selected file"
+#         if file and allowed_file(file.filename):
+#             filename = secure_filename(file.filename)
+#             fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+#             file.save(fullfilename)
+#
+#             with open(fullfilename, 'rb') as f:
+#                 reader = csv.reader(f)
+#                 lis = [line.split() for line in f]
+#                 # save to db
+#                 # for row in reader:
+#                 # data = {'train': row}
+#                 # db.create_document(data)
+#
+#                 return jsonify(lis)
+#     return ''
 
 
 @app.route('/train', methods=['POST'])
 def train():
     model = request.json['model']
     mode = request.json['mode']
-    filename = request.json['filename']
+    fullfilename = request.json['filename']
     columns = request.json['columns']
     if columns is None:
         columns = []
-    fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    result = run_model(model, mode, fullfilename, selected_columns=columns)
+    #fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    print fullfilename
+    file_content = get_data_from_db(fullfilename)
+    result = run_model(model, mode, fullfilename, selected_columns=columns, file_content=file_content)
     return jsonify(result)
 
 
@@ -203,22 +231,23 @@ def uploadedFiles():
 
 @app.route('/uploadedFilesWithDetails', methods=['GET'])
 def uploadedFilesWithDetails():
-    files = findfiles(app.config['UPLOAD_FOLDER'])
+    files = findfilesfromdb() #findfiles(app.config['UPLOAD_FOLDER'])
     result = []
     for file in files:
-        fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], file)
-        info = os.stat(fullfilename)
-        with open(fullfilename, 'rb') as f:
-            lis = [line.split() for line in f]
-        result.append({
-            'size': info.st_size,
-            'lines': len(lis),
-            'fields': lis[0],
-            'filename': file,
-            'createdAt': datetime.datetime.fromtimestamp(
-                int(info.st_ctime)
-            ).strftime('%Y-%m-%d %H:%M:%S')
-        })
+        fullfilename = file #os.path.join(app.config['UPLOAD_FOLDER'], file)
+        if os.path.isfile(fullfilename):
+            info = os.stat(fullfilename)
+            with open(fullfilename, 'rb') as f:
+                lis = [line.split() for line in f]
+            result.append({
+                'size': info.st_size,
+                'lines': len(lis),
+                'fields': lis[0],
+                'filename': file,
+                'createdAt': datetime.datetime.fromtimestamp(
+                    int(info.st_ctime)
+                ).strftime('%Y-%m-%d %H:%M:%S')
+            })
     return jsonify(result)
 
 

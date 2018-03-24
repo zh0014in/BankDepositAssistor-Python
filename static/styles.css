@@ -9,6 +9,7 @@
   height: 100%;
   padding-left: 370px;
   transition: all .4s ease 0s;
+  
 }
 
 #wrapper #sidebar-wrapper {
@@ -28,11 +29,14 @@
   transition: all .4s ease 0s;
   width: 370px;
   z-index: 1;
+  top: 150px;
 }
-
+.sarsha-spinner-container{
+  position: fixed !important;
+}
 .animate-slide {
   background: lightgray;
-  position: absolute;
+  position: fixed;
   width: 320px;
   height: 100%;
   top: 135px;

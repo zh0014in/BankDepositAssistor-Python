@@ -235,6 +235,7 @@ class AntiXSS {
     }
 
 }());
+<<<<<<< HEAD
 (function () {
     'use strict';
 
@@ -333,6 +334,108 @@ class AntiXSS {
         }
     }
 
+=======
+(function () {
+    'use strict';
+
+    angular
+        .module('app')
+        .component('datasetControls', datasetControls());
+
+
+    function datasetControls() {
+        datasetControlsController.$inject = ['$rootScope', '$scope', '$http', 'runModel', '$document']
+
+        function datasetControlsController($rootScope, $scope, $http, runModel, $document) {
+            var vm = this;
+
+            vm.$onInit = init;
+
+            function init() {
+                vm.show = false;
+            }
+
+            $scope.$on('fileSelectionChanged', function () {
+
+            });
+
+            $scope.$on('fileloaded', function (event, args) {
+                $scope.isTestFile = args.isTestFile;
+                vm.show = true;
+            });
+
+            vm.train = function () {
+                console.log('train')
+                $rootScope.$broadcast('trainstart', {
+                    data: $rootScope.fields
+                });
+            }
+
+            $scope.$on('columnSelected', function (event, args) {
+                vm.columns = args.columns;
+                runModel.run($rootScope.selectedModel, 'train', $rootScope.filename, vm.columns, function (response) {
+                    console.log(response.data);
+                    vm.parameters = response.data[1];
+                    vm.parameterNames = Object.keys(response.data[1]);
+                    $rootScope.$broadcast('trainparameters', {
+                        data: vm.parameters
+                    });
+                    if (response.data.length > 2) {
+                        var importanceFilename = response.data[2];
+                        $http.get('/loadDistributionData?filename=' + importanceFilename).then(function (response) {
+                            console.log(response.data);
+                            $rootScope.$broadcast('featureimportance', {
+                                data: response.data
+                            });
+                        });
+                    }
+                    $rootScope.$broadcast('traincomplete');
+                });
+            });
+
+            $scope.$on('pklSelectionChanged', function (event, args) {
+                vm.columns = args.pkl;
+            });
+
+            vm.validate = function () {
+                console.log('validate')
+                runModel.run($rootScope.selectedModel, 'validate', $rootScope.filename, vm.columns, function (response) {
+                    console.log(response.data);
+                    $rootScope.$broadcast('validatecomplete', {
+                        data: response.data
+                    });
+                });
+            }
+            vm.predict = function () {
+                if (!$scope.isTestFile) {
+                    DevExpress.ui.notify('select a test file to do the prediction', 'error', 1000);
+                    return;
+                }
+                if (!vm.columns) {
+                    DevExpress.ui.notify('select a model or train a model to do prediction', 'error', 1000);
+                    return;
+                }
+                console.log('predict')
+                runModel.run($rootScope.selectedModel, 'predict', $rootScope.filename, vm.columns, function (response) {
+                    console.log(response.data);
+                    $rootScope.$broadcast('predictcomplete', {
+                        data: response.data
+                    });
+                });
+            }
+        }
+
+        return {
+            templateUrl: "static/html/datasetControls.html",
+            bindings: {
+
+            },
+            controller: datasetControlsController,
+            controllerAs: 'vm'
+        }
+    }
+
+>>>>>>> 3ac69914c38a9cda676b74ac70ee5cac9c4dd299
 }());
 (function(){
     'use strict';
@@ -353,6 +456,7 @@ class AntiXSS {
     }
 
 }());
+<<<<<<< HEAD
 (function () {
     'use strict';
 
@@ -564,6 +668,287 @@ class AntiXSS {
         }
     }
 
+=======
+(function () {
+    'use strict';
+
+    angular
+        .module('app')
+        .component('distributionPlots', distributionPlots());
+
+
+    function distributionPlots() {
+        distributionPlotsController.$inject = ['$http', '$scope', 'runModel', 'spinnerService', '$rootScope'];
+
+        function distributionPlotsController($http, $scope, runModel, spinnerService, $rootScope) {
+            var vm = this;
+
+            init();
+
+            function init() {
+
+            }
+
+            vm.showMonthChart = false;
+            vm.monthChart;
+            vm.monthChartOptions = {
+                dataSource: [],
+                commonSeriesSettings: {
+                    argumentField: "key",
+                    type: "stackedBar"
+                },
+                series: [{
+                        valueField: "y",
+                        name: "yes"
+                    },
+                    {
+                        valueField: "n",
+                        name: "no"
+                    }
+                ],
+                rotated: false,
+                size: {
+                    width: 800
+                },
+                legend: {
+                    horizontalAlignment: "right",
+                    position: "inside",
+                    border: {
+                        visible: true
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    location: "edge",
+                    customizeTooltip: function (arg) {
+                        return {
+                            text: arg.seriesName + " count: " + arg.valueText
+                        };
+                    }
+                },
+                onInitialized: function (e) {
+                    vm.monthChart = e.component;
+                }
+            };
+
+            vm.showTestChart = false;
+            vm.testChart;
+            vm.testChartOptions = {
+                dataSource: [],
+                series: {
+                    argumentField: "key",
+                    valueField: "value",
+                    name: "",
+                    type: "bar"
+                },
+                rotated: false,
+                size: {
+                    width: 800
+                },
+                legend: {
+                    horizontalAlignment: "right",
+                    position: "inside",
+                    border: {
+                        visible: true
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    location: "edge",
+                    customizeTooltip: function (arg) {
+                        return {
+                            text: arg.valueText
+                        };
+                    }
+                },
+                onInitialized: function (e) {
+                    vm.testChart = e.component;
+                }
+            };
+
+            $scope.$on('fileSelectionChanged', function (event, args) {
+                spinnerService.show('distributionplotsspinner');
+                $http.get('/loadDistributionData?filename=' + args.file).then(function (response) {
+                    vm.data = response.data;
+                    countByColumn('month')
+                    spinnerService.close('distributionplotsspinner');
+                });
+            });
+
+            vm.countByColumn = countByColumn;
+
+            function countByColumn(column) {
+                if (!vm.data) {
+                    vm.showMonthChart = false;
+                    vm.showTestChart = false;
+                    return;
+                }
+
+                if (vm.data.all(function (t) {
+                        return !t.y;
+                    })) {
+                    console.log(vm.data);
+                    $rootScope.$broadcast('fileloaded', {
+                        isTestFile: true
+                    });
+                    console.log('test file');
+
+                    var groupByColumn = vm.data.groupBy(function (t) {
+                        return t[column]
+                    }).select(function (t) {
+                        return {
+                            key: t.key,
+                            value: t.length
+                        }
+                    });
+                    sortData(groupByColumn, column);
+                    console.log(groupByColumn);
+                    vm.testChart.option('series.name', column);
+                    vm.testChart.option('dataSource', groupByColumn);
+                    // vm.monthChart.render();
+                    vm.showTestChart = true;
+                    vm.showMonthChart = false;
+                    return;
+                }
+                $rootScope.$broadcast('fileloaded', {
+                    isTestFile: false
+                });
+                var groupByColumn = vm.data.groupBy(function (t) {
+                    return t[column]
+                }).select(function (t) {
+                    return {
+                        key: t.key,
+                        value: t.length,
+                        y: t.filter(x => x.y === 'yes').length,
+                        n: t.filter(x => x.y === 'no').length
+                    }
+                });
+                sortData(groupByColumn, column);
+                console.log(groupByColumn);
+                vm.monthChart.option('series.name', column);
+                vm.monthChart.option('dataSource', groupByColumn);
+                vm.showMonthChart = true;
+                vm.showTestChart = false;
+            }
+
+            function sortData(groupByColumn, column) {
+                if (column === 'month') {
+                    var sorting = {
+                        'jan': 0,
+                        'feb': 1,
+                        'mar': 2,
+                        'apr': 3,
+                        'may': 4,
+                        'jun': 5,
+                        'jul': 6,
+                        'aug': 7,
+                        'sep': 8,
+                        'oct': 9,
+                        'nov': 10,
+                        'dec': 11
+                    };
+                    // sort the data array
+                    groupByColumn.sort(function (a, b) {
+                        // sort based on the value in the monthNames object
+                        return sorting[a.key] - sorting[b.key];
+                    });
+                } else {
+                    groupByColumn.sort(function (a, b) {
+                        // sort based on the value in the monthNames object
+                        return a.key - b.key;
+                    });
+                }
+            }
+        }
+
+        return {
+            templateUrl: 'static/html/distributionPlots.html',
+            bindings: {
+
+            },
+            controller: distributionPlotsController,
+            controllerAs: 'vm'
+        }
+    }
+
+}());
+(function () {
+    'use strict';
+
+    angular
+        .module('app')
+        .component('featureImportance', featureImportance());
+
+
+    function featureImportance() {
+        featureImportanceController.$inject = ['$scope'];
+
+        function featureImportanceController($scope) {
+            var vm = this;
+            vm.show = false;
+            init();
+
+            function init() {
+
+            }
+            $scope.$on('featureimportance', function (event, args) {
+                vm.data = args.data.filter(function (t) {
+                    return t.importance > 0;
+                });
+                for (var i = 0; i < vm.data.length; i++) {
+                    vm.data[i].importance = Math.round(vm.data[i].importance * 100) / 100;
+                }
+                vm.chart.option('dataSource', vm.data);
+                vm.show = true;
+            });
+            vm.chartOptions = {
+                dataSource: [],
+                series: {
+                    argumentField: "features",
+                    valueField: "importance",
+                    name: "Feature Importance",
+                    type: "bar",
+                },
+                legend: {
+                    horizontalAlignment: "right",
+                    position: "inside",
+                    border: {
+                        visible: true
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    location: "edge",
+                    customizeTooltip: function (arg) {
+                        return {
+                            text: arg.valueText
+                        };
+                    }
+                },
+                rotated: false,
+                size: {
+                    width: 800
+                },
+                onInitialized: function (e) {
+                    vm.chart = e.component;
+                }
+            };
+            $scope.$on('modelSelectionChanged', function (event, args) {
+                vm.show = false;
+            });
+        }
+
+        return {
+            templateUrl: 'static/html/featureImportance.html',
+            bindings: {
+
+            },
+            controller: featureImportanceController,
+            controllerAs: 'vm'
+        }
+    }
+
+>>>>>>> 3ac69914c38a9cda676b74ac70ee5cac9c4dd299
 }());
 (function () {
     'use strict';
@@ -611,6 +996,7 @@ class AntiXSS {
     }
 
 }());
+<<<<<<< HEAD
 (function () {
     'use strict';
 
@@ -667,6 +1053,69 @@ class AntiXSS {
         }
     }
 
+=======
+(function () {
+    'use strict';
+
+    angular
+        .module('app')
+        .component('myUploader', myUploader());
+
+
+    function myUploader() {
+        myUploaderController.$inject = ['$scope', '$rootScope', 'spinnerService']
+
+        function myUploaderController($scope, $rootScope, spinnerService) {
+            var vm = this;
+
+            vm.$onInit = init;
+
+            function init() {
+                if (!vm.path) {
+                    vm.path = "/upload";
+                }
+                $scope.multiple = false;
+                $scope.accept = "text/csv";
+                $scope.value = [];
+                $scope.uploadMode = "instantly";
+
+                $scope.options = {
+                    uploadUrl: vm.path,
+                    showFileList: false,
+                    name: "test",
+                    bindingOptions: {
+                        multiple: "multiple",
+                        accept: "accept",
+                        value: "value",
+                        uploadMode: "uploadMode"
+                    },
+                    onUploadStarted: function () {
+                        spinnerService.show('distributionplotsspinner');
+                    },
+                    onUploaded: function (e) {
+                        vm.savedPath = e.request.response;
+                        $rootScope.$broadcast('fileuploaded');
+                        DevExpress.ui.notify("Uploaded successfully!", "success", 1000);
+                        spinnerService.close('distributionplotsspinner');
+                    }
+                };
+            }
+
+
+        }
+
+        return {
+            templateUrl: 'static/html/myUploader.html',
+            bindings: {
+                path: "@",
+                savedPath: "="
+            },
+            controller: myUploaderController,
+            controllerAs: 'vm'
+        }
+    }
+
+>>>>>>> 3ac69914c38a9cda676b74ac70ee5cac9c4dd299
 }());
 (function () {
     'use strict';
@@ -704,6 +1153,7 @@ class AntiXSS {
     }
 
 }());
+<<<<<<< HEAD
 (function () {
     'use strict';
 
@@ -752,6 +1202,171 @@ class AntiXSS {
 
     }
 
+=======
+(function () {
+    'use strict';
+
+    angular
+        .module('app')
+        .component('predictResult', predictResult());
+
+
+    function predictResult() {
+        predictResultController.$inject = ['$scope']
+
+        function predictResultController($scope) {
+            var vm = this;
+
+            vm.$onInit = init;
+
+            function init() {
+                vm.show = false;
+            }
+            vm.dataGrid;
+            vm.gridOptions = {
+                dataSource: [],
+                columnHidingEnabled: true,
+                onInitialized: function (e) {
+                    vm.dataGrid = e.component;
+                },
+                paging: {
+                    enabled: true,
+                    pageSize: 15
+                },
+                columns: [{
+                    dataField: 'age',
+                    hidingPriority: 9
+                }, {
+                    dataField: 'balance',
+                    hidingPriority: 8
+                }, {
+                    dataField: 'campaign',
+                    hidingPriority: 7
+                }, {
+                    dataField: 'contact',
+                    hidingPriority: 6
+                }, {
+                    dataField: 'day',
+                    hidingPriority: 5
+                }, {
+                    dataField: 'default',
+                    hidingPriority: 4
+                }, {
+                    dataField: 'duration',
+                    hidingPriority: 3
+                }, {
+                    dataField: 'education',
+                    hidingPriority: 10
+                }, {
+                    dataField: 'housing',
+                    hidingPriority: 11
+                }, {
+                    dataField: 'job',
+                    hidingPriority: 12
+                }, {
+                    dataField: 'loan',
+                    hidingPriority: 13
+                }, {
+                    dataField: 'marital',
+                    hidingPriority: 14
+                }, {
+                    dataField: 'month',
+                    hidingPriority: 15
+                }, {
+                    dataField: 'pdays',
+                    hidingPriority: 2
+                }, {
+                    dataField: 'poutcome',
+                    hidingPriority: 1
+                }, {
+                    dataField: 'previous',
+                    hidingPriority: 0
+                }, {
+                    dataField: 'y',
+                    hidingPriority: 16
+                }, ]
+            }
+            $scope.$on('predictcomplete', function (event, args) {
+                vm.data = args.data[1];
+                console.log(vm.data);
+                vm.dataGrid.option('dataSource', vm.data);
+                vm.show = true;
+                vm.columnNames = Object.keys(vm.data[0]);
+                console.log(vm.columnNames);
+            });
+
+            $scope.$on('modelSelectionChanged', function (event, args) {
+                vm.show = false;
+            });
+        }
+
+        return {
+            templateUrl: "static/html/predictResult.html",
+            bindings: {
+
+            },
+            controller: predictResultController,
+            controllerAs: 'vm'
+        }
+    }
+
+}());
+(function () {
+    'use strict';
+
+    angular
+        .module('app')
+        .controller('rootController', rootController)
+
+    /** @ngInject */
+    rootController.$inject = ['$scope', '$location', '$rootScope', '$document']
+
+    function rootController($scope, $location, $rootScope, $document) {
+        var vm = this;
+
+        init();
+
+        function init() {}
+        $scope.isActive = function (route) {
+            return route === $location.path();
+        }
+
+        $rootScope.selectedModel = 'svm';
+
+        $scope.$on('modelSelectionChanged', function (event, args) {
+            $rootScope.selectedModel = args.model;
+        });
+
+        $scope.$on('fileSelectionChanged', function (event, args) {
+            $rootScope.filename = args.file;
+            $rootScope.fields = args.fields[0].split(",");
+        });
+
+        $scope.$on('traincomplete', function () {
+            var someElement = angular.element(document.getElementById('trainResult'));
+            $document.scrollToElementAnimated(someElement);
+            DevExpress.ui.notify("train completed!", "success", 1000);
+        });
+
+        $scope.$on('modelSelectionChanged', function (event, args) {
+            var someElement = angular.element(document.getElementById('plots'));
+            $document.scrollToElementAnimated(someElement);
+        });
+
+        $scope.$on('validatecomplete', function () {
+            var someElement = angular.element(document.getElementById('validateResult'));
+            $document.scrollToElementAnimated(someElement);
+            DevExpress.ui.notify("validate completed!", "success", 1000);
+        });
+
+        $scope.$on('predictcomplete', function () {
+            var someElement = angular.element(document.getElementById('predictResult'));
+            $document.scrollToElementAnimated(someElement);
+            DevExpress.ui.notify("predict completed!", "success", 1000);
+        });
+    }
+
+>>>>>>> 3ac69914c38a9cda676b74ac70ee5cac9c4dd299
 }());
 (function () {
     'use strict';
@@ -821,6 +1436,7 @@ class AntiXSS {
     }
 
 }());
+<<<<<<< HEAD
 (function () {
     'use strict';
 
@@ -887,6 +1503,78 @@ class AntiXSS {
         }
     }
 
+=======
+(function () {
+    'use strict';
+
+    angular
+        .module('app')
+        .component('selectPkl', selectPkl());
+
+
+    function selectPkl() {
+        selectPklController.$inject = ['$http', '$scope', '$rootScope']
+
+        function selectPklController($http, $scope, $rootScope) {
+            var vm = this;
+
+            vm.$onInit = init;
+
+            function init() {
+                $http.get('/getexistingmodels').then(function (response) {
+                    vm.pkls = Object.keys(response.data).reduce(function (r, e) {
+                        if (e.startsWith($rootScope.selectedModel)) r[e] = response.data[e];
+                        return r;
+                    }, {});
+                    vm.pklNames = Object.keys(vm.pkls);
+                    vm.selectBox.option('items', vm.pklNames);
+                });
+            }
+
+            $scope.$on('modelSelectionChanged', function () {
+                init();
+            });
+
+            $scope.$on('traincomplete', function () {
+                init();
+            });
+
+            $scope.selectedPkl = '';
+            vm.simple = {
+                items: [],
+                placeholder: 'select saved model',
+                bindingOptions: {
+                    value: "selectedPkl"
+                },
+                onSelectionChanged: function (e) {
+                    $http.post('/getSavedModel', {
+                        model: e.selectedItem,
+                        columns: vm.pkls[e.selectedItem]
+                    }).then(function (response) {
+                        console.log(response.data);
+                        $rootScope.$broadcast('pklSelectionChanged', {
+                            pkl: vm.pkls[e.selectedItem],
+                            parameters: response.data
+                        });
+                    });
+                },
+                onInitialized: function (e) {
+                    vm.selectBox = e.component;
+                }
+            };
+        }
+
+        return {
+            templateUrl: "static/html/selectPkl.html",
+            bindings: {
+
+            },
+            controller: selectPklController,
+            controllerAs: 'vm'
+        }
+    }
+
+>>>>>>> 3ac69914c38a9cda676b74ac70ee5cac9c4dd299
 }());
 (function () {
     'use strict';
