@@ -102,6 +102,7 @@ def get_visitor():
         print('No database')
         return jsonify([])
 
+
 @app.route('/api/visitors', methods=['POST'])
 def put_visitor():
     user = request.json['name']
@@ -156,14 +157,21 @@ def upload_file_train():
 
                 if Document(db, username).exists():
                     # db[username]['_attachments'][trainFileName] = {'data', uploaded_file_content}
-                    db[username].put_attachment(attachment=trainFileName, content_type="application/json", data=uploaded_file_content)
+                    # db[username].put_attachment(
+                        # attachment=trainFileName, content_type="application/json", data=uploaded_file_content)
+                    with Document(db, username) as document:
+                        document['_attachments'][trainFileName] = {
+                            'data': uploaded_file_content}
+                        # db.update('')
                 else:
-                    data = {'_id': username, '_attachments': {trainFileName: {'data': uploaded_file_content}}}
+                    data = {'_id': username, '_attachments': {
+                        trainFileName: {'data': uploaded_file_content}}}
                     db.create_document(data)
                     db.update('')
-
+            print db[username].get_attachment(trainFileName)
             return trainFileName
     return ''
+
 
 @app.route('/train', methods=['POST'])
 def train():
@@ -178,7 +186,8 @@ def train():
     print fullfilename
     file_content = get_data_from_db(username, fullfilename)
     print file_content
-    result = run_model(model, mode, fullfilename, username, selected_columns=columns, file_content=file_content)
+    result = run_model(model, mode, fullfilename, username,
+                       selected_columns=columns, file_content=file_content)
     return jsonify(result)
 
 
@@ -190,10 +199,10 @@ def train():
 @app.route('/uploadedFilesWithDetails', methods=['GET'])
 def uploadedFilesWithDetails():
     username = request.args.get('username')
-    files = findfilesfromdb(username) #findfiles(app.config['UPLOAD_FOLDER'])
+    files = findfilesfromdb(username)  # findfiles(app.config['UPLOAD_FOLDER'])
     result = []
     for file in files:
-        fullfilename = file #os.path.join(app.config['UPLOAD_FOLDER'], file)
+        fullfilename = file  # os.path.join(app.config['UPLOAD_FOLDER'], file)
         if os.path.isfile(fullfilename):
             info = os.stat(fullfilename)
             with open(fullfilename, 'rb') as f:
@@ -257,6 +266,7 @@ def getSavedModel():
     result = view_saved_model(model, columns)
     return jsonify(result)
 
+
 @app.route('/register', methods=['POST'])
 def register():
     username = request.json['username']
@@ -270,6 +280,7 @@ def register():
         print 'create', username
     return ''
 
+
 @app.route('/login', methods=['POST'])
 def login():
     username = request.json['username']
@@ -281,6 +292,7 @@ def login():
 
     return render_template('404.html'), 404
 
+
 @app.route('/getFileData', methods=['GET'])
 def getFileData():
     filename = request.args.get('filename')
@@ -290,12 +302,14 @@ def getFileData():
     elif os.path.isfile(filename):
         return dumpFileData(filename)
 
+
 def dumpFileData(filename):
     with open(filename, 'rb') as f:
         reader = csv.reader(f)
         for row in reader:
             break
     return jsonify({'columns': row, 'data': dumpCsvToJson(filename)})
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port, debug=True)
