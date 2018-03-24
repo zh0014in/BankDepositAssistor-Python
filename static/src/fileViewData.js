@@ -34,24 +34,14 @@
             $scope.$on('fileClickViewData', function (event, args) {
                 vm.show = false;
                 $http.get('/getFileData?filename=' + args.file).then(function (response) {
+                    vm.fileName = args.file;
                     vm.fileData = angular.fromJson(response.data.data);
                     vm.columns = response.data.columns;
                     vm.columnNames = vm.columns;
-//                    vm.columnNames = Object.keys(vm.fileData[0]);
                     vm.dataGrid.option('columns', vm.columnNames);
                     vm.show = true;
                     vm.dataGrid.option('dataSource', vm.fileData);
                     vm.dataGrid.repaint();
-
-//                    ngDialog.open({
-//                        template: 'static/html/fileData.html',
-//                        className: 'ngdialog-theme-plain',
-//                        showClose: true,
-//                        scope: $scope
-//                    });
-
-                    var popupWindow = window.open('static/html/popupFileData.html');
-                    popupWindow.mySharedData = response.data;
                 });
             });
         }
