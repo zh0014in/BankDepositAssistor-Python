@@ -1,5 +1,5 @@
 from cloudant import Cloudant
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for, send_file
 from cloudant.error import CloudantException
 from cloudant.result import Result, ResultByKey
 from cloudant.query import Query
@@ -279,6 +279,22 @@ def login():
             return ''
 
     return render_template('404.html'), 404
+
+@app.route('/getFileData', methods=['GET'])
+def getFileData():
+    filename = request.args.get('filename')
+    fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    if os.path.isfile(fullfilename):
+        return dumpFileData(fullfilename)
+    elif os.path.isfile(filename):
+        return dumpFileData(filename)
+
+def dumpFileData(filename):
+    with open(filename, 'rb') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            break
+    return jsonify({'columns': row, 'data': dumpCsvToJson(filename)})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port, debug=True)

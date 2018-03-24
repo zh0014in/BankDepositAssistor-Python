@@ -74,11 +74,11 @@
             }
             vm.predict = function () {
                 if (!$scope.isTestFile) {
-                    DevExpress.ui.notify('select a test file to do the prediction', 'error', 1000);
+                    DevExpress.ui.notify('select a test file to do the prediction', 'error', 2000);
                     return;
                 }
                 if (!vm.columns) {
-                    DevExpress.ui.notify('select a model or train a model to do prediction', 'error', 1000);
+                    DevExpress.ui.notify('select a model or train a model to do prediction', 'error', 2000);
                     return;
                 }
                 console.log('predict')
