@@ -205,6 +205,7 @@ def uploadedFilesWithDetails():
     for filename in files:
         data = db[username].get_attachment(attachment=filename)
         lis = [row for row in csv.DictReader(StringIO(data))]
+        print lis[0]
         result.append({
                 'size': sys.getsizeof(data),
                 'lines': len(lis),
@@ -240,7 +241,6 @@ def get_data_to_json(username, filename):
 
     # with open(username+filename, 'w') as f:
     #     f.write(data)
-    data = [row for row in csv.DictReader(StringIO(data))]
     return json.dumps([row for row in csv.DictReader(StringIO(data))])
     # return dumpCsvToJson(username+filename)
 
