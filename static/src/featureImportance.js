@@ -17,6 +17,9 @@
             function init() {
 
             }
+            function destroy(){
+                vm.show = false;
+            }
             $scope.$on('featureimportance', function (event, args) {
                 vm.data = args.data.filter(function (t) {
                     return t.importance > 0;
@@ -61,6 +64,9 @@
             };
             $scope.$on('modelSelectionChanged', function (event, args) {
                 vm.show = false;
+            });
+            $scope.$on('removeuser', function () {
+                destroy();
             });
         }
 

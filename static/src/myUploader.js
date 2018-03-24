@@ -15,6 +15,7 @@
             vm.$onInit = init;
 
             function init() {
+                vm.show = false;
                 if (!vm.path) {
                     vm.path = "/upload";
                 }
@@ -45,6 +46,18 @@
                 };
             }
 
+            function destroy(){
+                vm.show = false;
+            }
+
+            $scope.$on('setuser', function (event, args) {
+                vm.user = args.user;
+                vm.show = true;
+            });
+
+            $scope.$on('removeuser', function () {
+                destroy();
+            });
 
         }
 

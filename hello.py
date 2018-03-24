@@ -98,19 +98,6 @@ def get_visitor():
         print('No database')
         return jsonify([])
 
-# /**
-#  * Endpoint to get a JSON array of all the visitors in the database
-#  * REST API example:
-#  * <code>
-#  * GET http://localhost:8000/api/visitors
-#  * </code>
-#  *
-#  * Response:
-#  * [ "Bob", "Jane" ]
-#  * @return An array of all the visitor names
-#  */
-
-
 @app.route('/api/visitors', methods=['POST'])
 def put_visitor():
     user = request.json['name']
@@ -178,37 +165,6 @@ def upload_file_train():
             return trainFileName
     return ''
 
-#
-# @app.route('/uploadTest', methods=['POST'])
-# def upload_file_test():
-#     if request.method == 'POST':
-#         # check if the post request has the file part
-#         if 'test' not in request.files:
-#             # flash('No file part')
-#             return "no file part"
-#         file = request.files['test']
-#         # if user does not select file, browser also
-#         # submit a empty part without filename
-#         if file.filename == '':
-#             # flash('No selected file')
-#             return "no selected file"
-#         if file and allowed_file(file.filename):
-#             filename = secure_filename(file.filename)
-#             fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-#             file.save(fullfilename)
-#
-#             with open(fullfilename, 'rb') as f:
-#                 reader = csv.reader(f)
-#                 lis = [line.split() for line in f]
-#                 # save to db
-#                 # for row in reader:
-#                 # data = {'train': row}
-#                 # db.create_document(data)
-#
-#                 return jsonify(lis)
-#     return ''
-
-
 @app.route('/train', methods=['POST'])
 def train():
     model = request.json['model']
@@ -231,6 +187,7 @@ def uploadedFiles():
 
 @app.route('/uploadedFilesWithDetails', methods=['GET'])
 def uploadedFilesWithDetails():
+    username = request.args.get('username')
     files = findfilesfromdb() #findfiles(app.config['UPLOAD_FOLDER'])
     result = []
     for file in files:
@@ -296,6 +253,17 @@ def getSavedModel():
     result = view_saved_model(model, columns)
     return jsonify(result)
 
+@app.route('/register', methods=['POST'])
+def register():
+    username = request.json['username']
+    password = request.json['password']
+    return ''
+
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.json['username']
+    password = request.json['password']
+    return ''
 
 @atexit.register
 def shutdown():

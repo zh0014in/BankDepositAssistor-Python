@@ -15,11 +15,19 @@
             vm.$onInit = init();
 
             function init() {
-                $http.get('/uploadedFilesWithDetails').then(function (response) {
-                    // $scope.selectedFile = data[0];
-                    console.log(response.data);
-                    vm.files = response.data;
-                });
+                vm.user = vm.user || $rootScope.user;
+                if (vm.user) {
+                    $http.get('/uploadedFilesWithDetails?username=' + vm.user.username).then(function (response) {
+                        // $scope.selectedFile = data[0];
+                        console.log(response.data);
+                        vm.files = response.data;
+                    });
+                }
+            }
+
+            function destroy(){
+                vm.user = {};
+                vm.files = [];
             }
 
             vm.fileSelected = function (file) {
@@ -32,6 +40,15 @@
 
             $scope.$on('fileuploaded', function () {
                 init();
+            });
+
+            $scope.$on('setuser', function (event, args) {
+                vm.user = args.user;
+                init();
+            });
+
+            $scope.$on('removeuser', function(){
+                destroy();
             });
         }
 

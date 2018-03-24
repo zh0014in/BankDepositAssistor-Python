@@ -13,7 +13,9 @@
 
         init();
 
-        function init() { }
+        function init() {
+        }
+
         $scope.isActive = function (route) {
             return route === $location.path();
         }

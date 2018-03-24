@@ -2,6 +2,16 @@
   width: 200px;
 }
 
+.login{
+  position: fixed;
+  height: 200px;
+  width: 300px;
+  top: 75px;
+  right: 0;
+  background-color: lightgray;
+  padding-left: 10px;
+}
+
 #wrapper {
   -moz-transition: all .4s ease 0s;
   -o-transition: all .4s ease 0s;
