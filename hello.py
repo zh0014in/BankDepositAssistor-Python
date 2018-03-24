@@ -130,7 +130,7 @@ def upload_file_train():
             # flash('No file part')
             return "no file part"
         file = request.files['test']
-        username = request.json['username']
+        username = request.args.get('username')
         # if user does not select file, browser also
         # submit a empty part without filename
         if file.filename == '':
