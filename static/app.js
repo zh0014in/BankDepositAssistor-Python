@@ -19,7 +19,13 @@
                     templateUrl: "static/html/datasets.html",
                     controller: 'datasetsController',
                     controllerAs: "vm"
-                }).otherwise({
+                })
+                .when('/admin',{
+                    templateUrl: 'static/html/admin.html',
+                    controller: 'adminController',
+                    controllerAs: 'vm'
+                })
+                .otherwise({
                     redirectTo: '/datasets'
                 });
         }).config(function ($httpProvider) {

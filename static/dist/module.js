@@ -140,7 +140,13 @@ var duScrollDefaultEasing=function(e){"use strict";return e<.5?Math.pow(2*e,2)/2
                     templateUrl: "static/html/datasets.html",
                     controller: 'datasetsController',
                     controllerAs: "vm"
-                }).otherwise({
+                })
+                .when('/admin',{
+                    templateUrl: 'static/html/admin.html',
+                    controller: 'adminController',
+                    controllerAs: 'vm'
+                })
+                .otherwise({
                     redirectTo: '/datasets'
                 });
         }).config(function ($httpProvider) {
@@ -154,6 +160,29 @@ var duScrollDefaultEasing=function(e){"use strict";return e<.5?Math.pow(2*e,2)/2
             }
 
         }]);
+
+}());
+(function(){
+    'use strict';
+
+    angular
+        .module('app')
+        .controller('adminController', adminController)
+
+    /** @ngInject */
+    adminController.$inject = ['$http']
+    function adminController($http){
+        var vm = this;
+        
+        vm.$onInit = init;
+
+        function init(){
+            $http.get('/admin', function(response){
+                console.log(response.data)
+                vm.users = response.data;
+            });
+        }
+    }
 
 }());
 /*
@@ -751,17 +780,24 @@ class AntiXSS {
             vm.$onInit = init;
 
             function init() {
-                vm.show = false;
+                vm.user = vm.user || $rootScope.user;
+                if (vm.user && vm.user.username) {
+                    vm.show = true;
+                } else {
+                    vm.show = false;
+                }
+
                 if (!vm.path) {
                     vm.path = "/upload";
                 }
+                vm.fullPath = vm.path + "?username="+vm.user.username;
                 $scope.multiple = false;
                 $scope.accept = "text/csv";
                 $scope.value = [];
                 $scope.uploadMode = "instantly";
 
                 $scope.options = {
-                    uploadUrl: vm.path,
+                    uploadUrl: vm.fullPath,
                     showFileList: false,
                     name: "test",
                     bindingOptions: {
@@ -778,17 +814,23 @@ class AntiXSS {
                         $rootScope.$broadcast('fileuploaded');
                         DevExpress.ui.notify("Uploaded successfully!", "success", 1000);
                         spinnerService.close('distributionplotsspinner');
+                    },
+                    onInitialized: function(e){
+                        vm.uploader = e.component;
                     }
                 };
             }
 
-            function destroy(){
+            function destroy() {
                 vm.show = false;
             }
 
             $scope.$on('setuser', function (event, args) {
                 vm.user = args.user;
                 vm.show = true;
+                if(vm.uploader){
+                    vm.uploader.option('uploadUrl', vm.path + "?username="+vm.user.username);
+                }
             });
 
             $scope.$on('removeuser', function () {
@@ -1288,6 +1330,8 @@ class AntiXSS {
                     $rootScope.user = vm.user;
                     $scope.showLogin = false;
                     $rootScope.$broadcast('setuser', { user: vm.user });
+                },function(){
+                    DevExpress.ui.notify('failed to register', 'error', 1000);
                 });
             }
 
@@ -1299,6 +1343,8 @@ class AntiXSS {
                     $rootScope.user = vm.user;
                     $scope.showLogin = false;
                     $rootScope.$broadcast('setuser', { user: vm.user });
+                }, function(){
+                    DevExpress.ui.notify('username or password is wrong', 'error', 1000);
                 });
             }
 
