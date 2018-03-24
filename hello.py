@@ -212,10 +212,7 @@ def uploadedFilesWithDetails():
                 'size': info.st_size,
                 'lines': len(lis),
                 'fields': lis[0],
-                'filename': file,
-                'createdAt': datetime.datetime.fromtimestamp(
-                    int(info.st_ctime)
-                ).strftime('%Y-%m-%d %H:%M:%S')
+                'filename': file
             })
     return jsonify(result)
 
@@ -232,15 +229,17 @@ def loadDistributionData():
     filename = request.args.get('filename')
     username = request.args.get('username')
     print filename, username
-    return get_data_from_json(username, filename)
+    return get_data_to_json(username, filename)
 
 
-def get_data_from_json(username, filename):
+def get_data_to_json(username, filename):
     data = db[username].get_attachment(attachment=filename)
     df = pd.read_csv(StringIO(data), sep=",")
     # print '---------------', df.to_json()
     # print '============'
-    return df.to_json()
+    print type(df.to_dict())
+
+    return jsonify(df.to_dict())
 
 
     # if os.path.isfile(fullfilename):
