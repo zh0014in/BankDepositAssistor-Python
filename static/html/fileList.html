@@ -12,4 +12,7 @@
         </div>
         <small data-ng-bind="'uploaded at ' + file.createdAt"></small>
     </a>
+    <div data-ng-hide="vm.files && vm.files.length > 0">
+        no files are uploaded
+    </div>
 </div>

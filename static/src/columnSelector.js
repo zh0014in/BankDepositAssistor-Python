@@ -18,6 +18,9 @@
                 vm.show = false;
                 vm.removedColumns = [];
             }
+            function destroy(){
+                vm.show = false;
+            }
             $scope.$on('trainstart', function (event, args) {
                 vm.columns = args.data;
                 vm.show = true;
@@ -48,6 +51,10 @@
                 vm.show = false;
                 $rootScope.$broadcast('columnSelected', {columns: vm.columns});
             }
+
+            $scope.$on('removeuser', function () {
+                destroy();
+            });
         }
 
         return {

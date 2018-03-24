@@ -15,16 +15,24 @@
             vm.$onInit = init;
 
             function init() {
+                vm.user = vm.user || $rootScope.user;
+                if (vm.user && vm.user.username) {
+                    vm.show = true;
+                } else {
+                    vm.show = false;
+                }
+
                 if (!vm.path) {
                     vm.path = "/upload";
                 }
+                vm.fullPath = vm.path + "?username="+vm.user.username;
                 $scope.multiple = false;
                 $scope.accept = "text/csv";
                 $scope.value = [];
                 $scope.uploadMode = "instantly";
 
                 $scope.options = {
-                    uploadUrl: vm.path,
+                    uploadUrl: vm.fullPath,
                     showFileList: false,
                     name: "test",
                     bindingOptions: {
@@ -41,10 +49,28 @@
                         $rootScope.$broadcast('fileuploaded');
                         DevExpress.ui.notify("Uploaded successfully!", "success", 1000);
                         spinnerService.close('distributionplotsspinner');
+                    },
+                    onInitialized: function(e){
+                        vm.uploader = e.component;
                     }
                 };
             }
 
+            function destroy() {
+                vm.show = false;
+            }
+
+            $scope.$on('setuser', function (event, args) {
+                vm.user = args.user;
+                vm.show = true;
+                if(vm.uploader){
+                    vm.uploader.option('uploadUrl', vm.path + "?username="+vm.user.username);
+                }
+            });
+
+            $scope.$on('removeuser', function () {
+                destroy();
+            });
 
         }
 

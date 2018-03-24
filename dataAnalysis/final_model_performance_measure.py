@@ -35,7 +35,7 @@ MODELS = {
 }
 
 
-def run_model(model_name, train_or_predict, file_name, selected_columns=COLUMNS, file_content='', db=None):
+def run_model(model_name, train_or_predict, file_name, username, selected_columns=COLUMNS, file_content=''):
     csvdata = StringIO(file_content)
 
     print selected_columns
@@ -236,7 +236,7 @@ def run_model(model_name, train_or_predict, file_name, selected_columns=COLUMNS,
 
     hash_value = str(hash(','.join(sorted(selected_columns))))
 
-    model_file_name = model_name + '_' + hash_value + '.pkl'
+    model_file_name = username + '_' + model_name + '_' + hash_value + '.pkl'
     print train_or_predict
     standard_scaler = preprocessing.StandardScaler()
 
@@ -259,9 +259,14 @@ def view_saved_model(model_name, selected_columns=COLUMNS):
     return fit_model.get_params()
 
 
-def getexistingmodeljsonfile():
+def getexistingmodeljsonfile(username):
+    result = json.dumps({})
     with open('existingmodel.json', 'r') as f:
-        return json.load(f)
+        data = json.load(f)
+        for key, value in data.items():
+            if key.startswith(username):
+                result[key]= value
+    return result
 
 
 def main():
