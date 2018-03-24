@@ -305,24 +305,17 @@ def login():
 
     return render_template('404.html'), 404
 
-
 @app.route('/getFileData', methods=['GET'])
 def getFileData():
     filename = request.args.get('filename')
-    fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    if os.path.isfile(fullfilename):
-        return dumpFileData(fullfilename)
-    elif os.path.isfile(filename):
-        return dumpFileData(filename)
+    username = request.args.get('username')
+    data, keys = get_data_to_json_with_keys(username, filename)
+    return jsonify({'columns': keys, 'data': data})
 
-
-def dumpFileData(filename):
-    with open(filename, 'rb') as f:
-        reader = csv.reader(f)
-        for row in reader:
-            break
-    return jsonify({'columns': row, 'data': dumpCsvToJson(filename)})
-
+def get_data_to_json_with_keys(username, filename):
+    data = db[username].get_attachment(attachment=filename)
+    df = pd.read_csv(StringIO(data), sep=",", index_col=0)
+    return json.dumps([row for row in csv.DictReader(StringIO(data))]), list(df)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port, debug=True)
