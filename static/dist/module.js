@@ -360,11 +360,11 @@ class AntiXSS {
             }
             vm.predict = function () {
                 if (!$scope.isTestFile) {
-                    DevExpress.ui.notify('select a test file to do the prediction', 'error', 1000);
+                    DevExpress.ui.notify('select a test file to do the prediction', 'error', 2000);
                     return;
                 }
                 if (!vm.columns) {
-                    DevExpress.ui.notify('select a model or train a model to do prediction', 'error', 1000);
+                    DevExpress.ui.notify('select a model or train a model to do prediction', 'error', 2000);
                     return;
                 }
                 console.log('predict')
@@ -818,6 +818,10 @@ class AntiXSS {
                         vm.savedPath = e.request.response;
                         $rootScope.$broadcast('fileuploaded');
                         DevExpress.ui.notify("Uploaded successfully!", "success", 1000);
+                        spinnerService.close('distributionplotsspinner');
+                    },
+                    onUploadError: function(e){
+                        DevExpress.ui.notify("Uploaded failed!", "error", 2000);
                         spinnerService.close('distributionplotsspinner');
                     },
                     onInitialized: function(e){
@@ -1337,7 +1341,7 @@ class AntiXSS {
                     $scope.showLogin = false;
                     $rootScope.$broadcast('setuser', { user: vm.user });
                 },function(){
-                    DevExpress.ui.notify('failed to register', 'error', 1000);
+                    DevExpress.ui.notify('failed to register', 'error', 2000);
                 });
             }
 
@@ -1350,7 +1354,7 @@ class AntiXSS {
                     $scope.showLogin = false;
                     $rootScope.$broadcast('setuser', { user: vm.user });
                 }, function(){
-                    DevExpress.ui.notify('username or password is wrong', 'error', 1000);
+                    DevExpress.ui.notify('username or password is wrong', 'error', 2000);
                 });
             }
 

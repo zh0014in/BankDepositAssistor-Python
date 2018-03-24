@@ -51,7 +51,7 @@
                         spinnerService.close('distributionplotsspinner');
                     },
                     onUploadError: function(e){
-                        DevExpress.ui.notify("Uploaded failed!", "error", 1000);
+                        DevExpress.ui.notify("Uploaded failed!", "error", 2000);
                         spinnerService.close('distributionplotsspinner');
                     },
                     onInitialized: function(e){
