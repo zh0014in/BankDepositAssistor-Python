@@ -514,7 +514,7 @@ class AntiXSS {
 
             $scope.$on('fileSelectionChanged', function (event, args) {
                 spinnerService.show('distributionplotsspinner');
-                $http.get('/loadDistributionData?filename=' + args.file).then(function (response) {
+                $http.get('/loadDistributionData?filename=' + args.file + "&username="+$rootScope.user.username).then(function (response) {
                     vm.data = response.data;
                     countByColumn('month')
                     spinnerService.close('distributionplotsspinner');
