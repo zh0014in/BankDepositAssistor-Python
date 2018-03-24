@@ -745,13 +745,6 @@ class AntiXSS {
                 });
             }
 
-            vm.viewFile = function (file) {
-                vm.selectedfile = file;
-                $rootScope.$broadcast('fileClickViewData', {
-                    file: file.filename
-                });
-            }
-
             $scope.$on('fileuploaded', function () {
                 init();
             });
@@ -797,6 +790,7 @@ class AntiXSS {
 
             vm.dataGrid;
             vm.gridOptions = {
+                columnAutoWidth: true,
                 dataSource: [],
                 onInitialized: function (e) {
                 vm.dataGrid = e.component;
@@ -808,7 +802,7 @@ class AntiXSS {
                 columns: []
             }
 
-            $scope.$on('fileClickViewData', function (event, args) {
+            $scope.$on('fileSelectionChanged', function (event, args) {
                 vm.show = false;
                 $http.get('/getFileData?filename=' + args.file+'&username='+$rootScope.user.username).then(function (response) {
                     vm.fileName = args.file;
