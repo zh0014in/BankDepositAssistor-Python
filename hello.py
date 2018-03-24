@@ -4,6 +4,7 @@ from cloudant.error import CloudantException
 from cloudant.result import Result, ResultByKey
 from cloudant.query import Query
 from cloudant.index import Index
+from cloudant.document import Document
 import atexit
 import cf_deployment_tracker
 import os
@@ -70,8 +71,8 @@ def findfiles(directory):
     return files
 
 
-def findfilesfromdb():
-    return map(str, db.keys(remote=True))
+def findfilesfromdb(username):
+    return map(str, db[username].get_attachment())
 
 
 def get_data_from_db(key, filename):
@@ -97,19 +98,6 @@ def get_visitor():
     else:
         print('No database')
         return jsonify([])
-
-# /**
-#  * Endpoint to get a JSON array of all the visitors in the database
-#  * REST API example:
-#  * <code>
-#  * GET http://localhost:8000/api/visitors
-#  * </code>
-#  *
-#  * Response:
-#  * [ "Bob", "Jane" ]
-#  * @return An array of all the visitor names
-#  */
-
 
 @app.route('/api/visitors', methods=['POST'])
 def put_visitor():
@@ -164,15 +152,15 @@ def upload_file_train():
                 uploaded_file_content = b64encode(f.read())
                 print 1234, trainFileName
                 # data = {'file_name': trainFileName}
-
-                data = {'_id': username, '_attachments': {
-                    trainFileName: {'data': uploaded_file_content}}}
-                print data['_id']
-                db.create_document(data)
+                if db[username].exists():
+                    db[username].put_attachment(attachment=trainFileName, data=uploaded_file_content)
+                else:
+                    data = {'_id': username, '_attachments': {
+                        trainFileName: {'data': uploaded_file_content}}}
+                    db.create_document(data)
 
             return trainFileName
     return ''
-
 
 @app.route('/train', methods=['POST'])
 def train():
@@ -197,7 +185,8 @@ def train():
 
 @app.route('/uploadedFilesWithDetails', methods=['GET'])
 def uploadedFilesWithDetails():
-    files = findfilesfromdb() #findfiles(app.config['UPLOAD_FOLDER'])
+    username = request.args.get('username')
+    files = findfilesfromdb(username) #findfiles(app.config['UPLOAD_FOLDER'])
     result = []
     for file in files:
         fullfilename = file #os.path.join(app.config['UPLOAD_FOLDER'], file)
@@ -262,11 +251,29 @@ def getSavedModel():
     result = view_saved_model(model, columns)
     return jsonify(result)
 
+@app.route('/register', methods=['POST'])
+def register():
+    username = request.json['username']
+    password = request.json['password']
 
-@atexit.register
-def shutdown():
-    if client:
-        client.disconnect()
+    if Document(db, 'usercontrol').exists():
+        db['usercontrol'][username] = password
+    else:
+        db.create_document({'usercontrol': {username: password}})
+    return ''
+
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.json['username']
+    password = request.json['password']
+
+    if username in db['usercontrol']:
+        if db['usercontrol'][username] == password:
+            return ''
+
+    return render_template('404.html'), 404
+
+
 
 
 if __name__ == '__main__':

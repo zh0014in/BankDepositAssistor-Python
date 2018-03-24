@@ -17,6 +17,9 @@
             function init() {
                 vm.show = false;
             }
+            function destroy(){
+                vm.show = false;
+            }
 
             $scope.$on('validatecomplete', function (event, args) {
                 vm.data = args.data[1];
@@ -25,6 +28,9 @@
 
             $scope.$on('modelSelectionChanged', function (event, args) {
                 vm.show = false;
+            });
+            $scope.$on('removeuser', function () {
+                destroy();
             });
         }
 

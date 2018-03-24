@@ -18,6 +18,11 @@
 
             }
 
+            function destroy(){
+                vm.showMonthChart = false;
+                vm.showTestChart = false;
+            }
+
             vm.showMonthChart = false;
             vm.monthChart;
             vm.monthChartOptions = {
@@ -27,13 +32,13 @@
                     type: "stackedBar"
                 },
                 series: [{
-                        valueField: "y",
-                        name: "yes"
-                    },
-                    {
-                        valueField: "n",
-                        name: "no"
-                    }
+                    valueField: "y",
+                    name: "yes"
+                },
+                {
+                    valueField: "n",
+                    name: "no"
+                }
                 ],
                 rotated: false,
                 size: {
@@ -114,8 +119,8 @@
                 }
 
                 if (vm.data.all(function (t) {
-                        return !t.y;
-                    })) {
+                    return !t.y;
+                })) {
                     console.log(vm.data);
                     $rootScope.$broadcast('fileloaded', {
                         isTestFile: true
@@ -188,6 +193,10 @@
                     });
                 }
             }
+
+            $scope.$on('removeuser', function () {
+                destroy();
+            });
         }
 
         return {

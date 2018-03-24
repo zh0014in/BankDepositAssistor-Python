@@ -15,14 +15,21 @@
             vm.$onInit = init;
 
             function init() {
-                $http.get('/getexistingmodels').then(function (response) {
-                    vm.pkls = Object.keys(response.data).reduce(function (r, e) {
-                        if (e.startsWith($rootScope.selectedModel)) r[e] = response.data[e];
-                        return r;
-                    }, {});
-                    vm.pklNames = Object.keys(vm.pkls);
-                    vm.selectBox.option('items', vm.pklNames);
-                });
+                vm.user = vm.user || $rootScope.user;
+                if (vm.user) {
+                    $http.get('/getexistingmodels?username=' + vm.user.username).then(function (response) {
+                        vm.pkls = Object.keys(response.data).reduce(function (r, e) {
+                            if (e.startsWith($rootScope.selectedModel)) r[e] = response.data[e];
+                            return r;
+                        }, {});
+                        vm.pklNames = Object.keys(vm.pkls);
+                        vm.selectBox.option('items', vm.pklNames);
+                    });
+                }
+            }
+
+            function destroy(){
+                vm.pklNames = [];
             }
 
             $scope.$on('modelSelectionChanged', function () {
@@ -31,6 +38,15 @@
 
             $scope.$on('traincomplete', function () {
                 init();
+            });
+
+            $scope.$on('setuser', function (event, args) {
+                vm.user = args.user;
+                init();
+            });
+
+            $scope.$on('removeuser', function () {
+                destroy();
             });
 
             $scope.selectedPkl = '';

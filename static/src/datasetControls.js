@@ -17,6 +17,9 @@
             function init() {
                 vm.show = false;
             }
+            function destroy(){
+                vm.show = false;
+            }
 
             $scope.$on('fileSelectionChanged', function () {
 
@@ -86,6 +89,9 @@
                     });
                 });
             }
+            $scope.$on('removeuser', function () {
+                destroy();
+            });
         }
 
         return {

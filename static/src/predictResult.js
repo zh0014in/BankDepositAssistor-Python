@@ -17,6 +17,9 @@
             function init() {
                 vm.show = false;
             }
+            function destroy(){
+                vm.show = false;
+            }
             vm.dataGrid;
             vm.gridOptions = {
                 dataSource: [],
@@ -92,6 +95,9 @@
 
             $scope.$on('modelSelectionChanged', function (event, args) {
                 vm.show = false;
+            });
+            $scope.$on('removeuser', function () {
+                destroy();
             });
         }
 

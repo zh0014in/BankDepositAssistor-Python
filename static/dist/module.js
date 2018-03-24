@@ -145,7 +145,15 @@ var duScrollDefaultEasing=function(e){"use strict";return e<.5?Math.pow(2*e,2)/2
                 });
         }).config(function ($httpProvider) {
             $httpProvider.interceptors.push('spinnerHttpInterceptor');
-        });
+        }).run(['$rootScope', function ($rootScope) {
+            if (sessionStorage.getItem("user")) {
+                $rootScope.user = JSON.parse(sessionStorage.getItem("user"));
+                // if ($rootScope.user) {
+                //     $rootScope.$broadcast('setuser', { user: $rootScope.user });
+                // }
+            }
+
+        }]);
 
 }());
 /*
@@ -192,6 +200,9 @@ class AntiXSS {
                 vm.show = false;
                 vm.removedColumns = [];
             }
+            function destroy(){
+                vm.show = false;
+            }
             $scope.$on('trainstart', function (event, args) {
                 vm.columns = args.data;
                 vm.show = true;
@@ -222,6 +233,10 @@ class AntiXSS {
                 vm.show = false;
                 $rootScope.$broadcast('columnSelected', {columns: vm.columns});
             }
+
+            $scope.$on('removeuser', function () {
+                destroy();
+            });
         }
 
         return {
@@ -235,7 +250,6 @@ class AntiXSS {
     }
 
 }());
-<<<<<<< HEAD
 (function () {
     'use strict';
 
@@ -255,103 +269,7 @@ class AntiXSS {
             function init() {
                 vm.show = false;
             }
-
-            $scope.$on('fileSelectionChanged', function () {
-
-            });
-
-            $scope.$on('fileloaded', function (event, args) {
-                $scope.isTestFile = args.isTestFile;
-                vm.show = true;
-            });
-
-            vm.train = function () {
-                console.log('train')
-                $rootScope.$broadcast('trainstart', {
-                    data: $rootScope.fields
-                });
-            }
-
-            $scope.$on('columnSelected', function (event, args) {
-                vm.columns = args.columns;
-                runModel.run($rootScope.selectedModel, 'train', $rootScope.filename, vm.columns, function (response) {
-                    console.log(response.data);
-                    vm.parameters = response.data[1];
-                    vm.parameterNames = Object.keys(response.data[1]);
-                    $rootScope.$broadcast('trainparameters', {
-                        data: vm.parameters
-                    });
-                    if (response.data.length > 2) {
-                        var importanceFilename = response.data[2];
-                        $http.get('/loadDistributionData?filename=' + importanceFilename).then(function (response) {
-                            console.log(response.data);
-                            $rootScope.$broadcast('featureimportance', {
-                                data: response.data
-                            });
-                        });
-                    }
-                    $rootScope.$broadcast('traincomplete');
-                });
-            });
-
-            $scope.$on('pklSelectionChanged', function (event, args) {
-                vm.columns = args.pkl;
-            });
-
-            vm.validate = function () {
-                console.log('validate')
-                runModel.run($rootScope.selectedModel, 'validate', $rootScope.filename, vm.columns, function (response) {
-                    console.log(response.data);
-                    $rootScope.$broadcast('validatecomplete', {
-                        data: response.data
-                    });
-                });
-            }
-            vm.predict = function () {
-                if (!$scope.isTestFile) {
-                    DevExpress.ui.notify('select a test file to do the prediction', 'error', 1000);
-                    return;
-                }
-                if (!vm.columns) {
-                    DevExpress.ui.notify('select a model or train a model to do prediction', 'error', 1000);
-                    return;
-                }
-                console.log('predict')
-                runModel.run($rootScope.selectedModel, 'predict', $rootScope.filename, vm.columns, function (response) {
-                    console.log(response.data);
-                    $rootScope.$broadcast('predictcomplete');
-                });
-            }
-        }
-
-        return {
-            templateUrl: "static/html/datasetControls.html",
-            bindings: {
-
-            },
-            controller: datasetControlsController,
-            controllerAs: 'vm'
-        }
-    }
-
-=======
-(function () {
-    'use strict';
-
-    angular
-        .module('app')
-        .component('datasetControls', datasetControls());
-
-
-    function datasetControls() {
-        datasetControlsController.$inject = ['$rootScope', '$scope', '$http', 'runModel', '$document']
-
-        function datasetControlsController($rootScope, $scope, $http, runModel, $document) {
-            var vm = this;
-
-            vm.$onInit = init;
-
-            function init() {
+            function destroy(){
                 vm.show = false;
             }
 
@@ -423,6 +341,9 @@ class AntiXSS {
                     });
                 });
             }
+            $scope.$on('removeuser', function () {
+                destroy();
+            });
         }
 
         return {
@@ -435,7 +356,6 @@ class AntiXSS {
         }
     }
 
->>>>>>> 3ac69914c38a9cda676b74ac70ee5cac9c4dd299
 }());
 (function(){
     'use strict';
@@ -456,7 +376,6 @@ class AntiXSS {
     }
 
 }());
-<<<<<<< HEAD
 (function () {
     'use strict';
 
@@ -477,216 +396,9 @@ class AntiXSS {
 
             }
 
-            vm.showChart = false;
-            vm.monthChart;
-            vm.monthChartOptions = {
-                dataSource: [],
-                commonSeriesSettings: {
-                    argumentField: "key",
-                    type: "stackedBar"
-                },
-                series: [{
-                        valueField: "y",
-                        name: "yes"
-                    },
-                    {
-                        valueField: "n",
-                        name: "no"
-                    }
-                ],
-                rotated: false,
-                size: {
-                    width: 800
-                },
-                legend: {
-                    horizontalAlignment: "right",
-                    position: "inside",
-                    border: {
-                        visible: true
-                    }
-                },
-                tooltip: {
-                    enabled: true,
-                    location: "edge",
-                    customizeTooltip: function (arg) {
-                        return {
-                            text: arg.seriesName + " count: " + arg.valueText
-                        };
-                    }
-                },
-                onInitialized: function (e) {
-                    vm.monthChart = e.component;
-                }
-            };
-
-            $scope.$on('fileSelectionChanged', function (event, args) {
-                spinnerService.show('distributionplotsspinner');
-                $http.get('/loadDistributionData?filename=' + args.file).then(function (response) {
-                    vm.data = response.data;
-                    countByColumn('month')
-                    spinnerService.close('distributionplotsspinner');
-                });
-            });
-
-
-
-            vm.countByColumn = countByColumn;
-
-            function countByColumn(column) {
-                if (!vm.data) {
-                    vm.showChart = false;
-                    return;
-                }
-
-                if (vm.data.all(function (t) {
-                        return !t.y;
-                    })) {
-                    console.log(vm.data);
-                    vm.showChart = false;
-                    $rootScope.$broadcast('fileloaded', {
-                        isTestFile: true
-                    });
-                    console.log('test file');
-                    return;
-                }
-                $rootScope.$broadcast('fileloaded', {
-                    isTestFile: false
-                });
-                var groupByColumn = vm.data.groupBy(function (t) {
-                    return t[column]
-                }).select(function (t) {
-                    return {
-                        key: t.key,
-                        value: t.length,
-                        y: t.filter(x => x.y === 'yes').length,
-                        n: t.filter(x => x.y === 'no').length
-                    }
-                });
-                if (column === 'month') {
-                    var sorting = {
-                        'jan': 0,
-                        'feb': 1,
-                        'mar': 2,
-                        'apr': 3,
-                        'may': 4,
-                        'jun': 5,
-                        'jul': 6,
-                        'aug': 7,
-                        'sep': 8,
-                        'oct': 9,
-                        'nov': 10,
-                        'dec': 11
-                    };
-                    // sort the data array
-                    groupByColumn.sort(function (a, b) {
-                        // sort based on the value in the monthNames object
-                        return sorting[a.key] - sorting[b.key];
-                    });
-                } else {
-                    groupByColumn.sort(function (a, b) {
-                        // sort based on the value in the monthNames object
-                        return a.key - b.key;
-                    });
-                }
-                console.log(groupByColumn);
-                vm.monthChart.option('series.name', column);
-                vm.monthChart.option('dataSource', groupByColumn);
-                // vm.monthChart.render();
-                vm.showChart = true;
-            }
-        }
-
-        return {
-            templateUrl: 'static/html/distributionPlots.html',
-            bindings: {
-
-            },
-            controller: distributionPlotsController,
-            controllerAs: 'vm'
-        }
-    }
-
-}());
-(function () {
-    'use strict';
-
-    angular
-        .module('app')
-        .component('featureImportance', featureImportance());
-
-
-    function featureImportance() {
-        featureImportanceController.$inject = ['$scope'];
-
-        function featureImportanceController($scope) {
-            var vm = this;
-            vm.show = false;
-            init();
-
-            function init() {
-
-            }
-            $scope.$on('featureimportance', function (event, args) {
-                vm.chart.option('dataSource', args.data);
-                vm.show = true;
-            });
-            vm.chartOptions = {
-                dataSource: [],
-                series: {
-                    argumentField: "features",
-                    valueField: "importance",
-                    name: "Feature Importance",
-                    type: "bar",
-                },
-                legend: {
-                    horizontalAlignment: "right",
-                    position: "inside",
-                    border: {
-                        visible: true
-                    }
-                },
-                rotated: true,
-                size: {
-                    width: 800
-                },
-                onInitialized: function (e) {
-                    vm.chart = e.component;
-                }
-            };
-            $scope.$on('modelSelectionChanged', function (event, args) {
-                vm.show = false;
-            });
-        }
-
-        return {
-            templateUrl: 'static/html/featureImportance.html',
-            bindings: {
-
-            },
-            controller: featureImportanceController,
-            controllerAs: 'vm'
-        }
-    }
-
-=======
-(function () {
-    'use strict';
-
-    angular
-        .module('app')
-        .component('distributionPlots', distributionPlots());
-
-
-    function distributionPlots() {
-        distributionPlotsController.$inject = ['$http', '$scope', 'runModel', 'spinnerService', '$rootScope'];
-
-        function distributionPlotsController($http, $scope, runModel, spinnerService, $rootScope) {
-            var vm = this;
-
-            init();
-
-            function init() {
-
+            function destroy(){
+                vm.showMonthChart = false;
+                vm.showTestChart = false;
             }
 
             vm.showMonthChart = false;
@@ -698,13 +410,13 @@ class AntiXSS {
                     type: "stackedBar"
                 },
                 series: [{
-                        valueField: "y",
-                        name: "yes"
-                    },
-                    {
-                        valueField: "n",
-                        name: "no"
-                    }
+                    valueField: "y",
+                    name: "yes"
+                },
+                {
+                    valueField: "n",
+                    name: "no"
+                }
                 ],
                 rotated: false,
                 size: {
@@ -785,8 +497,8 @@ class AntiXSS {
                 }
 
                 if (vm.data.all(function (t) {
-                        return !t.y;
-                    })) {
+                    return !t.y;
+                })) {
                     console.log(vm.data);
                     $rootScope.$broadcast('fileloaded', {
                         isTestFile: true
@@ -859,6 +571,10 @@ class AntiXSS {
                     });
                 }
             }
+
+            $scope.$on('removeuser', function () {
+                destroy();
+            });
         }
 
         return {
@@ -890,6 +606,9 @@ class AntiXSS {
 
             function init() {
 
+            }
+            function destroy(){
+                vm.show = false;
             }
             $scope.$on('featureimportance', function (event, args) {
                 vm.data = args.data.filter(function (t) {
@@ -936,6 +655,9 @@ class AntiXSS {
             $scope.$on('modelSelectionChanged', function (event, args) {
                 vm.show = false;
             });
+            $scope.$on('removeuser', function () {
+                destroy();
+            });
         }
 
         return {
@@ -948,7 +670,6 @@ class AntiXSS {
         }
     }
 
->>>>>>> 3ac69914c38a9cda676b74ac70ee5cac9c4dd299
 }());
 (function () {
     'use strict';
@@ -967,11 +688,19 @@ class AntiXSS {
             vm.$onInit = init();
 
             function init() {
-                $http.get('/uploadedFilesWithDetails').then(function (response) {
-                    // $scope.selectedFile = data[0];
-                    console.log(response.data);
-                    vm.files = response.data;
-                });
+                vm.user = vm.user || $rootScope.user;
+                if (vm.user) {
+                    $http.get('/uploadedFilesWithDetails?username=' + vm.user.username).then(function (response) {
+                        // $scope.selectedFile = data[0];
+                        console.log(response.data);
+                        vm.files = response.data;
+                    });
+                }
+            }
+
+            function destroy(){
+                vm.user = {};
+                vm.files = [];
             }
 
             vm.fileSelected = function (file) {
@@ -985,6 +714,15 @@ class AntiXSS {
             $scope.$on('fileuploaded', function () {
                 init();
             });
+
+            $scope.$on('setuser', function (event, args) {
+                vm.user = args.user;
+                init();
+            });
+
+            $scope.$on('removeuser', function(){
+                destroy();
+            });
         }
 
         return {
@@ -996,64 +734,6 @@ class AntiXSS {
     }
 
 }());
-<<<<<<< HEAD
-(function () {
-    'use strict';
-
-    angular
-        .module('app')
-        .component('myUploader', myUploader());
-
-
-    function myUploader() {
-        myUploaderController.$inject = ['$scope', '$rootScope']
-        function myUploaderController($scope, $rootScope) {
-            var vm = this;
-
-            vm.$onInit = init;
-
-            function init() {
-                if (!vm.path) {
-                    vm.path = "/upload";
-                }
-                $scope.multiple = false;
-                $scope.accept = "text/csv";
-                $scope.value = [];
-                $scope.uploadMode = "instantly";
-
-                $scope.options = {
-                    uploadUrl: vm.path,
-                    showFileList:false,
-                    name: "test",
-                    bindingOptions: {
-                        multiple: "multiple",
-                        accept: "accept",
-                        value: "value",
-                        uploadMode: "uploadMode"
-                    },
-                    onUploaded: function(e){
-                        vm.savedPath = e.request.response;
-                        $rootScope.$broadcast('fileuploaded');
-                        DevExpress.ui.notify("Uploaded successfully!", "success", 3000);
-                    }
-                };
-            }
-
-
-        }
-
-        return {
-            templateUrl: 'static/html/myUploader.html',
-            bindings: {
-                path: "@",
-                savedPath: "="
-            },
-            controller: myUploaderController,
-            controllerAs: 'vm'
-        }
-    }
-
-=======
 (function () {
     'use strict';
 
@@ -1071,6 +751,7 @@ class AntiXSS {
             vm.$onInit = init;
 
             function init() {
+                vm.show = false;
                 if (!vm.path) {
                     vm.path = "/upload";
                 }
@@ -1101,6 +782,18 @@ class AntiXSS {
                 };
             }
 
+            function destroy(){
+                vm.show = false;
+            }
+
+            $scope.$on('setuser', function (event, args) {
+                vm.user = args.user;
+                vm.show = true;
+            });
+
+            $scope.$on('removeuser', function () {
+                destroy();
+            });
 
         }
 
@@ -1115,7 +808,6 @@ class AntiXSS {
         }
     }
 
->>>>>>> 3ac69914c38a9cda676b74ac70ee5cac9c4dd299
 }());
 (function () {
     'use strict';
@@ -1153,56 +845,6 @@ class AntiXSS {
     }
 
 }());
-<<<<<<< HEAD
-(function () {
-    'use strict';
-
-    angular
-        .module('app')
-        .controller('rootController', rootController)
-
-    /** @ngInject */
-    rootController.$inject = ['$scope', '$location', '$rootScope', '$document']
-
-    function rootController($scope, $location, $rootScope, $document) {
-        var vm = this;
-
-        init();
-
-        function init() { }
-        $scope.isActive = function (route) {
-            return route === $location.path();
-        }
-
-        $rootScope.selectedModel = 'svm';
-
-        $scope.$on('modelSelectionChanged', function (event, args) {
-            $rootScope.selectedModel = args.model;
-        });
-
-        $scope.$on('fileSelectionChanged', function (event, args) {
-            $rootScope.filename = args.file;
-            $rootScope.fields = args.fields[0].split(",");
-        });
-
-        $scope.$on('traincomplete', function () {
-            var someElement = angular.element(document.getElementById('trainResult'));
-            $document.scrollToElementAnimated(someElement);
-        });
-
-        $scope.$on('modelSelectionChanged', function (event, args) {
-            var someElement = angular.element(document.getElementById('plots'));
-            $document.scrollToElementAnimated(someElement);
-        });
-
-        $scope.$on('validatecomplete', function () {
-            var someElement = angular.element(document.getElementById('validateResult'));
-            $document.scrollToElementAnimated(someElement);
-        });
-
-    }
-
-=======
 (function () {
     'use strict';
 
@@ -1220,6 +862,9 @@ class AntiXSS {
             vm.$onInit = init;
 
             function init() {
+                vm.show = false;
+            }
+            function destroy(){
                 vm.show = false;
             }
             vm.dataGrid;
@@ -1298,6 +943,9 @@ class AntiXSS {
             $scope.$on('modelSelectionChanged', function (event, args) {
                 vm.show = false;
             });
+            $scope.$on('removeuser', function () {
+                destroy();
+            });
         }
 
         return {
@@ -1326,7 +974,9 @@ class AntiXSS {
 
         init();
 
-        function init() {}
+        function init() {
+        }
+
         $scope.isActive = function (route) {
             return route === $location.path();
         }
@@ -1364,9 +1014,9 @@ class AntiXSS {
             $document.scrollToElementAnimated(someElement);
             DevExpress.ui.notify("predict completed!", "success", 1000);
         });
+
     }
 
->>>>>>> 3ac69914c38a9cda676b74ac70ee5cac9c4dd299
 }());
 (function () {
     'use strict';
@@ -1436,7 +1086,6 @@ class AntiXSS {
     }
 
 }());
-<<<<<<< HEAD
 (function () {
     'use strict';
 
@@ -1454,81 +1103,21 @@ class AntiXSS {
             vm.$onInit = init;
 
             function init() {
-                $http.get('/getexistingmodels').then(function (response) {
-                    vm.pkls = Object.keys(response.data).reduce(function (r, e) {
-                        if (e.startsWith($rootScope.selectedModel)) r[e] = response.data[e];
-                        return r;
-                    }, {});
-                    vm.pklNames = Object.keys(vm.pkls);
-                    vm.selectBox.option('items', vm.pklNames);
-                });
+                vm.user = vm.user || $rootScope.user;
+                if (vm.user) {
+                    $http.get('/getexistingmodels?username=' + vm.user.username).then(function (response) {
+                        vm.pkls = Object.keys(response.data).reduce(function (r, e) {
+                            if (e.startsWith($rootScope.selectedModel)) r[e] = response.data[e];
+                            return r;
+                        }, {});
+                        vm.pklNames = Object.keys(vm.pkls);
+                        vm.selectBox.option('items', vm.pklNames);
+                    });
+                }
             }
 
-            $scope.$on('modelSelectionChanged', function () {
-                init();
-            });
-
-            $scope.selectedPkl = '';
-            vm.simple = {
-                items: [],
-                placeholder: 'select saved model',
-                bindingOptions: {
-                    value: "selectedPkl"
-                },
-                onSelectionChanged: function (e) {
-                    $http.post('/getSavedModel', {
-                        model: e.selectedItem,
-                        columns: vm.pkls[e.selectedItem]
-                    }).then(function (response) {
-                        console.log(response.data);
-                        $rootScope.$broadcast('pklSelectionChanged', {
-                            pkl: vm.pkls[e.selectedItem],
-                            parameters: response.data
-                        });
-                    });
-                },
-                onInitialized: function (e) {
-                    vm.selectBox = e.component;
-                }
-            };
-        }
-
-        return {
-            templateUrl: "static/html/selectPkl.html",
-            bindings: {
-
-            },
-            controller: selectPklController,
-            controllerAs: 'vm'
-        }
-    }
-
-=======
-(function () {
-    'use strict';
-
-    angular
-        .module('app')
-        .component('selectPkl', selectPkl());
-
-
-    function selectPkl() {
-        selectPklController.$inject = ['$http', '$scope', '$rootScope']
-
-        function selectPklController($http, $scope, $rootScope) {
-            var vm = this;
-
-            vm.$onInit = init;
-
-            function init() {
-                $http.get('/getexistingmodels').then(function (response) {
-                    vm.pkls = Object.keys(response.data).reduce(function (r, e) {
-                        if (e.startsWith($rootScope.selectedModel)) r[e] = response.data[e];
-                        return r;
-                    }, {});
-                    vm.pklNames = Object.keys(vm.pkls);
-                    vm.selectBox.option('items', vm.pklNames);
-                });
+            function destroy(){
+                vm.pklNames = [];
             }
 
             $scope.$on('modelSelectionChanged', function () {
@@ -1539,6 +1128,15 @@ class AntiXSS {
                 init();
             });
 
+            $scope.$on('setuser', function (event, args) {
+                vm.user = args.user;
+                init();
+            });
+
+            $scope.$on('removeuser', function () {
+                destroy();
+            });
+
             $scope.selectedPkl = '';
             vm.simple = {
                 items: [],
@@ -1574,7 +1172,6 @@ class AntiXSS {
         }
     }
 
->>>>>>> 3ac69914c38a9cda676b74ac70ee5cac9c4dd299
 }());
 (function () {
     'use strict';
@@ -1645,6 +1242,9 @@ class AntiXSS {
             function init() {
                 vm.show = false;
             }
+            function destroy(){
+                vm.show = false;
+            }
 
             $scope.$on('traincomplete', function () {
                 vm.title = 'train completed';
@@ -1659,6 +1259,9 @@ class AntiXSS {
             $scope.$on('modelSelectionChanged', function (event, args) {
                 vm.show = false;
             });
+            $scope.$on('removeuser', function () {
+                destroy();
+            });
         }
 
         return {
@@ -1667,6 +1270,66 @@ class AntiXSS {
 
             },
             controller: trainResultController,
+            controllerAs: 'vm'
+        }
+    }
+
+}());
+(function () {
+    'use strict';
+
+    angular
+        .module('app')
+        .component('userManager', userManager());
+
+
+    function userManager() {
+        userManagerController.$inject = ["$http", "$rootScope", "$scope"]
+        function userManagerController($http, $rootScope, $scope) {
+            var vm = this;
+
+            vm.$onInit = init;
+
+            function init() {
+                vm.user = vm.user || $rootScope.user;
+            }
+
+            vm.register = function () {
+                $http.post('/register', { username: vm.username, password: vm.password }).then(function () {
+                    vm.user = { username: vm.username };
+                    sessionStorage.setItem("user", JSON.stringify(vm.user));
+                    $rootScope.user = vm.user;
+                    $scope.showLogin = false;
+                    $rootScope.$broadcast('setuser', { user: vm.user });
+                });
+            }
+
+            vm.login = function () {
+                $http.post('/login', { username: vm.username, password: vm.password }).then(function (response) {
+                    console.log('login successfully');
+                    vm.user = { username: vm.username };
+                    sessionStorage.setItem("user", JSON.stringify(vm.user));
+                    $rootScope.user = vm.user;
+                    $scope.showLogin = false;
+                    $rootScope.$broadcast('setuser', { user: vm.user });
+                });
+            }
+
+            vm.logout = function () {
+                sessionStorage.removeItem("user");
+                vm.user = {};
+                $rootScope.user = {};
+                $rootScope.$broadcast('removeuser');
+            }
+
+        }
+
+        return {
+            templateUrl: "static/html/userManager.html",
+            bindings: {
+
+            },
+            controller: userManagerController,
             controllerAs: 'vm'
         }
     }
@@ -1691,6 +1354,9 @@ class AntiXSS {
             function init() {
                 vm.show = false;
             }
+            function destroy(){
+                vm.show = false;
+            }
 
             $scope.$on('validatecomplete', function (event, args) {
                 vm.data = args.data[1];
@@ -1699,6 +1365,9 @@ class AntiXSS {
 
             $scope.$on('modelSelectionChanged', function (event, args) {
                 vm.show = false;
+            });
+            $scope.$on('removeuser', function () {
+                destroy();
             });
         }
 
