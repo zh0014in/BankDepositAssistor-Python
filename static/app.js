@@ -20,7 +20,7 @@
                     controller: 'datasetsController',
                     controllerAs: "vm"
                 })
-                .when('/admin',{
+                .when('/admin', {
                     templateUrl: 'static/html/admin.html',
                     controller: 'adminController',
                     controllerAs: 'vm'
@@ -31,11 +31,16 @@
         }).config(function ($httpProvider) {
             $httpProvider.interceptors.push('spinnerHttpInterceptor');
         }).run(['$rootScope', function ($rootScope) {
-            if (sessionStorage.getItem("user")) {
-                $rootScope.user = JSON.parse(sessionStorage.getItem("user"));
-                // if ($rootScope.user) {
-                //     $rootScope.$broadcast('setuser', { user: $rootScope.user });
-                // }
+            if (typeof (Storage) !== "undefined") {
+                if (sessionStorage.getItem("user")) {
+                    $rootScope.user = JSON.parse(sessionStorage.getItem("user"));
+                    // if ($rootScope.user) {
+                    //     $rootScope.$broadcast('setuser', { user: $rootScope.user });
+                    // }
+                }
+            } else {
+                // Sorry! No Web Storage support..
+                alert('session storage is required');
             }
 
         }]);
