@@ -13,6 +13,7 @@ from werkzeug.utils import secure_filename
 import csv
 import sys
 import datetime
+from base64 import b64encode
 
 from dataAnalysis.final_model_performance_measure import run_model
 from dataAnalysis.final_model_performance_measure import getexistingmodeljsonfile
@@ -145,9 +146,9 @@ def upload_file_train():
 
             with open(trainFileName, 'rb') as f:
 
-                from base64 import b64encode
+                # from base64 import b64encode
                 #
-                # uploaded_file_content = b64encode(f.read())
+                uploaded_file_content = b64encode(f.read())
                 print 1234, trainFileName
                 # data = {'file_name': trainFileName}
                 reader = csv.DictReader(f)
@@ -155,9 +156,9 @@ def upload_file_train():
 
                 if Document(db, username).exists():
                     # db[username]['_attachments'][trainFileName] = {'data', uploaded_file_content}
-                    db[username].put_attachment(attachment=trainFileName, content_type="application/json", data=out)
+                    db[username].put_attachment(attachment=trainFileName, content_type="application/json", data=uploaded_file_content)
                 else:
-                    data = {'_id': username, '_attachments': {trainFileName: {'data': f.readlines()}}}
+                    data = {'_id': username, '_attachments': {trainFileName: {'data': uploaded_file_content}}}
                     db.create_document(data)
                     db.update('')
 
