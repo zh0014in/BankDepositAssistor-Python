@@ -234,12 +234,18 @@ def loadDistributionData():
 
 def get_data_to_json(username, filename):
     data = db[username].get_attachment(attachment=filename)
-    df = pd.read_csv(StringIO(data), sep=",")
-    # print '---------------', df.to_json()
-    # print '============'
-    print type(df.to_dict())
+    # df = pd.read_csv(StringIO(data), sep=",", index_col=0)
+    # # print '---------------', df.to_json()
+    # # print '============'
+    # print jsonify(df.to_dict())
+    #
+    # return jsonify(df.to_dict())
 
-    return jsonify(df.to_dict())
+    # with open(username+filename, 'w') as f:
+    #     f.write(data)
+
+    return json.dumps([row for row in csv.DictReader(StringIO(data))])
+    # return dumpCsvToJson(username+filename)
 
 
     # if os.path.isfile(fullfilename):
