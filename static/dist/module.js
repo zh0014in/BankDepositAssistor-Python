@@ -132,7 +132,7 @@ var duScrollDefaultEasing=function(e){"use strict";return e<.5?Math.pow(2*e,2)/2
             'hl.sticky',
             'duScroll'
         ])
-        .value('duScrollDuration', 1000)
+        // .value('duScrollDuration', 1000)
         //.value('duScrollOffset', 30)
         .config(function ($routeProvider) {
             $routeProvider
@@ -719,7 +719,7 @@ class AntiXSS {
 
         init();
 
-        function init() {}
+        function init() { }
         $scope.isActive = function (route) {
             return route === $location.path();
         }
@@ -749,6 +749,7 @@ class AntiXSS {
             var someElement = angular.element(document.getElementById('validateResult'));
             $document.scrollToElementAnimated(someElement);
         });
+
     }
 
 }());

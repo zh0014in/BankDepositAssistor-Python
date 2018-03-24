@@ -13,7 +13,7 @@
 
         init();
 
-        function init() {}
+        function init() { }
         $scope.isActive = function (route) {
             return route === $location.path();
         }
@@ -43,6 +43,7 @@
             var someElement = angular.element(document.getElementById('validateResult'));
             $document.scrollToElementAnimated(someElement);
         });
+
     }
 
 }());
