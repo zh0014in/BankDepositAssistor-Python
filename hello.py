@@ -14,7 +14,8 @@ import csv
 import sys
 import datetime
 from base64 import b64encode
-
+import pandas as pd
+from StringIO import StringIO
 from dataAnalysis.final_model_performance_measure import run_model
 from dataAnalysis.final_model_performance_measure import getexistingmodeljsonfile
 from dataAnalysis.final_model_performance_measure import view_saved_model
@@ -168,7 +169,7 @@ def upload_file_train():
                         trainFileName: {'data': uploaded_file_content}}}
                     db.create_document(data)
                     db.update('')
-            print db[username].get_attachment(trainFileName)
+            # print db[username].get_attachment(trainFileName)
             return trainFileName
     return ''
 
@@ -231,7 +232,17 @@ def loadDistributionData():
     filename = request.args.get('filename')
     username = request.args.get('username')
     print filename, username
-    return db[username].get_attachment(attachment=filename, write_to='json')
+    return get_data_from_json(username, filename)
+
+
+def get_data_from_json(username, filename):
+    data = db[username].get_attachment(attachment=filename)
+    df = pd.read_csv(StringIO(data), sep=",")
+    # print '---------------', df.to_json()
+    # print '============'
+    return df.to_json()
+
+
     # if os.path.isfile(fullfilename):
     #     return dumpCsvToJson(fullfilename)
     # elif os.path.isfile(filename):
