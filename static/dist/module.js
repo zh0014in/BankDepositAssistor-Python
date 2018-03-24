@@ -1060,8 +1060,8 @@ class AntiXSS {
         .service('runModel', runModel)
 
     /** @ngInject */
-    runModel.$inject = ['$http'];
-    function runModel($http) {
+    runModel.$inject = ['$http', '$rootScope'];
+    function runModel($http, $rootScope) {
 
         this.run = run;
 
@@ -1070,7 +1070,8 @@ class AntiXSS {
                 model: model,
                 filename: filename,
                 mode: mode,
-                columns: columns
+                columns: columns,
+                username: $rootScope.user.username
             }).then(callback);
         }
     }
