@@ -286,7 +286,9 @@ def register():
     password = request.json['password']
 
     if Document(db, 'usercontrol').exists():
-        db['usercontrol'][username] = password
+        print username
+        with Document(db, 'usercontrol') as document:
+            document[username] = password
         print 'update', username
     else:
         db.create_document({'_id': 'usercontrol', username: password})
