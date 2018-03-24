@@ -258,8 +258,10 @@ def register():
 
     if Document(db, 'usercontrol').exists():
         db['usercontrol'][username] = password
+        print 'update', username
     else:
-        db.create_document({'usercontrol': {username: password}})
+        db.create_document({'_id': 'usercontrol', username: password})
+        print 'create', username
     return ''
 
 @app.route('/login', methods=['POST'])
@@ -272,9 +274,6 @@ def login():
             return ''
 
     return render_template('404.html'), 404
-
-
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port, debug=True)
