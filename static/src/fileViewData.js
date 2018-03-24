@@ -7,9 +7,9 @@
 
 
     function fileViewData() {
-        fileViewDataController.$inject = ['$scope', '$http', '$rootScpoe']
+        fileViewDataController.$inject = ['$scope', '$http', '$rootScope']
 
-        function fileViewDataController($scope, $http, $rootScpoe) {
+        function fileViewDataController($scope, $http, $rootScope) {
             var vm = this;
 
             init();
@@ -33,7 +33,7 @@
 
             $scope.$on('fileClickViewData', function (event, args) {
                 vm.show = false;
-                $http.get('/getFileData?filename=' + args.file+'&username='+$rootScpoe.user.username).then(function (response) {
+                $http.get('/getFileData?filename=' + args.file+'&username='+$rootScope.user.username).then(function (response) {
                     vm.fileName = args.file;
                     vm.fileData = angular.fromJson(response.data.data);
                     vm.columns = response.data.columns;
