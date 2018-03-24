@@ -1142,7 +1142,7 @@ class AntiXSS {
                 if (vm.user) {
                     $http.get('/getexistingmodels?username=' + vm.user.username).then(function (response) {
                         vm.pkls = Object.keys(response.data).reduce(function (r, e) {
-                            if (e.startsWith($rootScope.selectedModel)) r[e] = response.data[e];
+                            if (e.startsWith(vm.user.username + "_"+ $rootScope.selectedModel)) r[e] = response.data[e];
                             return r;
                         }, {});
                         vm.pklNames = Object.keys(vm.pkls);
