@@ -24,6 +24,8 @@
                     $rootScope.user = vm.user;
                     $scope.showLogin = false;
                     $rootScope.$broadcast('setuser', { user: vm.user });
+                },function(){
+                    DevExpress.ui.notify('failed to register', 'error', 1000);
                 });
             }
 
@@ -35,6 +37,8 @@
                     $rootScope.user = vm.user;
                     $scope.showLogin = false;
                     $rootScope.$broadcast('setuser', { user: vm.user });
+                }, function(){
+                    DevExpress.ui.notify('username or password is wrong', 'error', 1000);
                 });
             }
 

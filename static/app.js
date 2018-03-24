@@ -11,7 +11,7 @@
             'hl.sticky',
             'duScroll'
         ])
-        // .value('duScrollDuration', 1000)
+        .value('duScrollDuration', 1000)
         //.value('duScrollOffset', 30)
         .config(function ($routeProvider) {
             $routeProvider
