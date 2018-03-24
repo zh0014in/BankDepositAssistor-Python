@@ -1,15 +1,12 @@
 <div class="list-group" style="min-height:500px">
     
-    <a href="javascript:;" data-ng-click="vm.fileSelected(file);" ng-class="{'active': file === vm.selectedfile}" class="list-group-item list-group-item-action flex-column align-items-start"
+    <a href="javascript:;" data-ng-click="vm.fileSelected(file);vm.viewFile(file);" ng-class="{'active': file === vm.selectedfile}" class="list-group-item list-group-item-action flex-column align-items-start"
         data-ng-repeat="file in vm.files">
         <div class="d-flex w-100 justify-content-between">
             <h5 class="mb-1" data-ng-bind="file.filename"></h5>
             <small data-ng-bind="file.size/1000 + 'KB'"></small>
         </div>
-        <div class="d-flex w-100 justify-content-between">
-            <p class="mb-1" data-ng-bind="file.lines + ' lines of data'"></p>
-            <button type="button" data-ng-click="vm.viewFile(file); $event.stopPropagation();">View</button>
-        </div>
+        <p class="mb-1" data-ng-bind="file.lines + ' lines of data'"></p>
         <small data-ng-bind="'uploaded at ' + file.createdAt"></small>
     </a>
     <div data-ng-hide="vm.files && vm.files.length > 0">
