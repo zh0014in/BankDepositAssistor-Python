@@ -28,7 +28,7 @@
 
         $scope.$on('fileSelectionChanged', function (event, args) {
             $rootScope.filename = args.file;
-            $rootScope.fields = args.fields[0].split(",");
+            $rootScope.fields = Object.keys(args.fields);
         });
 
         $scope.$on('traincomplete', function () {
