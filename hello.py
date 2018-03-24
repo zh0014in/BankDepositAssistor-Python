@@ -143,21 +143,21 @@ def upload_file_train():
             file.save(trainFileName)
             print trainFileName
 
-            print 123
             with open(trainFileName, 'rb') as f:
-                # lis=[line.split() for line in f]
-                #save to db
 
                 from base64 import b64encode
-
-                uploaded_file_content = b64encode(f.read())
+                #
+                # uploaded_file_content = b64encode(f.read())
                 print 1234, trainFileName
                 # data = {'file_name': trainFileName}
+                reader = csv.DictReader(f)
+                out = json.dumps([row for row in reader])
+
                 if Document(db, username).exists():
-                    db[username].put_attachment(attachment=trainFileName, content_type="application/octet-stream", data=uploaded_file_content)
+                    # db[username]['_attachments'][trainFileName] = {'data', uploaded_file_content}
+                    db[username].put_attachment(attachment=trainFileName, content_type="application/json", data=out)
                 else:
-                    data = {'_id': username, '_attachments': {
-                        trainFileName: {'data': uploaded_file_content, 'content_type': "application/octet-stream"}}}
+                    data = {'_id': username, '_attachments': {trainFileName: {'data': f.readlines()}}}
                     db.create_document(data)
                     db.update('')
 
@@ -219,11 +219,13 @@ def dumpCsvToJson(filename):
 @app.route('/loadDistributionData', methods=['GET'])
 def loadDistributionData():
     filename = request.args.get('filename')
-    fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    if os.path.isfile(fullfilename):
-        return dumpCsvToJson(fullfilename)
-    elif os.path.isfile(filename):
-        return dumpCsvToJson(filename)
+    username = request.args.get('username')
+    print filename, username
+    return db[username].get_attachment(attachment=filename, write_to='json')
+    # if os.path.isfile(fullfilename):
+    #     return dumpCsvToJson(fullfilename)
+    # elif os.path.isfile(filename):
+    #     return dumpCsvToJson(filename)
 
 
 # @app.route('/getFiledetails', methods=['GET'])
