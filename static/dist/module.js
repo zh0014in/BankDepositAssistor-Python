@@ -787,6 +787,9 @@ class AntiXSS {
             function init() {
                 vm.show = false;
             }
+            function destroy(){
+                vm.show = false;
+            }
 
             vm.dataGrid;
             vm.gridOptions = {
@@ -814,6 +817,9 @@ class AntiXSS {
                     vm.dataGrid.option('dataSource', vm.fileData);
                     vm.dataGrid.repaint();
                 });
+            });
+            $scope.$on('removeuser', function () {
+                destroy();
             });
         }
 
