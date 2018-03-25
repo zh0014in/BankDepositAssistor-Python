@@ -75,12 +75,38 @@ def isFile(object):
 
 def findfilesfromdb(username):
     if Document(db, username).exists():
-        return map(str, db[username]['_attachments'].keys())
+        return map(str, db[username].get('_attachments', {}).keys())
     return []
 
 
 def get_data_from_db(key, filename):
     return db[key].get_attachment(filename)
+
+
+def get_all_usage_data_from_db(username):
+    assert username.startswith('admin')
+    result = {}
+    if not Document(db, 'usercontrol').exists():
+        return result
+    else:
+        for key in db['usercontrol'].keys():
+            if key.startswith('_') or key.startswith('admin'):
+                continue
+            else:
+                result[key] = {}
+                datausage = 0
+                if Document(db, key).exists():
+                    with Document(db, key) as document:
+                        desc = json.loads(document.json())
+                        result[key]['time'] = round(desc.get('time_spent', 0), 2)
+                        for attach in desc.get('_attachments', []):
+                            datausage += desc['_attachments'][attach]['length']
+                    result[key]['datausage'] = round(datausage/1024./ 1024., 2) # in Mb
+                else:
+                    result[key] = {'datausage': 0, 'time': 0}
+
+    print result
+    return json.dumps(result)
 
 
 @app.route('/')
@@ -147,29 +173,17 @@ def upload_file_train():
             print trainFileName
 
             with open(trainFileName, 'rb') as f:
-
-                # from base64 import b64encode
-                #
                 uploaded_file_content = b64encode(f.read())
-                print 1234, trainFileName
-                # data = {'file_name': trainFileName}
-                reader = csv.DictReader(f)
-                out = json.dumps([row for row in reader])
-
                 if Document(db, username).exists():
-                    # db[username]['_attachments'][trainFileName] = {'data', uploaded_file_content}
-                    # db[username].put_attachment(
-                        # attachment=trainFileName, content_type="application/json", data=uploaded_file_content)
                     with Document(db, username) as document:
                         document['_attachments'][trainFileName] = {
                             'data': uploaded_file_content}
-                        # db.update('')
                 else:
                     data = {'_id': username, '_attachments': {
-                        trainFileName: {'data': uploaded_file_content}}}
+                        trainFileName: {'data': uploaded_file_content},
+                        }, 'time_spent': 0}
                     db.create_document(data)
-                    db.update('')
-            # print db[username].get_attachment(trainFileName)
+
             return trainFileName
     return ''
 
@@ -187,8 +201,12 @@ def train():
     print fullfilename
     file_content = get_data_from_db(username, fullfilename)
     print file_content
-    result = run_model(model, mode, fullfilename, username,
+    result, time_spent = run_model(model, mode, fullfilename, username,
                        selected_columns=columns, file_content=file_content)
+    with Document(db, username) as time_control:
+
+        time_control['time_spent'] = float(time_control.get('time_spent', 0)) + time_spent
+        print username, time_control['time_spent']
     return jsonify(result)
 
 

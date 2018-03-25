@@ -239,18 +239,20 @@ def run_model(model_name, train_or_predict, file_name, username, selected_column
     model_file_name = username + '_' + model_name + '_' + hash_value + '.pkl'
     print train_or_predict
     standard_scaler = preprocessing.StandardScaler()
-
+    import time
+    start_time = time.time()
     if 'train' == train_or_predict:
-        return train(selected_columns)
+        return train(selected_columns), time.time() - start_time
 
     if 'validate' == train_or_predict:
         assert os.path.exists(model_file_name)
 
-        return validate(selected_columns)
+        return validate(selected_columns), time.time() - start_time
 
     if 'predict' == train_or_predict:
         assert os.path.exists(model_file_name)
-        return predict(selected_columns)
+        return predict(selected_columns), time.time() - start_time
+
 
 
 def view_saved_model(model_name, selected_columns=COLUMNS):
