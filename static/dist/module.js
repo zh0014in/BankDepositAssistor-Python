@@ -1141,8 +1141,8 @@ class AntiXSS {
         });
 
         $scope.$on('fileloaded', function(){
-            var someElement = angular.element(document.getElementById('plots'));
-            $document.scrollToElementAnimated(someElement);
+            // var someElement = angular.element(document.getElementById('plots'));
+            // $document.scrollToElementAnimated(someElement);
         });
 
         $scope.$on('traincomplete', function () {
