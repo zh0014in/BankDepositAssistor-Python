@@ -19,7 +19,7 @@
                 if (vm.user) {
                     $http.get('/getexistingmodels?username=' + vm.user.username).then(function (response) {
                         vm.pkls = Object.keys(response.data).reduce(function (r, e) {
-                            if (e.startsWith(vm.user.username + "_"+ $rootScope.selectedModel)) r[e] = response.data[e];
+                            if (e.startsWith(vm.user.username + "_" + $rootScope.selectedModel)) r[e] = response.data[e];
                             return r;
                         }, {});
                         vm.pklNames = Object.keys(vm.pkls);
@@ -28,7 +28,7 @@
                 }
             }
 
-            function destroy(){
+            function destroy() {
                 vm.pklNames = [];
             }
 
@@ -65,6 +65,12 @@
                         $rootScope.$broadcast('pklSelectionChanged', {
                             pkl: vm.pkls[e.selectedItem],
                             parameters: response.data
+                        });
+
+                        $http.get('/getfeatureimportance?model=' + $rootScope.selectedModel + '&username=' + $rootScope.user.username).then(function (response) {
+                            $rootScope.$broadcast('featureimportance', {
+                                data: response.data
+                            });
                         });
                     });
                 },

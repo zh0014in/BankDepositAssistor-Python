@@ -21,6 +21,9 @@
                 vm.show = false;
             }
             $scope.$on('featureimportance', function (event, args) {
+                if(!args.data){
+                    return;
+                }
                 vm.data = args.data.filter(function (t) {
                     return t.importance > 0;
                 });

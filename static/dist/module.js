@@ -335,7 +335,7 @@ class AntiXSS {
                     });
                     if (response.data.length > 2) {
                         var importanceFilename = response.data[2];
-                        $http.get('/loadDistributionData?filename=' + importanceFilename+'&username='+$rootScope.user.username).then(function (response) {
+                        $http.get('/getfeatureimportance?model=' + $rootScope.selectedModel+'&username='+$rootScope.user.username).then(function (response) {
                             console.log(response.data);
                             $rootScope.$broadcast('featureimportance', {
                                 data: response.data
@@ -650,10 +650,13 @@ class AntiXSS {
             function init() {
 
             }
-            function destroy(){
+            function destroy() {
                 vm.show = false;
             }
             $scope.$on('featureimportance', function (event, args) {
+                if(!args.data){
+                    return;
+                }
                 vm.data = args.data.filter(function (t) {
                     return t.importance > 0;
                 });
@@ -1238,7 +1241,7 @@ class AntiXSS {
                 if (vm.user) {
                     $http.get('/getexistingmodels?username=' + vm.user.username).then(function (response) {
                         vm.pkls = Object.keys(response.data).reduce(function (r, e) {
-                            if (e.startsWith(vm.user.username + "_"+ $rootScope.selectedModel)) r[e] = response.data[e];
+                            if (e.startsWith(vm.user.username + "_" + $rootScope.selectedModel)) r[e] = response.data[e];
                             return r;
                         }, {});
                         vm.pklNames = Object.keys(vm.pkls);
@@ -1247,7 +1250,7 @@ class AntiXSS {
                 }
             }
 
-            function destroy(){
+            function destroy() {
                 vm.pklNames = [];
             }
 
@@ -1284,6 +1287,12 @@ class AntiXSS {
                         $rootScope.$broadcast('pklSelectionChanged', {
                             pkl: vm.pkls[e.selectedItem],
                             parameters: response.data
+                        });
+
+                        $http.get('/getfeatureimportance?model=' + $rootScope.selectedModel + '&username=' + $rootScope.user.username).then(function (response) {
+                            $rootScope.$broadcast('featureimportance', {
+                                data: response.data
+                            });
                         });
                     });
                 },

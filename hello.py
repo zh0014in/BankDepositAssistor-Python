@@ -268,7 +268,8 @@ def get_feature_importance(username, model):
     if model == 'svm':
         return json.dumps({})
     else:
-        return json.load(username+ '_' + model + '.json')
+        with open(username+ '_' + model + '.json', 'r') as fp:
+            return json.load(fp)
 
 def get_data_to_json(username, filename):
     data = db[username].get_attachment(attachment=filename)
@@ -363,6 +364,12 @@ def getFileData():
     filename = request.args.get('filename')
     username = request.args.get('username')
     return get_data_to_json(username, filename)
+
+@app.route('/getfeatureimportance', methods=['GET'])
+def getfeatureimportance():
+    model = request.args.get('model')
+    username = request.args.get('username')
+    return get_feature_importance(username, model)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port, debug=True)
