@@ -59,6 +59,6 @@ target/
 
 # Mac files
 *.DS_Store
-
+existingmodel.json
 # vcap-local.json
 node_modules/
