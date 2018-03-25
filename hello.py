@@ -353,13 +353,7 @@ def admin():
 def getFileData():
     filename = request.args.get('filename')
     username = request.args.get('username')
-    data, keys = get_data_to_json_with_keys(username, filename)
-    return jsonify({'columns': keys, 'data': data})
-
-def get_data_to_json_with_keys(username, filename):
-    data = db[username].get_attachment(attachment=filename)
-    df = pd.read_csv(StringIO(data), sep=",", index_col=0)
-    return json.dumps([row for row in csv.DictReader(StringIO(data))]), list(df)
+    return get_data_to_json(username, filename)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port, debug=True)

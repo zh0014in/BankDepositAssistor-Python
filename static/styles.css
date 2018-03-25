@@ -121,3 +121,17 @@
     right: -320px;
   }
 }
+
+.list-group {
+    padding-left:10px;
+    min-height:500px
+}
+
+.button-panel {
+    background-color: white;
+    padding-top: 14px
+}
+
+.selector-box {
+    padding-right: 5px
+}
