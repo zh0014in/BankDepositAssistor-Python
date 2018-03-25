@@ -691,6 +691,9 @@ class AntiXSS {
             $scope.$on('modelSelectionChanged', function (event, args) {
                 vm.show = false;
             });
+            $scope.$on('fileSelectionChanged', function () {
+                vm.show = false;
+            });
             $scope.$on('removeuser', function () {
                 destroy();
             });
@@ -1048,6 +1051,9 @@ class AntiXSS {
             $scope.$on('modelSelectionChanged', function (event, args) {
                 vm.show = false;
             });
+            $scope.$on('fileSelectionChanged', function () {
+                vm.show = false;
+            });
             $scope.$on('removeuser', function () {
                 destroy();
             });
@@ -1365,6 +1371,9 @@ class AntiXSS {
             $scope.$on('modelSelectionChanged', function (event, args) {
                 vm.show = false;
             });
+            $scope.$on('fileSelectionChanged', function () {
+                vm.show = false;
+            });
             $scope.$on('removeuser', function () {
                 destroy();
             });
@@ -1474,6 +1483,9 @@ class AntiXSS {
             });
 
             $scope.$on('modelSelectionChanged', function (event, args) {
+                vm.show = false;
+            });
+            $scope.$on('fileSelectionChanged', function () {
                 vm.show = false;
             });
             $scope.$on('removeuser', function () {
