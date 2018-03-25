@@ -274,8 +274,8 @@ def get_data_to_json(username, filename):
     # with open(username+filename, 'w') as f:
     #     f.write(data)
 
-    data = [row for row in csv.DictReader(StringIO(data))]
-    return json.dumps({'fields': list(data.split('\n', 1)[0].split(',')), 'data': data})
+    result = [row for row in csv.DictReader(StringIO(data))]
+    return json.dumps({'fields': list(data.split('\n', 1)[0].split(',')), 'data': result})
     # return dumpCsvToJson(username+filename)
 
 
