@@ -424,16 +424,18 @@ class AntiXSS {
 
         function distributionPlotsController($http, $scope, runModel, spinnerService, $rootScope) {
             var vm = this;
+            vm.show = false;
 
             init();
 
             function init() {
-
+                vm.show = $rootScope.user;
             }
 
             function destroy(){
                 vm.showMonthChart = false;
                 vm.showTestChart = false;
+                vm.show = false;
             }
 
             vm.showMonthChart = false;
@@ -520,6 +522,7 @@ class AntiXSS {
                     $rootScope.fields = response.data.fields;
                     countByColumn('month');
                     spinnerService.close('distributionplotsspinner');
+                    $rootScope.$broadcast('fileloaded');
                 });
             });
 
@@ -607,6 +610,10 @@ class AntiXSS {
                     });
                 }
             }
+
+            $scope.$on('setuser', function (event, args) {
+                vm.show = true;
+            });
 
             $scope.$on('removeuser', function () {
                 destroy();
@@ -724,10 +731,12 @@ class AntiXSS {
         function fileListController($scope, $http, $rootScope) {
             var vm = this;
             vm.selectedfile = null;
+            vm.show = false;
             vm.$onInit = init();
 
             function init() {
                 vm.user = vm.user || $rootScope.user;
+                vm.show = vm.user;
                 if (vm.user) {
                     $http.get('/uploadedFilesWithDetails?username=' + vm.user.username).then(function (response) {
                         // $scope.selectedFile = data[0];
@@ -738,6 +747,7 @@ class AntiXSS {
             }
 
             function destroy() {
+                vm.show = false;
                 vm.user = {};
                 vm.files = [];
             }
@@ -754,6 +764,7 @@ class AntiXSS {
             });
 
             $scope.$on('setuser', function (event, args) {
+                vm.show = true;
                 vm.user = args.user;
                 init();
             });
@@ -1002,6 +1013,9 @@ class AntiXSS {
                     enabled: true,
                     pageSize: 10
                 },
+                filterRow:{
+                    visible: true
+                },
                 columns: [{
                     dataField: 'age',
                 }, {
@@ -1101,6 +1115,11 @@ class AntiXSS {
         $scope.$on('fileSelectionChanged', function (event, args) {
             $rootScope.filename = args.file;
             // $rootScope.fields = Object.keys(args.fields);
+        });
+
+        $scope.$on('fileloaded', function(){
+            var someElement = angular.element(document.getElementById('plots'));
+            $document.scrollToElementAnimated(someElement);
         });
 
         $scope.$on('traincomplete', function () {
@@ -1473,12 +1492,13 @@ class AntiXSS {
             function init() {
                 vm.show = false;
             }
-            function destroy(){
+            function destroy() {
                 vm.show = false;
             }
 
             $scope.$on('validatecomplete', function (event, args) {
                 vm.data = args.data[1];
+                vm.percentage = (vm.data.TruePositive + vm.data.FalseNegative) / (vm.data.TruePositive + vm.data.FalseNegative + vm.data.TrueNegative + vm.data.FalsePositive);
                 vm.show = true;
             });
 

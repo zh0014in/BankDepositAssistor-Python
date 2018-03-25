@@ -34,6 +34,9 @@
                     enabled: true,
                     pageSize: 10
                 },
+                filterRow:{
+                    visible: true
+                },
                 columns: [{
                     dataField: 'age',
                 }, {

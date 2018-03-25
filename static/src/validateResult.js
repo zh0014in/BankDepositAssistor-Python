@@ -17,12 +17,13 @@
             function init() {
                 vm.show = false;
             }
-            function destroy(){
+            function destroy() {
                 vm.show = false;
             }
 
             $scope.$on('validatecomplete', function (event, args) {
                 vm.data = args.data[1];
+                vm.percentage = (vm.data.TruePositive + vm.data.FalseNegative) / (vm.data.TruePositive + vm.data.FalseNegative + vm.data.TrueNegative + vm.data.FalsePositive);
                 vm.show = true;
             });
 
