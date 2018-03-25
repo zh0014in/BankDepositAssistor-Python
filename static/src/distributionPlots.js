@@ -11,16 +11,18 @@
 
         function distributionPlotsController($http, $scope, runModel, spinnerService, $rootScope) {
             var vm = this;
+            vm.show = false;
 
             init();
 
             function init() {
-
+                vm.show = $rootScope.user;
             }
 
             function destroy(){
                 vm.showMonthChart = false;
                 vm.showTestChart = false;
+                vm.show = false;
             }
 
             vm.showMonthChart = false;
@@ -194,6 +196,10 @@
                     });
                 }
             }
+
+            $scope.$on('setuser', function (event, args) {
+                vm.show = true;
+            });
 
             $scope.$on('removeuser', function () {
                 destroy();
