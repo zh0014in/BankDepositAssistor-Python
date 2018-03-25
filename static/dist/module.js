@@ -424,16 +424,18 @@ class AntiXSS {
 
         function distributionPlotsController($http, $scope, runModel, spinnerService, $rootScope) {
             var vm = this;
+            vm.show = false;
 
             init();
 
             function init() {
-
+                vm.show = $rootScope.user;
             }
 
             function destroy(){
                 vm.showMonthChart = false;
                 vm.showTestChart = false;
+                vm.show = false;
             }
 
             vm.showMonthChart = false;
@@ -609,6 +611,10 @@ class AntiXSS {
                 }
             }
 
+            $scope.$on('setuser', function (event, args) {
+                vm.show = true;
+            });
+
             $scope.$on('removeuser', function () {
                 destroy();
             });
@@ -725,10 +731,12 @@ class AntiXSS {
         function fileListController($scope, $http, $rootScope) {
             var vm = this;
             vm.selectedfile = null;
+            vm.show = false;
             vm.$onInit = init();
 
             function init() {
                 vm.user = vm.user || $rootScope.user;
+                vm.show = vm.user;
                 if (vm.user) {
                     $http.get('/uploadedFilesWithDetails?username=' + vm.user.username).then(function (response) {
                         // $scope.selectedFile = data[0];
@@ -739,6 +747,7 @@ class AntiXSS {
             }
 
             function destroy() {
+                vm.show = false;
                 vm.user = {};
                 vm.files = [];
             }
@@ -755,6 +764,7 @@ class AntiXSS {
             });
 
             $scope.$on('setuser', function (event, args) {
+                vm.show = true;
                 vm.user = args.user;
                 init();
             });

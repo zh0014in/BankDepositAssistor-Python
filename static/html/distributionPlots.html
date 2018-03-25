@@ -1,37 +1,39 @@
-<div class="card" data-ng-show="vm.showMonthChart || vm.showTestChart">
-    <div class="card-body">
-        <h2 class="card-title">some insights of the data</h2>
-        <span>
-            <!-- <h2>Some Insights of the Data</h2> -->
-            count by:
-            <a href="javascript:;" data-ng-click="vm.countByColumn('month')">
-                <u>month</u>
-            </a>
-            <a href="javascript:;" data-ng-click="vm.countByColumn('age')">
-                <u>age</u>
-            </a>
-            <a href="javascript:;" data-ng-click="vm.countByColumn('campaign')">
-                <u>campaign</u>
-            </a>
-            <a href="javascript:;" data-ng-click="vm.countByColumn('marital')">
-                <u>marital</u>
-            </a>
-            <a href="javascript:;" data-ng-click="vm.countByColumn('education')">
-                <u>education</u>
-            </a>
-            <a href="javascript:;" data-ng-click="vm.countByColumn('housing')">
-                <u>housing</u>
-            </a>
-            <a href="javascript:;" data-ng-click="vm.countByColumn('loan')">
-                <u>loan</u>
-            </a>
-            <div dx-chart="vm.monthChartOptions" data-ng-show="vm.showMonthChart"></div>
-            <div dx-chart="vm.testChartOptions" data-ng-show="vm.showTestChart"></div>
-            <column-selector></column-selector>
-        </span>
+<div data-ng-show="vm.show">
+    <div class="card" data-ng-show="vm.showMonthChart || vm.showTestChart">
+        <div class="card-body">
+            <h2 class="card-title">some insights of the data</h2>
+            <span>
+                <!-- <h2>Some Insights of the Data</h2> -->
+                count by:
+                <a href="javascript:;" data-ng-click="vm.countByColumn('month')">
+                    <u>month</u>
+                </a>
+                <a href="javascript:;" data-ng-click="vm.countByColumn('age')">
+                    <u>age</u>
+                </a>
+                <a href="javascript:;" data-ng-click="vm.countByColumn('campaign')">
+                    <u>campaign</u>
+                </a>
+                <a href="javascript:;" data-ng-click="vm.countByColumn('marital')">
+                    <u>marital</u>
+                </a>
+                <a href="javascript:;" data-ng-click="vm.countByColumn('education')">
+                    <u>education</u>
+                </a>
+                <a href="javascript:;" data-ng-click="vm.countByColumn('housing')">
+                    <u>housing</u>
+                </a>
+                <a href="javascript:;" data-ng-click="vm.countByColumn('loan')">
+                    <u>loan</u>
+                </a>
+                <div dx-chart="vm.monthChartOptions" data-ng-show="vm.showMonthChart"></div>
+                <div dx-chart="vm.testChartOptions" data-ng-show="vm.showTestChart"></div>
+                <column-selector></column-selector>
+            </span>
 
+        </div>
     </div>
+    <span data-ng-hide="vm.showMonthChart || vm.showTestChart">
+        <h3>Select a dataset to get an insight of the data</h3>
+    </span>
 </div>
-<span data-ng-hide="vm.showMonthChart || vm.showTestChart">
-    <p>Select a dataset to get an insight of the data</p>
-</span>
