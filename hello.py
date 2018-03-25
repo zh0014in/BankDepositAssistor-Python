@@ -264,6 +264,11 @@ def loadDistributionData():
     print filename, username
     return get_data_to_json(username, filename)
 
+def get_feature_importance(username, model):
+    if model == 'svm':
+        return json.dumps({})
+    else:
+        return json.load(username+ '_' + model + '.json')
 
 def get_data_to_json(username, filename):
     data = db[username].get_attachment(attachment=filename)

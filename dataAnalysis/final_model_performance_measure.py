@@ -76,10 +76,10 @@ def run_model(model_name, train_or_predict, file_name, username, selected_column
         feature_importance_output = ""
         if (model_name == "rf"):
             importances = fit_model.feature_importances_
-            feature_importance_output = "rf_feature_importance.csv"
+            feature_importance_output = username + "_rf.json"
         elif (model_name == "lm"):
             importances = fit_model.coef_[0]
-            feature_importance_output = "lm_feature_importance.csv"
+            feature_importance_output = username + "_lm.json"
 
         if (len(importances)):
             feature_names = training_set_imputed.keys()
@@ -96,7 +96,8 @@ def run_model(model_name, train_or_predict, file_name, username, selected_column
                 else:
                     f_dict[key] = row['importance']
             print f_dict
-            df.to_csv(feature_importance_output)
+            if feature_importance_output:
+                json.dump(f_dict, feature_importance_output)
 
         joblib.dump(fit_model, model_file_name)
 
@@ -110,19 +111,13 @@ def run_model(model_name, train_or_predict, file_name, username, selected_column
 
             try:
                 jd = json.load(f)
-                print '-----------------', jd
             except:
                 pass
 
 
             with open('existingmodel.json', 'w') as f1:
                 jd[model_file_name] = selected_columns
-
-                print '-----------------123  ', jd
                 json.dump(jd, f1)
-
-        with open(feature_importance_csv, 'w') as f2:
-            json.dump(feature_importance_output)
 
         if (not feature_importance_output):
             return model_name, fit_model.get_params()
