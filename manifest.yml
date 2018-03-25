@@ -3,4 +3,4 @@ applications:
  - name: e0046718python
    random-route: true
    memory: 1024M
-   instances: 2
+   instances: 1
