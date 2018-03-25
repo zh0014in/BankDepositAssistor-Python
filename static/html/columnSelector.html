@@ -6,7 +6,7 @@
                 <strong>included features</strong>
             </p>
             <ul class="list-unstyled">
-                <li data-ng-repeat="column in vm.columns">
+                <li data-ng-repeat="column in vm.columns" data-ng-show="column !== 'education'">
                     <a href="javascript:;" data-ng-click="vm.remove(column);">
                         <i class="fas fa-times text-danger"></i>
                     </a> {{column}}
