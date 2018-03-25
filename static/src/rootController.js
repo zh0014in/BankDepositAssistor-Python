@@ -31,6 +31,11 @@
             // $rootScope.fields = Object.keys(args.fields);
         });
 
+        $scope.$on('fileloaded', function(){
+            var someElement = angular.element(document.getElementById('plots'));
+            $document.scrollToElementAnimated(someElement);
+        });
+
         $scope.$on('traincomplete', function () {
             var someElement = angular.element(document.getElementById('trainResult'));
             $document.scrollToElementAnimated(someElement);

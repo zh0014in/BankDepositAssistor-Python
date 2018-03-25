@@ -520,6 +520,7 @@ class AntiXSS {
                     $rootScope.fields = response.data.fields;
                     countByColumn('month');
                     spinnerService.close('distributionplotsspinner');
+                    $rootScope.$broadcast('fileloaded');
                 });
             });
 
@@ -1103,6 +1104,11 @@ class AntiXSS {
             // $rootScope.fields = Object.keys(args.fields);
         });
 
+        $scope.$on('fileloaded', function(){
+            var someElement = angular.element(document.getElementById('plots'));
+            $document.scrollToElementAnimated(someElement);
+        });
+
         $scope.$on('traincomplete', function () {
             var someElement = angular.element(document.getElementById('trainResult'));
             $document.scrollToElementAnimated(someElement);
@@ -1473,12 +1479,13 @@ class AntiXSS {
             function init() {
                 vm.show = false;
             }
-            function destroy(){
+            function destroy() {
                 vm.show = false;
             }
 
             $scope.$on('validatecomplete', function (event, args) {
                 vm.data = args.data[1];
+                vm.percentage = (vm.data.TruePositive + vm.data.FalseNegative) / (vm.data.TruePositive + vm.data.FalseNegative + vm.data.TrueNegative + vm.data.FalsePositive);
                 vm.show = true;
             });
 
