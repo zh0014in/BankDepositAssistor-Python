@@ -455,7 +455,7 @@ class AntiXSS {
                 ],
                 rotated: false,
                 size: {
-                    width: 800
+                    width: 1200
                 },
                 legend: {
                     horizontalAlignment: "right",
@@ -516,8 +516,9 @@ class AntiXSS {
             $scope.$on('fileSelectionChanged', function (event, args) {
                 spinnerService.show('distributionplotsspinner');
                 $http.get('/loadDistributionData?filename=' + args.file + "&username="+$rootScope.user.username).then(function (response) {
-                    vm.data = response.data;
-                    countByColumn('month')
+                    vm.data = response.data.data;
+                    $rootScope.fields = response.data.fields;
+                    countByColumn('month');
                     spinnerService.close('distributionplotsspinner');
                 });
             });
@@ -733,7 +734,7 @@ class AntiXSS {
                 }
             }
 
-            function destroy(){
+            function destroy() {
                 vm.user = {};
                 vm.files = [];
             }
@@ -741,8 +742,7 @@ class AntiXSS {
             vm.fileSelected = function (file) {
                 vm.selectedfile = file;
                 $rootScope.$broadcast('fileSelectionChanged', {
-                    file: file.filename,
-                    fields: file.fields
+                    file: file.filename
                 });
             }
 
@@ -755,7 +755,7 @@ class AntiXSS {
                 init();
             });
 
-            $scope.$on('removeuser', function(){
+            $scope.$on('removeuser', function () {
                 destroy();
             });
         }
@@ -1094,7 +1094,7 @@ class AntiXSS {
 
         $scope.$on('fileSelectionChanged', function (event, args) {
             $rootScope.filename = args.file;
-            $rootScope.fields = Object.keys(args.fields);
+            // $rootScope.fields = Object.keys(args.fields);
         });
 
         $scope.$on('traincomplete', function () {
