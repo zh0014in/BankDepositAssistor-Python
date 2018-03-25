@@ -203,6 +203,7 @@ def train():
     print file_content
     result, time_spent = run_model(model, mode, fullfilename, username,
                        selected_columns=columns, file_content=file_content)
+    print time_spent
     with Document(db, username) as time_control:
 
         time_control['time_spent'] = float(time_control.get('time_spent', 0)) + time_spent
@@ -292,7 +293,11 @@ def getexistingmodels():
 @app.route('/getSavedModel', methods=['POST'])
 def getSavedModel():
     model = request.json['model']
-    columns = request.json['columns']
+    try:
+        columns = request.json['columns']
+    except:
+        print 'can not get columns'
+
     # model = model[:-4]
     result = view_saved_model(model, columns)
     return jsonify(result)
