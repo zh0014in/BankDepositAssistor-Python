@@ -667,6 +667,12 @@ class AntiXSS {
                 if (!args.data) {
                     return;
                 }
+                if(jQuery.isEmptyObject(args.data)){
+                    return;
+                }
+                if(args.data === "{}"){
+                    return;
+                }
                 console.log(args.data);
                 vm.data = [];
                 for(var key in args.data){
@@ -1147,24 +1153,24 @@ class AntiXSS {
 
         $scope.$on('traincomplete', function () {
             var someElement = angular.element(document.getElementById('trainResult'));
-            $document.scrollToElementAnimated(someElement);
+            $document.scrollToElementAnimated(someElement, 50);
             DevExpress.ui.notify("train completed!", "success", 1000);
         });
 
         $scope.$on('modelSelectionChanged', function (event, args) {
             var someElement = angular.element(document.getElementById('plots'));
-            $document.scrollToElementAnimated(someElement);
+            $document.scrollToElementAnimated(someElement, 50);
         });
 
         $scope.$on('validatecomplete', function () {
             var someElement = angular.element(document.getElementById('validateResult'));
-            $document.scrollToElementAnimated(someElement);
+            $document.scrollToElementAnimated(someElement, 50);
             DevExpress.ui.notify("validate completed!", "success", 1000);
         });
 
         $scope.$on('predictcomplete', function () {
             var someElement = angular.element(document.getElementById('predictResult'));
-            $document.scrollToElementAnimated(someElement);
+            $document.scrollToElementAnimated(someElement, 50);
             DevExpress.ui.notify("predict completed!", "success", 1000);
         });
 

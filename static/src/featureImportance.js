@@ -38,6 +38,12 @@
                 if (!args.data) {
                     return;
                 }
+                if(jQuery.isEmptyObject(args.data)){
+                    return;
+                }
+                if(args.data === "{}"){
+                    return;
+                }
                 console.log(args.data);
                 vm.data = [];
                 for(var key in args.data){
