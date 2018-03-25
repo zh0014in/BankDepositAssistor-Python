@@ -17,7 +17,7 @@
             function init() {
 
             }
-            function destroy(){
+            function destroy() {
                 vm.show = false;
             }
             $scope.$on('featureimportance', function (event, args) {

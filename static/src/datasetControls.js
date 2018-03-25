@@ -48,7 +48,7 @@
                     });
                     if (response.data.length > 2) {
                         var importanceFilename = response.data[2];
-                        $http.get('/loadDistributionData?filename=' + importanceFilename+'&username='+$rootScope.user.username).then(function (response) {
+                        $http.get('/getfeatureimportance?model=' + $rootScope.selectedModel+'&username='+$rootScope.user.username).then(function (response) {
                             console.log(response.data);
                             $rootScope.$broadcast('featureimportance', {
                                 data: response.data
