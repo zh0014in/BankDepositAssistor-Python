@@ -121,6 +121,8 @@ def run_model(model_name, train_or_predict, file_name, username, selected_column
                 print '-----------------123  ', jd
                 json.dump(jd, f1)
 
+        with open(feature_importance_csv, 'w') as f2:
+            json.dump(feature_importance_output)
 
         if (not feature_importance_output):
             return model_name, fit_model.get_params()
@@ -237,6 +239,7 @@ def run_model(model_name, train_or_predict, file_name, username, selected_column
     hash_value = str(hash(','.join(sorted(selected_columns))))
 
     model_file_name = username + '_' + model_name + '_' + hash_value + '.pkl'
+    feature_importance_csv = username + '_' + model_name + '_' + hash_value + '.pkl'
     print train_or_predict
     standard_scaler = preprocessing.StandardScaler()
     import time
