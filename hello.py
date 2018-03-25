@@ -98,10 +98,12 @@ def get_all_usage_data_from_db(username):
                 if Document(db, key).exists():
                     with Document(db, key) as document:
                         desc = json.loads(document.json())
-                        result[key]['time'] = round(desc.get('time_spent', 0), 2)
+                        result[key]['time'] = round(
+                            desc.get('time_spent', 0), 2)
                         for attach in desc.get('_attachments', []):
                             datausage += desc['_attachments'][attach]['length']
-                    result[key]['datausage'] = round(datausage/1024./ 1024., 2) # in Mb
+                    result[key]['datausage'] = round(
+                        datausage/1024. / 1024., 2)  # in Mb
                 else:
                     result[key] = {'datausage': 0, 'time': 0}
 
@@ -181,7 +183,7 @@ def upload_file_train():
                 else:
                     data = {'_id': username, '_attachments': {
                         trainFileName: {'data': uploaded_file_content},
-                        }, 'time_spent': 0}
+                    }, 'time_spent': 0}
                     db.create_document(data)
 
             return trainFileName
@@ -201,11 +203,12 @@ def train():
     print fullfilename
     file_content = get_data_from_db(username, fullfilename)
     result, time_spent = run_model(model, mode, fullfilename, username,
-                       selected_columns=columns, file_content=file_content)
+                                   selected_columns=columns, file_content=file_content)
     print time_spent
     with Document(db, username) as time_control:
 
-        time_control['time_spent'] = float(time_control.get('time_spent', 0)) + time_spent
+        time_control['time_spent'] = float(
+            time_control.get('time_spent', 0)) + time_spent
         print username, time_control['time_spent']
     return jsonify(result)
 
@@ -278,7 +281,6 @@ def get_data_to_json(username, filename):
     return json.dumps({'fields': list(data.split('\n', 1)[0].split(',')), 'data': result})
     # return dumpCsvToJson(username+filename)
 
-
     # if os.path.isfile(fullfilename):
     #     return dumpCsvToJson(fullfilename)
     # elif os.path.isfile(filename):
@@ -344,10 +346,12 @@ def login():
             return ''
     return render_template('404.html'), 404
 
+
 @app.route('/admin', methods=['GET'])
 def admin():
     username = request.args.get('username')
     return get_all_usage_data_from_db(username)
+
 
 @app.route('/getFileData', methods=['GET'])
 def getFileData():

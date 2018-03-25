@@ -42,7 +42,7 @@
                 ],
                 rotated: false,
                 size: {
-                    width: 800
+                    width: 1200
                 },
                 legend: {
                     horizontalAlignment: "right",
@@ -103,8 +103,9 @@
             $scope.$on('fileSelectionChanged', function (event, args) {
                 spinnerService.show('distributionplotsspinner');
                 $http.get('/loadDistributionData?filename=' + args.file + "&username="+$rootScope.user.username).then(function (response) {
-                    vm.data = response.data;
-                    countByColumn('month')
+                    vm.data = response.data.data;
+                    $rootScope.fields = response.data.fields;
+                    countByColumn('month');
                     spinnerService.close('distributionplotsspinner');
                 });
             });

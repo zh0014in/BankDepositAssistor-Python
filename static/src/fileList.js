@@ -25,7 +25,7 @@
                 }
             }
 
-            function destroy(){
+            function destroy() {
                 vm.user = {};
                 vm.files = [];
             }
@@ -33,8 +33,7 @@
             vm.fileSelected = function (file) {
                 vm.selectedfile = file;
                 $rootScope.$broadcast('fileSelectionChanged', {
-                    file: file.filename,
-                    fields: file.fields
+                    file: file.filename
                 });
             }
 
@@ -47,7 +46,7 @@
                 init();
             });
 
-            $scope.$on('removeuser', function(){
+            $scope.$on('removeuser', function () {
                 destroy();
             });
         }
