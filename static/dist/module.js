@@ -455,7 +455,7 @@ class AntiXSS {
                 ],
                 rotated: false,
                 size: {
-                    width: 1200
+                    width: 1000
                 },
                 legend: {
                     horizontalAlignment: "right",
