@@ -24,7 +24,7 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
-
+*.pkl
 # python virtual environment/compiled files
 venv/
 *.pyc
