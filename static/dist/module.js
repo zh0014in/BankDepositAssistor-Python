@@ -1272,6 +1272,7 @@ class AntiXSS {
 
             function destroy() {
                 vm.pklNames = [];
+                vm.selectBox.option('items', []);
             }
 
             $scope.$on('modelSelectionChanged', function () {
