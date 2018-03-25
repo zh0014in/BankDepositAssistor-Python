@@ -200,7 +200,6 @@ def train():
     #fullfilename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     print fullfilename
     file_content = get_data_from_db(username, fullfilename)
-    print file_content
     result, time_spent = run_model(model, mode, fullfilename, username,
                        selected_columns=columns, file_content=file_content)
     print time_spent
