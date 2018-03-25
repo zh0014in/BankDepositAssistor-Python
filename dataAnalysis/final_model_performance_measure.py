@@ -97,7 +97,8 @@ def run_model(model_name, train_or_predict, file_name, username, selected_column
                     f_dict[key] = row['importance']
             print f_dict
             if feature_importance_output:
-                json.dump(f_dict, feature_importance_output)
+                with open(feature_importance_output, 'w') as f2:
+                    json.dump(f_dict, f2)
 
         joblib.dump(fit_model, model_file_name)
 
