@@ -168,7 +168,7 @@ def run_model(model_name, train_or_predict, file_name, username, selected_column
         np.set_printoptions(precision=2)
         print model_name, cnf_matrix
 
-        tn, fp, fn, tp = confusion_matrix(validation_label_set, label_pred).ravel()
+        tp, fp, fn, tn = confusion_matrix(validation_label_set, label_pred).ravel()
         validate_result = {'TrueNegative': tn, 'FalsePositive': fp, 'FalseNegative': fn, 'TruePositive': tp}
 
         return model_name, validate_result
