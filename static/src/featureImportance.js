@@ -20,16 +20,40 @@
             function destroy() {
                 vm.show = false;
             }
+            Object.filter = function (obj, predicate) {
+                var result = {}, key;
+                // ---------------^---- as noted by @CMS, 
+                //      always declare variables with the "var" keyword
+
+                for (key in obj) {
+                    if (obj.hasOwnProperty(key) && !predicate(obj[key])) {
+                        result[key] = obj[key];
+                    }
+                }
+
+                return result;
+            };
+
             $scope.$on('featureimportance', function (event, args) {
-                if(!args.data){
+                if (!args.data) {
                     return;
                 }
-                vm.data = args.data.filter(function (t) {
-                    return t.importance > 0;
-                });
-                for (var i = 0; i < vm.data.length; i++) {
-                    vm.data[i].importance = Math.round(vm.data[i].importance * 100) / 100;
+                console.log(args.data);
+                vm.data = [];
+                for(var key in args.data){
+                    if(args.data[key] < 0){
+                        delete args.data[key];
+                    }else{
+                        args.data[key] = Math.round(args.data[key] * 100)/100;
+                        vm.data.push({
+                            'features': key,
+                            'importance': args.data[key]
+                        });
+                    }
                 }
+                vm.data.sort(function(a, b){
+                    return a['importance'] - b['importance'];
+                });
                 vm.chart.option('dataSource', vm.data);
                 vm.show = true;
             });
@@ -57,7 +81,7 @@
                         };
                     }
                 },
-                rotated: false,
+                rotated: true,
                 size: {
                     width: 800
                 },
@@ -69,7 +93,7 @@
                 vm.show = false;
             });
             $scope.$on('fileSelectionChanged', function () {
-                vm.show = false;
+                // vm.show = false;
             });
             $scope.$on('removeuser', function () {
                 destroy();

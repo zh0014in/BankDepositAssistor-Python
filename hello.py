@@ -369,7 +369,7 @@ def getFileData():
 def getfeatureimportance():
     model = request.args.get('model')
     username = request.args.get('username')
-    return get_feature_importance(username, model)
+    return jsonify( get_feature_importance(username, model))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port, debug=True)

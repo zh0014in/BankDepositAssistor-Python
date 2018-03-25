@@ -17,7 +17,7 @@
             function init() {
                 vm.show = false;
             }
-            function destroy(){
+            function destroy() {
                 vm.show = false;
             }
 
@@ -46,15 +46,12 @@
                     $rootScope.$broadcast('trainparameters', {
                         data: vm.parameters
                     });
-                    if (response.data.length > 2) {
-                        var importanceFilename = response.data[2];
-                        $http.get('/getfeatureimportance?model=' + $rootScope.selectedModel+'&username='+$rootScope.user.username).then(function (response) {
-                            console.log(response.data);
-                            $rootScope.$broadcast('featureimportance', {
-                                data: response.data
-                            });
+                    $http.get('/getfeatureimportance?model=' + $rootScope.selectedModel + '&username=' + $rootScope.user.username).then(function (response) {
+                        console.log(response.data);
+                        $rootScope.$broadcast('featureimportance', {
+                            data: response.data
                         });
-                    }
+                    });
                     $rootScope.$broadcast('traincomplete');
                 });
             });

@@ -109,7 +109,6 @@
                     $rootScope.fields = response.data.fields;
                     countByColumn('month');
                     spinnerService.close('distributionplotsspinner');
-                    $rootScope.$broadcast('fileloaded');
                 });
             });
 
