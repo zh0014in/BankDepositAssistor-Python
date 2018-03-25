@@ -39,8 +39,9 @@
                 vm.show = false;
                 $http.get('/getFileData?filename=' + args.file+'&username='+$rootScope.user.username).then(function (response) {
                     vm.fileName = args.file;
+                    console.log(response.data.field);
                     vm.fileData = angular.fromJson(response.data.data);
-                    vm.columns = response.data.columns;
+                    vm.columns = response.data.field;
                     vm.columnNames = vm.columns;
                     vm.dataGrid.option('columns', vm.columnNames);
                     vm.show = true;
@@ -49,6 +50,7 @@
                 });
             });
             $scope.$on('removeuser', function () {
+                console("=========================================")
                 destroy();
             });
         }
