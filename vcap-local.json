@@ -3,9 +3,9 @@
     "cloudantNoSQLDB": [
       {
         "credentials": {
-          "username": "be2afd60-2be0-42ab-b38c-bfa1c316812e-bluemix",
-          "password": "eb6865be2106349a9ea0a56cf8deb25058c8c902e2f9fe2ff8e7d0c950bdf603",
-          "host": "be2afd60-2be0-42ab-b38c-bfa1c316812e-bluemix.cloudant.com"
+          "username": "ebfedddf-03f5-4dd8-93a5-235f467594c9-bluemix",
+          "password": "ccb5ef55244fc613e1a80665317a73f747ff96c267c1027fa07354f91d205ec8",
+          "host": "ebfedddf-03f5-4dd8-93a5-235f467594c9-bluemix.cloudant.com"
         },
         "label": "cloudantNoSQLDB"
       }
