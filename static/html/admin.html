@@ -1,11 +1,18 @@
-<h1>Registered Users</h1>
-<table class="table">
-    <thead>
-        <th></th>
-    </thead>
-    <tbody>
-        <tr data-ng-repeat="user in vm.users">
-            
-        </tr>
-    </tbody>
-</table>
+<span>
+    <h1>Registered Users</h1>
+    <table class="table" data-ng-show="vm.users">
+        <thead>
+            <th>Username</th>
+            <th>Data Usage</th>
+            <th>Time</th>
+        </thead>
+        <tbody>
+            <tr data-ng-repeat="(key, user) in vm.users">
+                <td data-ng-bind="key"></td>
+                <td data-ng-bind="user.datausage"></td>
+                <td data-ng-bind="user.time"></td>
+            </tr>
+        </tbody>
+    </table>
+    <sarsha-spinner name="adminspinner"></sarsha-spinner>
+</span>

@@ -167,7 +167,7 @@ var duScrollDefaultEasing=function(e){"use strict";return e<.5?Math.pow(2*e,2)/2
         }]);
 
 }());
-(function(){
+(function () {
     'use strict';
 
     angular
@@ -175,16 +175,17 @@ var duScrollDefaultEasing=function(e){"use strict";return e<.5?Math.pow(2*e,2)/2
         .controller('adminController', adminController)
 
     /** @ngInject */
-    adminController.$inject = ['$http']
-    function adminController($http){
+    adminController.$inject = ['$http', '$rootScope', 'spinnerService'];
+    function adminController($http, $rootScope, spinnerService) {
         var vm = this;
-        
-        vm.$onInit = init;
 
-        function init(){
-            $http.get('/admin', function(response){
-                console.log(response.data)
+        init();
+
+        function init() {
+            spinnerService.show('adminspinner');
+            $http.get('/admin?username=' + $rootScope.user.username).then(function (response) {
                 vm.users = response.data;
+                spinnerService.close('adminspinner');
             });
         }
     }

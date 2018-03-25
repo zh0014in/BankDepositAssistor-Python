@@ -322,8 +322,12 @@ def login():
     if username in db['usercontrol']:
         if db['usercontrol'][username] == password:
             return ''
-
     return render_template('404.html'), 404
+
+@app.route('/admin', methods=['GET'])
+def admin():
+    username = request.args.get('username')
+    return get_all_usage_data_from_db(username)
 
 @app.route('/getFileData', methods=['GET'])
 def getFileData():

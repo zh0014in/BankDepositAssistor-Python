@@ -1,4 +1,4 @@
-(function(){
+(function () {
     'use strict';
 
     angular
@@ -6,16 +6,17 @@
         .controller('adminController', adminController)
 
     /** @ngInject */
-    adminController.$inject = ['$http']
-    function adminController($http){
+    adminController.$inject = ['$http', '$rootScope', 'spinnerService'];
+    function adminController($http, $rootScope, spinnerService) {
         var vm = this;
-        
-        vm.$onInit = init;
 
-        function init(){
-            $http.get('/admin', function(response){
-                console.log(response.data)
+        init();
+
+        function init() {
+            spinnerService.show('adminspinner');
+            $http.get('/admin?username=' + $rootScope.user.username).then(function (response) {
                 vm.users = response.data;
+                spinnerService.close('adminspinner');
             });
         }
     }
