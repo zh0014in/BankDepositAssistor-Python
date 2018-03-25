@@ -217,19 +217,33 @@ def train():
 
 @app.route('/uploadedFilesWithDetails', methods=['GET'])
 def uploadedFilesWithDetails():
-    username = request.args.get('username')
-    files = findfilesfromdb(username)  # findfiles(app.config['UPLOAD_FOLDER'])
     result = []
-    for filename in files:
-        data = db[username].get_attachment(attachment=filename)
-        lis = [row for row in csv.DictReader(StringIO(data))]
-        print lis[0]
-        result.append({
-                'size': sys.getsizeof(data),
-                'lines': len(lis),
-                'fields': lis[0],
-                'filename': filename
-            })
+    username = request.args.get('username')
+    if Document(db, username).exists():
+        print username
+        with Document(db, username) as document:
+            desc = json.loads(document.json())
+            print username, desc
+            for attach in desc.get('_attachments', {}):
+                print attach
+                result.append({
+                    'size': desc['_attachments'][attach]['length'],
+                    'filename': attach
+                })
+    print result
+    # username = request.args.get('username')
+    # files = findfilesfromdb(username)  # findfiles(app.config['UPLOAD_FOLDER'])
+    # result = []
+    # for filename in files:
+    #     data = db[username].get_attachment(attachment=filename)
+    #     lis = [row for row in csv.DictReader(StringIO(data))]
+    #     print lis[0]
+    #     result.append({
+    #             'size': sys.getsizeof(data),
+    #             'lines': len(lis),
+    #             'fields': lis[0],
+    #             'filename': filename
+    #         })
     return jsonify(result)
 
 
@@ -259,7 +273,8 @@ def get_data_to_json(username, filename):
 
     # with open(username+filename, 'w') as f:
     #     f.write(data)
-    return json.dumps([row for row in csv.DictReader(StringIO(data))])
+    data = [row for row in csv.DictReader(StringIO(data))]
+    return json.dumps({'fields': data[0], 'data': data})
     # return dumpCsvToJson(username+filename)
 
 
