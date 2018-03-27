@@ -89,23 +89,24 @@ def get_all_usage_data_from_db(username):
     if not Document(db, 'usercontrol').exists():
         return result
     else:
-        for key in db['usercontrol'].keys():
-            if key.startswith('_') or key.startswith('admin'):
-                continue
-            else:
-                result[key] = {}
-                datausage = 0
-                if Document(db, key).exists():
-                    with Document(db, key) as document:
-                        desc = json.loads(document.json())
-                        result[key]['time'] = round(
-                            desc.get('time_spent', 0), 2)
-                        for attach in desc.get('_attachments', []):
-                            datausage += desc['_attachments'][attach]['length']
-                    result[key]['datausage'] = round(
-                        datausage/1024. / 1024., 2)  # in Mb
+        with Document(db, 'usercontrol') as d:
+            for key in d.keys():
+                if key.startswith('_') or key.startswith('admin'):
+                    continue
                 else:
-                    result[key] = {'datausage': 0, 'time': 0}
+                    result[key] = {}
+                    datausage = 0
+                    if Document(db, key).exists():
+                        with Document(db, key) as document:
+                            desc = json.loads(document.json())
+                            result[key]['time'] = round(
+                                desc.get('time_spent', 0), 2)
+                            for attach in desc.get('_attachments', []):
+                                datausage += desc['_attachments'][attach]['length']
+                        result[key]['datausage'] = round(
+                            datausage/1024. / 1024., 2)  # in Mb
+                    else:
+                        result[key] = {'datausage': 0, 'time': 0}
 
     print result
     return json.dumps(result)
@@ -347,11 +348,11 @@ def login():
     username = request.json['username']
     password = request.json['password']
 
-    if username in db['usercontrol']:
-        if db['usercontrol'][username] == password:
-            return ''
+    with Document(db, 'usercontrol') as document:
+        if username in document:
+            if document[username] == password:
+                return ''
     return render_template('404.html'), 404
-
 
 @app.route('/admin', methods=['GET'])
 def admin():
