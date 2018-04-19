@@ -33,11 +33,8 @@ We're now going to update your local code to point to this database. We'll creat
       ]
     }
   }
-  ```
 2. Replace username, password and host with correct connections
-  ```
 3. Run your application locally.
-  ```
 python hello.py
   ```
 
