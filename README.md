@@ -6,12 +6,23 @@ Install the dependencies listed in the [requirements.txt](https://pip.readthedoc
 pip install -r requirements.txt
   ```
 
+cd into static/ and run npm, gulp
+
+```
+cd static/
+npm install
+gulp default
+cd ../
+```
+
 Run the app.
   ```
 python hello.py
   ```
 
  View your app at: http://localhost:8000
+
+The csv files can be found in uploads/
 
 ## Use the database
 
